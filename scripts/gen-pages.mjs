@@ -17,12 +17,14 @@ const PAGES = [
   ['admissions.html', 'admissions', 'admissions', 'Admissions'],
   ['admissions-7plus-journey.html', 'admissions-7plus-journey', 'admissions', 'Your 7+ Journey'],
   ['admissions-11plus-journey.html', 'admissions-11plus-journey', 'admissions', 'Your 11+ Journey'],
+  ['admissions-11plus-past-papers.html', 'admissions-11plus-past-papers', 'admissions', '11+ Entrance Exam & Past Papers'],
   ['admissions-16plus-journey.html', 'admissions-16plus-journey', 'admissions', 'Your 16+ Journey'],
   ['book-a-visit.html', 'book-a-visit', 'admissions', 'Book a Visit'],
   ['register.html', 'register', 'admissions', 'Register'],
   ['fees.html', 'fees', 'admissions', 'Fees'],
   ['scholarships-bursaries.html', 'scholarships-bursaries', 'admissions', 'Scholarships & Bursaries'],
   ['admissions-faqs.html', 'admissions-faqs', 'admissions', 'Frequently Asked Questions'],
+  ['admissions-grammar-or-independent.html', 'admissions-grammar-or-independent', 'admissions', 'Grammar or Independent School?'],
 
   ['prep.html', 'prep', 'prep', '7+ Prep'],
   ['prep-why.html', 'prep-why', 'prep', 'Why Bancroft’s Prep'],
@@ -33,11 +35,12 @@ const PAGES = [
 
   ['senior.html', 'senior', 'senior', '11+ Senior'],
   ['senior-why.html', 'senior-why', 'senior', 'Why Bancroft’s Senior'],
-  ['senior-academic-results.html', 'senior-academic-results', 'senior', 'Senior Academic Results'],
+  ['senior-academic-results.html', 'senior-academic-results', 'senior', 'GCSE Results'],
   ['senior-curriculum.html', 'senior-curriculum', 'senior', 'Senior Curriculum'],
   ['senior-sport-arts.html', 'senior-sport-arts', 'senior', 'Sport & Arts'],
   ['senior-clubs.html', 'senior-clubs', 'senior', 'Senior Clubs'],
   ['senior-pastoral-care.html', 'senior-pastoral-care', 'senior', 'Senior Pastoral Care'],
+  ['senior-learning-for-life.html', 'senior-learning-for-life', 'senior', 'Learning for Life'],
   ['senior-sport.html', 'senior-sport', 'senior', 'Sport at Bancroft’s'],
   ['senior-sport-football.html', 'senior-sport-football', 'senior', 'Football'],
   ['senior-sport-rugby.html', 'senior-sport-rugby', 'senior', 'Rugby'],
@@ -55,7 +58,7 @@ const PAGES = [
   ['sixth-form-curriculum-subjects.html', 'sixth-form-curriculum-subjects', 'sixth-form', 'Sixth Form Curriculum & Subjects'],
   ['sixth-form-leavers-destinations.html', 'sixth-form-leavers-destinations', 'sixth-form', 'Leavers’ Destinations'],
   ['sixth-form-staying-on.html', 'sixth-form-staying-on', 'sixth-form', 'Staying On'],
-  ['sixth-form-examination-results.html', 'sixth-form-examination-results', 'sixth-form', 'Sixth Form Examination Results'],
+  ['sixth-form-examination-results.html', 'sixth-form-examination-results', 'sixth-form', 'A Level Results'],
 
   ['school-life.html', 'school-life', 'school-life', 'School Life'],
   ['school-life-community.html', 'school-life-community', 'school-life', 'Our Community'],
@@ -73,6 +76,7 @@ const PAGES = [
   ['about.html', 'about', 'about', 'About'],
   ['about-welcome.html', 'about-welcome', 'about', 'Welcome from the Head'],
   ['about-what-we-stand-for.html', 'about-what-we-stand-for', 'about', 'What We Stand For'],
+  ['about-rankings-recognition.html', 'about-rankings-recognition', 'about', 'Rankings & Recognition'],
   ['about-history-archives.html', 'about-history-archives', 'about', 'Our History & Archives'],
   ['about-governance-leadership.html', 'about-governance-leadership', 'about', 'Governance & Leadership'],
   ['about-policies-procedures.html', 'about-policies-procedures', '', 'Policies and Procedures'],
@@ -128,4 +132,25 @@ writeFileSync(resolve(root, 'components.html'), `<!doctype html>
 </html>
 `)
 
-console.log(`Generated ${PAGES.length + 1} HTML pages.`)
+// Sitemap — tooling too: drawn from config.ts's own menu/page data by <wf-sitemap-page>.
+writeFileSync(resolve(root, 'sitemap.html'), `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>Sitemap - ${SITE_NAME}</title>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-gray-900 focus:text-white focus:px-4 focus:py-2 focus:text-sm">Skip to content</a>
+    <wf-header-nav active="" minimal minimal-label="Sitemap"></wf-header-nav>
+    <main id="main" class="w-full mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <wf-sitemap-page></wf-sitemap-page>
+    </main>
+    <wf-prototype-nav></wf-prototype-nav>
+  </body>
+</html>
+`)
+
+console.log(`Generated ${PAGES.length + 2} HTML pages.`)

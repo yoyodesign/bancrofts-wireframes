@@ -33,6 +33,8 @@ export class WfHeaderNav extends Light {
   /** Stripped-down header — brand + a single "Return to homepage" link, no nav/CTA/hamburger.
    *  Used on tooling pages (Component List) that aren't part of the site's own IA. */
   @property({ type: Boolean }) minimal = false
+  /** Name shown beside the brand on a minimal (tooling) page — Component List, Sitemap. */
+  @property({ attribute: 'minimal-label' }) minimalLabel = 'Component List'
   @state() private navOpen = false
   /** Mobile/narrow-viewport drill-down state: null = root section list; a slug = drilled into
    *  that section's sub-view (see the `lg:hidden` render branch). */
@@ -295,7 +297,7 @@ export class WfHeaderNav extends Light {
       return html`
         <header class="sticky mt-[var(--wf-bar-h)] top-[var(--wf-bar-h)] z-40 border-b border-gray-200 bg-white">
           <div class="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
-            <span class="text-base font-semibold text-gray-900">${siteName}: Component List</span>
+            <span class="text-base font-semibold text-gray-900">${siteName}: ${this.minimalLabel}</span>
             <a href="index.html"
                class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2">Return to homepage</a>
           </div>

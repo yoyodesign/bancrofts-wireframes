@@ -42,7 +42,7 @@ export class WfPageBody extends Light {
       case 'wf-quote':
         return html`<wf-quote .items=${p.items || []}></wf-quote>`
       case 'wf-logos':
-        return html`<wf-logos heading=${p.heading || ''} .names=${p.names || []}></wf-logos>`
+        return html`<wf-logos heading=${p.heading || ''} .names=${p.names || []} cta-label=${p.ctaLabel || ''} cta-href=${p.ctaHref || ''}></wf-logos>`
       case 'wf-statistics':
         return html`<wf-statistics heading=${p.heading || ''} .items=${p.items || []}></wf-statistics>`
       case 'wf-table':

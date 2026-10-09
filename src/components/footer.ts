@@ -1,7 +1,7 @@
 import { html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import { Light } from '../base'
-import { footerColumns, footerTagline, footerLegal, siteName } from '../config'
+import { footerColumns, footerLegalLinks, footerTagline, footerLegal, siteName } from '../config'
 
 @customElement('wf-site-footer')
 export class WfSiteFooter extends Light {
@@ -36,7 +36,9 @@ export class WfSiteFooter extends Light {
           </div>
           <div class="mt-12 border-t border-gray-200 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <p class="text-xs text-gray-400">&copy; ${new Date().getFullYear()} ${footerLegal}</p>
-            <a href="privacy-policy.html" class="text-xs text-gray-500 hover:text-gray-900">Privacy Policy</a>
+            <div class="flex flex-wrap gap-4">
+              ${footerLegalLinks.map((l) => html`<a href=${l.href} class="text-xs text-gray-500 hover:text-gray-900">${l.label}</a>`)}
+            </div>
           </div>
         </div>
       </footer>`

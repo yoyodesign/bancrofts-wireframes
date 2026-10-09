@@ -81,6 +81,74 @@ a page shell, so it doesn't drift from the generator.
 
 59 HTML files total (58 site pages + Component List).
 
+### Sitemap (2026-10-09)
+
+`sitemap.html`, opened from the Prototype panel's "Sitemap" row — a tooling page like the Component
+List (`<wf-sitemap-page>`, `src/components/sitemap-page.ts`). It draws the site as a tree in the style
+of the original Sitemap v1 (window-style page blocks, one column per section, footer block), in the
+wireframe's greyscale rather than the original's coloured tags.
+
+It keeps no page list of its own, so it can't drift from the site:
+
+- **Columns and their order** — `primaryNav`.
+- **Where each page sits** — the page's own breadcrumb (its last ancestor crumb is its parent). This
+  is what places off-menu pages correctly, e.g. the nine sports under Sport, 11+ Exam & Past Papers
+  under Your 11+ Journey.
+- **Type tag** — `corePages` (the same six types as the Core pages panel; section overviews stay
+  "Content"). A page missing from `corePages` shows as "Untyped".
+- **Footer block** — `footerColumns` plus `footerLegalLinks` (the Privacy Policy link, moved out of
+  `footer.ts` into config so both read one list). Links with no built page are tagged "External".
+
+Pages outside the burger menu get a dashed outline and a "Not in menu" marker (Book a Visit shows
+"Header button"). A page with no breadcrumb parent, menu entry or footer link appears under "Unplaced
+pages" rather than silently dropping off. The block for the page you arrived from is ringed.
+
+The tree is wider than most windows, so it opens scaled to fit the available width — the whole
+structure at once, as in the original drawing — with a "Fit to screen / 100%" toggle, +/- steps
+(20% to 150%) and click-and-drag to slide around when it's larger than the window. Fit applies to
+width only; the page still scrolls vertically. In a narrow window the fitted labels are too small to
+read, so there it's an overview and you magnify to read.
+
+### SEO audit additions (2026-10-09)
+
+Six additions taken from the Search Audit and Recommendations report (24.09.26), placed by how the
+report sizes each opportunity:
+
+- **`admissions-11plus-past-papers.html`** — 11+ Entrance Exam & Past Papers hub. The report's largest
+  search opportunity (the existing 2017 paper PDFs rank for around 2,760 searches a month). Off
+  primary nav, as a sub-page of Your 11+ Journey: it was briefly in the Admissions nav, but it broke
+  the 7+/11+/16+ run and pushed Admissions to nine items, and most visitors arrive from search rather
+  than the menu. Reached from Your 11+ Journey, the Admissions "Guides for parents" row, the Grammar
+  guide and a "Preparing for the 11+?" block on `senior.html` (placed after the six area blocks and
+  above the FAQs, framed as 11+ preparation so it doesn't read as a seventh area of Senior life).
+  Ends on Register / Book a Visit.
+- **`about-rankings-recognition.html`** — Rankings & Recognition, in the About nav after What We Stand
+  For. Whole-school proof (league tables, ISI 2025, awards), so it sits in About rather than under one
+  stage. Gives the ISI report a home again after the About restructure folded it into intro copy. The
+  homepage awards strip links here (`wf-logos` gained optional `ctaLabel`/`ctaHref`).
+- **`admissions-grammar-or-independent.html`** — a guide for parents, off primary nav (same pattern as
+  Sport): it is a search/AI landing page, not something browsed to. Reached from a new "Guides for
+  parents" row on Admissions, Your 11+ Journey, Why Bancroft's Senior and Fees.
+- **`senior-learning-for-life.html`** — off primary nav, reached from Senior Pastoral Care and Senior
+  Curriculum. Replaces a PDF as the version found in search. To confirm: Senior-only, or Prep too.
+- **Results pages** — kept as two pages, one per stage, but rebuilt to the report's evergreen structure
+  (five-year table, subject highlights, pupil quote, cross-links, FAQs) and renamed "GCSE Results" /
+  "A Level Results" to match search terms. URLs are unchanged (`senior-academic-results.html`,
+  `sixth-form-examination-results.html`); renaming those is a decision for the real build's URL map.
+- **FAQs** — a `faqs()` helper in `config.ts` adds a page-specific `wf-accordion` to Admissions, the
+  three Journey pages, the three stage overviews, Fees, Scholarships & Bursaries and both results
+  pages. Journey pages carry process questions and stage overviews carry "life at this stage"
+  questions, so the two candidate hubs per entry point stay distinct. Every set ends on a link to
+  the central `admissions-faqs.html`.
+- **Fees** — adds "Fees and VAT" and a "What your fees include" table for the value-after-VAT question.
+
+Anything not already in the wireframe or the report is marked in the page itself as "Wireframe
+note", "Placeholder", "To confirm" or "To be supplied" — league table positions, prior-year results,
+what fees cover, the grammar comparison points and the Learning for Life themes all need real content.
+
+New pages must be added in three places: `scripts/gen-pages.mjs` (the shell), `src/config.ts` (the
+content) and `vite.config.ts`'s `rollupOptions.input` (or the page is missing from the deployed build).
+
 ### Co-Curriculum section (2026-08-30)
 
 Per client feedback, from a conversation with a target-audience parent: clubs/co-curriculum was

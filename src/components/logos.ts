@@ -1,11 +1,15 @@
 import { html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { Light } from '../base'
+import { arrowIcon } from './utils'
 
 @customElement('wf-logos')
 export class WfLogos extends Light {
   @property() heading = ''
   @property({ attribute: false }) names: string[] = []
+  /** Optional link shown under the logo row — e.g. through to the page that explains the awards. */
+  @property({ attribute: 'cta-label' }) ctaLabel = ''
+  @property({ attribute: 'cta-href' }) ctaHref = ''
 
   render() {
     return html`
@@ -17,6 +21,12 @@ export class WfLogos extends Light {
               ${n}
             </div>`)}
         </div>
+        ${this.ctaLabel && this.ctaHref ? html`
+          <p class="mt-6 text-center">
+            <a href=${this.ctaHref} class="inline-flex items-center text-sm font-medium text-gray-900 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2">
+              ${this.ctaLabel} ${arrowIcon()}
+            </a>
+          </p>` : ''}
       </section>`
   }
 }

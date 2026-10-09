@@ -1,7 +1,7 @@
 import { html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 import { Light } from '../base'
-import { corePages, flows, changelog, CORE_PAGE_TYPES } from '../config'
+import { corePages, flows, changelog, pages, primaryNav, CORE_PAGE_TYPES } from '../config'
 import { gridIcon, closeIcon, chevronIcon } from './utils'
 
 const FLOW_KEY = 'wf-flow-index'
@@ -204,6 +204,10 @@ export class WfPrototypeNav extends Light {
 
         ${this.view === 'root' ? html`
           <div class="p-5 space-y-3">
+            <a href="sitemap.html" class="w-full flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3.5 hover:bg-gray-50">
+              <span><span class="block text-sm font-semibold text-gray-900">Sitemap</span><span class="block text-xs text-gray-500">${Object.keys(pages).length} pages across ${primaryNav.length} sections</span></span>
+              ${rowChevron()}
+            </a>
             <button type="button" @click=${() => this.openPanel('core')} class="w-full flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3.5 text-left hover:bg-gray-50">
               <span><span class="block text-sm font-semibold text-gray-900">Core pages</span><span class="block text-xs text-gray-500">${corePages.length} templates across ${coreTypeGroups.length} page types</span></span>
               ${rowChevron()}
