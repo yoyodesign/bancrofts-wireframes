@@ -1,0 +1,28 @@
+@import "tailwindcss";
+/* Sticky footer + no horizontal scroll from full-bleed heroes. Host display:block is set in base.ts.
+   overflow-x lives on html, NOT body: setting it on body forces body's overflow-y to compute as auto
+   (CSS Overflow spec's visible/auto pairing rule), turning body into an unintended scroll container
+   that silently breaks position:sticky for descendants (e.g. a sticky header) — see lit.md gotchas.
+   body must NOT also get `height: 100%` (a common companion to this pattern) — html has a definite
+   height (100vh via the viewport), so `height: 100%` on body would resolve to that same fixed value
+   and, unlike min-height, actually CLAMP body's box to it; content taller than one screenful then
+   overflows past body's own border box, and since the sticky header's containing block is body's box,
+   the header stops sticking as soon as you scroll past that first screenful — see lit.md gotchas. */
+html { overflow-x: hidden; }
+body { min-height: 100vh; display: flex; flex-direction: column; }
+main { flex: 1 0 auto; }
+/* Set by wf-prototype-nav to the walkthrough bar's real height so the sticky header sits
+   below it (both at rest and while stuck during scroll) instead of being covered by it. */
+:root { --wf-bar-h: 0px; }
+
+/* Appear animation for the play button on wf-media's video placeholder (see components/utils.ts
+   videoPlaceholder) — a small pop-in on mount so the affordance doesn't read as static/dead. This
+   MUST live here: utils.ts references the animation by name (`[animation:wf-pop-in_0.3s_ease-out]`)
+   but an inline Tailwind arbitrary-value animation reference doesn't define the keyframes — an
+   undefined animation name is silently ignored by the browser (no error, no animation, no visual
+   sign anything is wrong), so it's easy to reference this from a component and forget the keyframes
+   have to be declared globally, once, here. */
+@keyframes wf-pop-in {
+  from { opacity: 0; transform: scale(0.75); }
+  to { opacity: 1; transform: scale(1); }
+}
