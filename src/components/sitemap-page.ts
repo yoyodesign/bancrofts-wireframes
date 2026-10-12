@@ -1,15 +1,34 @@
 import { html, type TemplateResult } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
+import { customElement, property, state } from 'lit/decorators.js'
 import { Light } from '../base'
 import { pages, primaryNav, corePages, footerColumns, footerLegalLinks, headerCta, CORE_PAGE_TYPES } from '../config'
 
-interface SitemapNode {
+export interface SitemapNode {
   href: string
   label: string
   type: string
-  /** Why a real page isn't in the burger menu, if it isn't — shown as a small dashed marker. */
-  marker: '' | 'Not in menu' | 'Header button'
+  /** Anything that sets a page apart from an ordinary menu page (e.g. "Not in menu", "Header
+   *  button") — shown as a small dashed marker, with the block itself outlined dashed. */
+  marker: string
+  /** Optional small line under the label, e.g. where a menu item redirects to. */
+  note?: string
   children: SitemapNode[]
+}
+
+/** Everything the page draws. The wireframe's own sitemap builds this from config.ts (see build());
+ *  any other site can be drawn in exactly the same style by handing the component a ready-made
+ *  one through `source`. */
+export interface SitemapSource {
+  eyebrow: string
+  title: string
+  home?: SitemapNode
+  sections: SitemapNode[]
+  /** Link lists drawn as blocks under the tree (the footer, a utility menu). An item is either a
+   *  page (`node`) or a non-page link tagged with `type` (External, PDF). */
+  lists: { tag: string; items: { label: string; node?: SitemapNode; type?: string; href?: string }[] }[]
+  unplaced: SitemapNode[]
+  /** Explanation shown in the key for each marker in use. */
+  markerKey: Record<string, string>
 }
 
 /** Greyscale only, like the rest of the wireframe — types are told apart by weight, not colour. */
@@ -36,6 +55,16 @@ const hrefOf = (key: string) => (key === 'homepage' ? 'index.html' : `${key}.htm
  *  magnify, and click-and-drag to slide around once it's bigger than the window. */
 @customElement('wf-sitemap-page')
 export class WfSitemapPage extends Light {
+  /** A ready-made structure to draw instead of the wireframe's own. */
+  @property({ attribute: false }) source?: SitemapSource
+  /** Set on a page that will supply `source` from its own script, so the wireframe's sitemap
+   *  doesn't flash up first. */
+  @property({ type: Boolean, attribute: 'await-source' }) awaitSource = false
+
+  updated() {
+    this.measure()
+  }
+
   /** 'fit' tracks the window width; a number is a fixed scale chosen with the zoom controls. */
   @state() private zoom: number | 'fit' = 'fit'
   /** The tree's own unscaled size, measured after render — transforms don't change layout size. */
@@ -137,7 +166,7 @@ export class WfSitemapPage extends Light {
       </div>`
   }
 
-  private build() {
+  private build(): SitemapSource {
     const typeByHref = new Map(corePages.map((p) => [p.href, p.type as string]))
     const menuOrder = new Map<string, number>()
     for (const item of primaryNav) {
@@ -182,12 +211,30 @@ export class WfSitemapPage extends Light {
     }
 
     return {
+      eyebrow: 'Prototype',
+      title: 'Sitemap',
       home: nodes.get('index.html'),
       sections: primaryNav.map((n) => nodes.get(n.href)).filter((n): n is SitemapNode => !!n),
-      footer: footerLinks.map((l) => ({ label: l.label, node: nodes.get(l.href) })),
+      lists: [{ tag: 'Footer', items: footerLinks.map((l) => ({ label: l.label, node: nodes.get(l.href), type: 'External' })) }],
       unplaced,
-      all: [...nodes.values()],
+      markerKey: { 'Not in menu': 'a real page reached by links, not the menu' },
     }
+  }
+
+  /** Every page in the structure, once each — the tree plus any page that only appears in a list. */
+  private allNodes(data: SitemapSource): SitemapNode[] {
+    const seen = new Map<string, SitemapNode>()
+    const visit = (n?: SitemapNode) => {
+      if (!n) return
+      if (!seen.has(n.href + '|' + n.label)) seen.set(n.href + '|' + n.label, n)
+      n.children.forEach(visit)
+    }
+    visit(data.home)
+    data.sections.forEach(visit)
+    data.unplaced.forEach(visit)
+    const treeHrefs = new Set([...seen.values()].map((n) => n.href))
+    for (const list of data.lists) for (const item of list.items) if (item.node && !treeHrefs.has(item.node.href)) visit(item.node)
+    return [...seen.values()]
   }
 
   private tag(label: string, classes = TAG[label] || TAG_FALLBACK) {
@@ -207,13 +254,14 @@ export class WfSitemapPage extends Light {
 
   private card(node: SitemapNode, from: string): TemplateResult {
     return html`
-      <a href=${node.href} aria-label="${node.label} (${node.type})"
+      <a href=${node.href} target=${/^https?:/.test(node.href) ? '_blank' : '_self'} rel="noopener" aria-label="${node.label} (${node.type})"
         class="block w-44 rounded-md border bg-white overflow-hidden shadow-sm hover:border-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2
           ${node.marker ? 'border-dashed border-gray-400' : 'border-gray-300'} ${node.href === from ? 'ring-2 ring-gray-900 ring-offset-2' : ''}">
         ${this.windowBar()}
         <span class="block px-2.5 py-2">
           <span class="flex flex-wrap gap-1">${this.tag(node.type)}${node.marker ? this.marker(node.marker) : ''}</span>
           <span class="mt-1.5 block text-xs font-semibold text-gray-900 leading-snug">${node.label}</span>
+          ${node.note ? html`<span class="mt-0.5 block text-[10px] text-gray-500 leading-snug">${node.note}</span>` : ''}
         </span>
       </a>`
   }
@@ -235,16 +283,21 @@ export class WfSitemapPage extends Light {
   }
 
   render() {
-    const { home, sections, footer, unplaced, all } = this.build()
+    const data = this.source ?? (this.awaitSource ? null : this.build())
+    if (!data) return html``
+    const { home, sections, lists, unplaced } = data
+    const all = this.allNodes(data)
     const from = document.referrer ? new URL(document.referrer).pathname.split('/').pop() || 'index.html' : ''
-    const types = [...CORE_PAGE_TYPES, 'Untyped'].map((t) => ({ type: t as string, count: all.filter((n) => n.type === t).length })).filter((t) => t.count)
-    const offMenu = all.filter((n) => n.marker).length
+    // The six core types first, in their usual order, then any other type the source uses.
+    const typeNames = [...new Set([...(CORE_PAGE_TYPES as string[]), ...all.map((n) => n.type)])]
+    const types = typeNames.map((t) => ({ type: t, count: all.filter((n) => n.type === t).length })).filter((t) => t.count)
+    const markers = [...new Set(all.map((n) => n.marker).filter(Boolean))].filter((m) => data.markerKey[m])
 
     return html`
       <div class="space-y-6 pb-4">
         <section>
-          <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">Prototype</p>
-          <h1 class="mt-2 text-3xl sm:text-4xl font-semibold text-gray-900">Sitemap</h1>
+          <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">${data.eyebrow}</p>
+          <h1 class="mt-2 text-3xl sm:text-4xl font-semibold text-gray-900">${data.title}</h1>
         </section>
 
         <!-- Type key and zoom controls share one row, pinned under the header on wide screens so
@@ -252,7 +305,7 @@ export class WfSitemapPage extends Light {
         <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 lg:sticky lg:top-[calc(var(--wf-bar-h)+4rem)] lg:z-30 lg:bg-gray-50/95 lg:py-3">
           <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-600">
             ${types.map((t) => html`<span class="inline-flex items-center gap-1.5">${this.tag(t.type)} ${t.count}</span>`)}
-            ${offMenu ? html`<span class="inline-flex items-center gap-1.5">${this.marker('Not in menu')} a real page reached by links, not the menu</span>` : ''}
+            ${markers.map((m) => html`<span class="inline-flex items-center gap-1.5">${this.marker(m)} ${data.markerKey[m]}</span>`)}
           </div>
           ${this.zoomControls()}
         </div>
@@ -282,20 +335,23 @@ export class WfSitemapPage extends Light {
         </section>
 
         <section class="flex flex-wrap items-start gap-8">
-          <div class="w-72 rounded-md border border-gray-300 bg-white overflow-hidden shadow-sm">
-            ${this.windowBar()}
-            <div class="px-3 py-2.5">
-              ${this.tag('Footer')}
-              <ul class="mt-2 space-y-1.5">
-                ${footer.map((f) => html`
-                  <li class="flex items-center justify-between gap-2 text-xs">
-                    ${f.node
-                      ? html`<a href=${f.node.href} class="font-semibold text-gray-900 hover:underline">${f.label}</a>${this.tag(f.node.type)}`
-                      : html`<span class="font-semibold text-gray-900">${f.label}</span>${this.tag('External')}`}
-                  </li>`)}
-              </ul>
-            </div>
-          </div>
+          ${lists.map((list) => html`
+            <div class="w-72 rounded-md border border-gray-300 bg-white overflow-hidden shadow-sm">
+              ${this.windowBar()}
+              <div class="px-3 py-2.5">
+                ${this.tag(list.tag)}
+                <ul class="mt-2 space-y-1.5">
+                  ${list.items.map((f) => html`
+                    <li class="flex items-center justify-between gap-2 text-xs">
+                      ${f.node
+                        ? html`<a href=${f.node.href} target=${/^https?:/.test(f.node.href) ? '_blank' : '_self'} rel="noopener" class="font-semibold text-gray-900 hover:underline">${f.label}</a>${this.tag(f.node.type)}`
+                        : f.href
+                          ? html`<a href=${f.href} target="_blank" rel="noopener" class="font-semibold text-gray-900 hover:underline">${f.label}</a>${this.tag(f.type || 'External')}`
+                          : html`<span class="font-semibold text-gray-900">${f.label}</span>${this.tag(f.type || 'External')}`}
+                    </li>`)}
+                </ul>
+              </div>
+            </div>`)}
 
           ${unplaced.length ? html`
             <div>

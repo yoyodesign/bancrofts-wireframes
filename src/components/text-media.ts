@@ -19,6 +19,7 @@ export class WfTextMedia extends Light {
   @property({ attribute: 'cta-id' }) ctaId = ''
   @property({ attribute: 'secondary-label' }) secondaryLabel = ''
   @property({ attribute: 'secondary-href' }) secondaryHref = '#'
+  @property({ attribute: 'secondary-id' }) secondaryId = ''
   /** For a short row of same-weight REFERENCE links (e.g. School Bus Service's routes/pricing,
    *  Terms and Conditions, Information Booklet) rather than one primary action — these render as
    *  plain text + arrow, not buttons, since they're all reference material at the same level, not a
@@ -40,7 +41,7 @@ export class WfTextMedia extends Light {
           <div class="mt-5 flex flex-wrap items-center gap-3">
             <a href=${this.ctaHref} id=${this.ctaId || undefined} class="inline-block rounded-lg bg-gray-800 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">${this.ctaLabel}</a>
             ${this.secondaryLabel ? html`
-              <a href=${this.secondaryHref} class="inline-block rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-gray-800 border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">${this.secondaryLabel}</a>` : ''}
+              <a href=${this.secondaryHref} id=${this.secondaryId || undefined} class="inline-block rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-gray-800 border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">${this.secondaryLabel}</a>` : ''}
           </div>` : ''}
       </div>`
     // Media is ALWAYS first in DOM, text always second — so a stacked (mobile/tablet) layout is

@@ -36,7 +36,7 @@ export class WfPageBody extends Light {
       case 'wf-text-media':
         return html`<wf-text-media heading=${p.heading || ''} .body=${p.body || []} side=${p.side || 'left'}
           media-label=${p.mediaLabel || 'Section image'} .links=${p.links || []}
-          cta-label=${p.ctaLabel || ''} cta-href=${p.ctaHref || '#'} cta-id=${p.ctaId || ''} secondary-label=${p.secondaryLabel || ''} secondary-href=${p.secondaryHref || '#'}></wf-text-media>`
+          cta-label=${p.ctaLabel || ''} cta-href=${p.ctaHref || '#'} cta-id=${p.ctaId || ''} secondary-label=${p.secondaryLabel || ''} secondary-href=${p.secondaryHref || '#'} secondary-id=${p.secondaryId || ''}></wf-text-media>`
       case 'wf-media':
         return html`<wf-media type=${p.type || 'image'} label=${p.label || 'Media'} caption=${p.caption || ''} aspect-class=${p.aspectClass || 'aspect-video'} ?centered=${!!p.centered}></wf-media>`
       case 'wf-quote':
@@ -77,7 +77,8 @@ export class WfPageBody extends Light {
         return html`<wf-signup-form heading=${p.heading || undefined} body=${p.body || undefined} submit-label=${p.submitLabel || undefined}></wf-signup-form>`
       case 'wf-promo':
         return html`<wf-promo heading=${p.heading || ''} body=${p.body || ''}
-          cta-label=${p.ctaLabel || ''} cta-href=${p.ctaHref || ''} cta-id=${p.ctaId || ''} media-label=${p.mediaLabel || 'Promo image'}></wf-promo>`
+          cta-label=${p.ctaLabel || ''} cta-href=${p.ctaHref || ''} cta-id=${p.ctaId || ''}
+          secondary-label=${p.secondaryLabel || ''} secondary-href=${p.secondaryHref || '#'} secondary-id=${p.secondaryId || ''} media-label=${p.mediaLabel || 'Promo image'}></wf-promo>`
       case 'wf-accordion':
         return html`<wf-accordion heading=${p.heading || ''} .items=${p.items || []} ?multi-open=${!!p.multiOpen}></wf-accordion>`
       case 'wf-share':

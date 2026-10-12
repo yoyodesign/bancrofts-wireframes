@@ -16,6 +16,12 @@ export class WfPromo extends Light {
   @property({ attribute: 'cta-label' }) ctaLabel = ''
   @property({ attribute: 'cta-href' }) ctaHref = ''
   @property({ attribute: 'cta-id' }) ctaId = ''
+  /** Optional second, quieter action beside the primary one (e.g. "Register" next to "Book a
+   *  Visit") - an outline button, the same primary/secondary pairing wf-standard-hero and
+   *  wf-text-media already offer. One primary and at most one secondary per banner. */
+  @property({ attribute: 'secondary-label' }) secondaryLabel = ''
+  @property({ attribute: 'secondary-href' }) secondaryHref = '#'
+  @property({ attribute: 'secondary-id' }) secondaryId = ''
   @property({ attribute: 'media-label' }) mediaLabel = 'Promo image'
 
   render() {
@@ -32,10 +38,17 @@ export class WfPromo extends Light {
           <h3 class="text-xl sm:text-2xl font-semibold text-white">${this.heading}</h3>
           <p class="mt-3 max-w-xl text-sm sm:text-base text-gray-100">${this.body}</p>
           ${this.ctaLabel ? html`
-            <a href=${this.ctaHref} id=${this.ctaId || undefined}
-               class="mt-6 rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-              ${this.ctaLabel}
-            </a>` : ''}
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <a href=${this.ctaHref} id=${this.ctaId || undefined}
+                 class="rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                ${this.ctaLabel}
+              </a>
+              ${this.secondaryLabel ? html`
+                <a href=${this.secondaryHref} id=${this.secondaryId || undefined}
+                   class="rounded-lg border border-white/70 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                  ${this.secondaryLabel}
+                </a>` : ''}
+            </div>` : ''}
         </div>
       </div>`
   }

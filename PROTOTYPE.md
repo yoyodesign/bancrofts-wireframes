@@ -109,6 +109,18 @@ structure at once, as in the original drawing — with a "Fit to screen / 100%" 
 width only; the page still scrolls vertically. In a narrow window the fitted labels are too small to
 read, so there it's an overview and you magnify to read.
 
+### Current-site sitemap, for comparison (2026-10-12, local only)
+
+`<wf-sitemap-page>` can also draw a ready-made structure handed to it through its `source` property
+(`SitemapSource`, exported from `sitemap-page.ts`), so another site can be shown in exactly the same
+style. This is used for a snapshot of the current bancrofts.org, to compare side by side with the
+wireframe's sitemap: `sitemap-current.html` with its data in `src/current-site-sitemap.ts`.
+
+Both of those files are **git-ignored and not in `vite.config.ts`'s inputs**, so they exist only on
+the machine they were made on and are never deployed. Nothing links to the page; open it by address
+while the dev server is running. Unlike the wireframe sitemap it is a fixed snapshot, not live data:
+the sources and the date it was read are noted at the top of the data file.
+
 ### SEO audit additions (2026-10-09)
 
 Six additions taken from the Search Audit and Recommendations report (24.09.26), placed by how the
@@ -221,9 +233,9 @@ referenced by anything, safe to retire; the "Already at Bancroft's? / Staying On
 different audience — current Year 11 moving up, not new applicants) is untouched.
 
 Kept the exact same CTA element ids (`cta-prep-hero-journey`, `cta-senior-hero-journey`,
-`cta-sixthform-hero-journey`) on the relocated buttons, purely so the three walkthrough flows that
+`cta-sixthform-hero-journey`) on the relocated buttons, purely so the three user journey walkthroughs that
 click through them (`11+ parent enquiry`, `7+ Prep parent enquiry`, `Sixth Form recruitment and
-retention`) keep working without touching `flows` at all — the flow only cares that the id exists on
+retention`) keep working without touching `flows` at all — the journey only cares that the id exists on
 the page, not where. Verified `7+ Prep parent enquiry` end to end: the walkthrough ring correctly finds
 the relocated button and clicking it still advances to `admissions-7plus-journey.html`.
 
@@ -242,7 +254,19 @@ already closes on an appropriate promo (Book a Visit for `admissions`/7+/11+, Re
 removing the premature hero button loses no path; it was simply redundant with what the page already
 ends on, plus the always-present header CTA. None of the four hero CTA ids (`cta-admissions-hero`,
 `cta-7plus-journey-hero`, `cta-11plus-journey-hero`, `cta-16plus-journey-hero`) were referenced by any
-walkthrough flow, so nothing else needed updating.
+user journey walkthrough, so nothing else needed updating.
+
+### Arts section (2026-10-12)
+
+Mirrors Sport, at the client's request: the arts had one paragraph on Sport & Arts and nothing behind
+it, while the live site has three arts pages. Added **`senior-arts.html`** (a listing page, "The Arts
+at Bancroft's") and three detail pages, **`senior-arts-visual-arts.html`**, **`senior-arts-drama.html`**
+and **`senior-arts-music.html`**, each following a sport page's pattern (department, facilities,
+highlights, a "More in the arts" row, closing Book a Visit). Not in `primaryNav`, like Sport.
+Reached from the "The Arts" block on Sport & Arts, "Arts & Performance" on Senior Clubs and Music
+Awards on Scholarships & Bursaries. Content is paraphrased from bancrofts.org/senior/the-arts/, with
+no staff or pupil names. Open question for the client: the arts run across Prep and Sixth Form too,
+but, as on the live site, these pages sit under 11+ Senior.
 
 ### Sport section (2026-08-28)
 
@@ -282,13 +306,31 @@ About was trimmed from 10 sub-pages to 5, on request:
 - **ISI Inspection 2025** removed as a standalone page; folded into About overview's intro copy as a
   stated credential ("rated excellent across every area of our 2025 ISI Inspection").
 
-## User flows (walkthroughs, via the Prototype panel)
+## User journeys (walkthroughs, via the Prototype panel)
 
-1. **11+ parent enquiry** — Homepage → 11+ Senior → Your 11+ Journey → Book a Visit
-2. **7+ Prep parent enquiry** — Homepage → 7+ Prep → Your 7+ Journey → Book a Visit
-3. **Sixth Form recruitment and retention** — Homepage → 16+ Sixth Form → Your 16+ Journey → Register
-4. **Current family quick task** — Homepage → School Life → Calendar
-5. **Reputation to conversion via News** — Homepage → News article → Book a Visit
+Replaced 2026-10-10. The site's job is open event bookings, so "Book a Visit" is the primary CTA
+everywhere and "Register" is secondary. Journeys that end in a booking carry the note "End state is a
+booked event, tracked as a key event by entry point (7+, 11+, 16+)".
+
+1. **11+ parent enquiry** - Homepage → 11+ Senior → Your 11+ Journey → Book a Visit
+2. **7+ Prep parent enquiry** - Homepage → 7+ Prep → Your 7+ Journey → Book a Visit
+3. **Sixth Form applicant** - Homepage → 16+ Sixth Form → Your 16+ Journey → Book a Visit
+4. **Sixth Form current pupil** - Homepage → 16+ Sixth Form → Staying On → Register
+5. **Current family quick task** - Homepage → School Life → Calendar (ends on the Calendar; the
+   onward links to News and the newsletter are optional, not a walkthrough step)
+6. **Reputation to conversion via News** - Homepage → News article → GCSE Results → Book a Visit
+7. **11+ past papers** - Your 11+ Journey → 11+ Exam & Past Papers → Book a Visit
+8. **Value and fees** - Fees → Scholarships & Bursaries → Book a Visit
+9. **Register** - Admissions → Register
+
+On the stage pages the hero "Book a Visit" is a shortcut straight to the form; the walkthrough
+follows the longer route through the closing "Start your N+ journey" button. That hero button
+reverses the 2026-08-31 decision to keep stage heroes intro-only (see "Hero CTA moved to end of
+page" above), at the client's direction.
+
+Deliberately left for later: sticky mobile CTA, announcement bar, Add to Calendar, entry-point
+selector, "What we look for" block, Getting Here page, partner prep block on Your 11+ Journey,
+seasonal CTA slot.
 
 ## Inferred additions (flag for review)
 
@@ -467,13 +509,13 @@ should extend to the changelog text too.
 - `prototype-nav.ts` had a leftover example reference to "every horse's Detail page" in its static
   help copy; generalised to "every news article."
 - `prototype-nav.ts`'s walkthrough had a real crash bug: `onDocClick` incremented `stepIndex` on
-  every matching click with no bounds check, including the flow's LAST step. That pushed `stepIndex`
+  every matching click with no bounds check, including the journey's LAST step. That pushed `stepIndex`
   past the end of the `steps` array, and `render()` unconditionally called `renderWalkBar(flow)`
-  whenever a flow was active, which read `flow.steps[stepIndex].href` — `undefined.href` — crashing
+  whenever a journey was active, which read `flow.steps[stepIndex].href` — `undefined.href` — crashing
   the whole component's render. Since the walkthrough bar and the floating "Prototype" button both
-  come from that one `render()`, completing ANY flow (not just one) made both vanish on whatever
+  come from that one `render()`, completing ANY journey (not just one) made both vanish on whatever
   page/state followed, with a console error the only trace. Found via "Current family quick task"
-  specifically (a 2-step flow, so the bug shows up fast), confirmed it affects every flow the same
+  specifically (a 2-step journey, so the bug shows up fast), confirmed it affects every journey the same
   way, including form-submit endings (e.g. "11+ parent enquiry"'s Book a Visit submission). Fixed by
   exiting the flow on that last click instead of overflowing the index, plus a `this.stepIndex <
   flow.steps.length` bounds-check in `render()` as a backstop against the same class of bug.

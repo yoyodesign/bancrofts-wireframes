@@ -213,7 +213,7 @@ export class WfPrototypeNav extends Light {
               ${rowChevron()}
             </button>
             <button type="button" @click=${() => this.openPanel('flows')} class="w-full flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3.5 text-left hover:bg-gray-50">
-              <span><span class="block text-sm font-semibold text-gray-900">User flows</span><span class="block text-xs text-gray-500">${flows.length} walkthroughs</span></span>
+              <span><span class="block text-sm font-semibold text-gray-900">User journeys</span><span class="block text-xs text-gray-500">${flows.length} walkthroughs</span></span>
               ${rowChevron()}
             </button>
             <button type="button" @click=${() => this.openPanel('changelog')} class="w-full flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3.5 text-left hover:bg-gray-50">
@@ -259,7 +259,7 @@ export class WfPrototypeNav extends Light {
 
         ${this.view === 'flows' ? html`
           <div class="p-5 space-y-4">
-            <h2 class="text-sm font-semibold text-gray-900">User flows</h2>
+            <h2 class="text-sm font-semibold text-gray-900">User journeys</h2>
             ${flows.map((f, i) => html`
               <div class="rounded-lg border border-gray-200 p-4">
                 <h3 class="text-sm font-semibold text-gray-900">${f.name}</h3>

@@ -51,6 +51,10 @@ const PAGES = [
   ['senior-sport-swimming.html', 'senior-sport-swimming', 'senior', 'Swimming'],
   ['senior-sport-tennis.html', 'senior-sport-tennis', 'senior', 'Tennis'],
   ['senior-sport-badminton.html', 'senior-sport-badminton', 'senior', 'Badminton'],
+  ['senior-arts.html', 'senior-arts', 'senior', 'The Arts at Bancroft’s'],
+  ['senior-arts-visual-arts.html', 'senior-arts-visual-arts', 'senior', 'Visual Arts'],
+  ['senior-arts-drama.html', 'senior-arts-drama', 'senior', 'Drama'],
+  ['senior-arts-music.html', 'senior-arts-music', 'senior', 'Music'],
 
   ['sixth-form.html', 'sixth-form', 'sixth-form', '16+ Sixth Form'],
   ['sixth-form-life.html', 'sixth-form-life', 'sixth-form', 'Sixth Form Life'],

@@ -1,3 +1,7 @@
 node_modules
 dist
 .DS_Store
+
+# Current bancrofts.org sitemap, for side-by-side comparison. Local only for now.
+sitemap-current.html
+src/current-site-sitemap.ts
