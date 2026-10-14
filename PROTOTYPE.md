@@ -256,6 +256,58 @@ ends on, plus the always-present header CTA. None of the four hero CTA ids (`cta
 `cta-7plus-journey-hero`, `cta-11plus-journey-hero`, `cta-16plus-journey-hero`) were referenced by any
 user journey walkthrough, so nothing else needed updating.
 
+### SEO review (2026-10-14)
+
+From the SEO director's review of live URLs that had no home in the new sitemap.
+
+- **Term Dates** (`term-dates.html`) is its own page in School Life, above the calendar, which is
+  renamed **Events Calendar** (URL unchanged). "Term dates" earned 3,187 search clicks year to date
+  against 199 for "calendar". It is a plain-text table, not the script-drawn month grid, so search
+  engines and parents can read it at a glance. The "Current family quick task" journey now ends there.
+- **Register Online** is a landing page leading to **`register-7plus.html`**, **`register-11plus.html`**
+  and **`register-16plus.html`**, one form per entry point as on the live site. Buttons on
+  stage-specific pages go straight to their own form; general ones go to the landing page, which
+  also points occasional-place enquiries to Contact.
+- **CCF, Duke of Edinburgh's Award and Sea Scouts** each have a page under Senior Co-Curriculum
+  (`senior-co-curriculum-ccf.html` etc.), linked from its "Outdoor & Adventure" block and from
+  Trips & Visits. "ccf" is the audit's largest non-brand search term. Sea Scouts runs from Year 5 to
+  Year 9, so it may also want a link from the Prep Co-Curriculum.
+- **Acceptance Deposit** (`acceptance-deposit.html`): a functional form page, off the menu, linked
+  from Starting at Bancroft's. In the real build it should be hidden from search (noindex); the live
+  `/depositpayment/` currently isn't.
+- **Spiritual Life** (`senior-spiritual-life.html`), off the menu. Senior Pastoral Care's separate
+  promo blocks became one "Support and wellbeing" card row to make room for it.
+- **New-parent information:** the live Prep page (`/information-for-new-pupils-parents/`) is
+  password-protected and belongs in the Parent Portal, not the public site. The public "IT
+  Information for Thirds" page is folded into Starting at Bancroft's as "Devices and IT", and Fees
+  lists the Year 7 iPad as bought separately.
+
+### Structure review (2026-10-13)
+
+From internal review of the wireframe against the live site and parent research.
+
+- **Co-Curriculum, not Clubs.** All three stage pages are "Co-Curriculum" again, in menus, headings,
+  breadcrumbs and addresses (`*-co-curriculum.html`), because it is the school's own term. This
+  reverses the 2026-08-30 rename to "Clubs" described below. Everyday phrases ("250+ clubs and
+  societies") are unchanged.
+- **Register Online.** The page, menu item and buttons all read "Register Online" (was "Register").
+- **Hero "Book a Visit"** added to Admissions and the three Journey pages, matching the stage pages.
+- **Grammar or independent** is no longer a page. Its questions sit in the Admissions FAQs, with
+  related questions on Fees and Your 11+ Journey. The comparison table was not carried over.
+- **7+ Prep:** "Welcome from the Head of Prep" block on the overview; "Our aims and values" (the five
+  aims and six core values from the live Prep page) on Why Bancroft's Prep; new **`prep-life.html`**,
+  "Prep School Life", third in the Prep nav.
+- **11+ Senior:** new off-nav pages **`senior-learning-support.html`** (from Pastoral Care, and from
+  Prep Pastoral Care) and **`senior-trips-visits.html`** (from Co-Curriculum and Curriculum).
+- **Transition:** new off-nav **`admissions-11plus-starting.html`**, "Starting at Bancroft's", under
+  Your 11+ Journey, whose timeline gains a fifth step, "Start". From parent research: content from
+  recent joiners that reassures children before they start. Eyebrow "Becoming Bancroft's". The same
+  pattern would suit 7+ and 16+ later.
+- **16+ Sixth Form:** new **`sixth-form-why.html`**; Sixth Form Life rewritten for pupils ("you");
+  nav now runs overview, Why, A Level Results, mirroring Senior's overview, Why, GCSE Results.
+
+Still to confirm: What We Stand For shows three placeholder values, not the school's six.
+
 ### Arts section (2026-10-12)
 
 Mirrors Sport, at the client's request: the arts had one paragraph on Sport & Arts and nothing behind
@@ -263,7 +315,7 @@ it, while the live site has three arts pages. Added **`senior-arts.html`** (a li
 at Bancroft's") and three detail pages, **`senior-arts-visual-arts.html`**, **`senior-arts-drama.html`**
 and **`senior-arts-music.html`**, each following a sport page's pattern (department, facilities,
 highlights, a "More in the arts" row, closing Book a Visit). Not in `primaryNav`, like Sport.
-Reached from the "The Arts" block on Sport & Arts, "Arts & Performance" on Senior Clubs and Music
+Reached from the "The Arts" block on Sport & Arts, "Arts & Performance" on Senior Co-Curriculum and Music
 Awards on Scholarships & Bursaries. Content is paraphrased from bancrofts.org/senior/the-arts/, with
 no staff or pupil names. Open question for the client: the arts run across Prep and Sixth Form too,
 but, as on the live site, these pages sit under 11+ Senior.
