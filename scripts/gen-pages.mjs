@@ -21,6 +21,7 @@ const PAGES = [
   ['admissions-11plus-starting.html', 'admissions-11plus-starting', 'admissions', 'Starting at Bancroft’s'],
   ['admissions-16plus-journey.html', 'admissions-16plus-journey', 'admissions', 'Your 16+ Journey'],
   ['book-a-visit.html', 'book-a-visit', 'admissions', 'Book a Visit'],
+  ['admissions-occasional-places.html', 'admissions-occasional-places', 'admissions', 'Occasional Places'],
   ['register.html', 'register', 'admissions', 'Register Online'],
   ['register-7plus.html', 'register-7plus', 'admissions', '7+ Registration'],
   ['register-11plus.html', 'register-11plus', 'admissions', '11+ Registration'],

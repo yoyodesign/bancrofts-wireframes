@@ -333,11 +333,12 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { heading: 'Three entry points, one school', body: ['Most pupils join Bancroft’s at 7+, 11+ or 16+, though occasional places do become available in other year groups. Each journey has its own assessment process and timeline, but all lead into the same through-school community.'] } },
       {
         component: 'wf-cards', props: {
-          heading: 'Find your journey', cols: 3,
+          heading: 'Find your journey', cols: 4,
           items: [
             { href: 'admissions-7plus-journey.html', heading: 'Your 7+ Journey', description: 'Joining the Prep years.', imageLabel: 'Prep pupils arriving at school', linkText: 'Start your 7+ journey' },
             { href: 'admissions-11plus-journey.html', heading: 'Your 11+ Journey', description: 'Joining the Senior School.', imageLabel: 'Senior pupils arriving at school', linkText: 'Start your 11+ journey' },
             { href: 'admissions-16plus-journey.html', heading: 'Your 16+ Journey', description: 'Joining or staying on for Sixth Form.', imageLabel: 'Sixth Form pupils arriving at school', linkText: 'Start your 16+ journey' },
+            { href: 'admissions-occasional-places.html', heading: 'Occasional Places', description: 'Joining in another year group.', imageLabel: 'A new pupil being shown around the school', linkText: 'About occasional places' },
           ],
         },
       },
@@ -363,7 +364,7 @@ export const pages: Record<string, Page> = {
       faqs([
         { heading: 'When should we start the admissions process?', body: 'Most families visit a year or more before entry. Registration for 11+ opens in the spring of Year 5, and 7+ families usually register in the autumn term before the September they hope to join.' },
         { heading: 'Which entry point is right for my child?', body: '7+ is entry into Year 3, 11+ is entry into Year 7 and 16+ is entry into Year 12. Each has its own journey page with the process and key dates.' },
-        { heading: 'Do you offer places in other year groups?', body: 'Occasional places do become available outside the three main entry points. Contact our admissions team to ask about a specific year group.', ctaLabel: 'Contact admissions', ctaHref: 'contact.html' },
+        { heading: 'Do you offer places in other year groups?', body: 'Occasional places do become available outside the three main entry points, usually in Years 4, 5, 8 and 9.', ctaLabel: 'About occasional places', ctaHref: 'admissions-occasional-places.html' },
         { heading: 'Is there a registration fee?', body: 'A non-refundable registration fee applies at 7+ and 11+. There is no fee to register interest in the Sixth Form.', ctaLabel: 'Register Online', ctaHref: 'register.html' },
         { heading: 'Can we visit before registering?', body: 'Yes, and we’d encourage it. Open Mornings and personal tours run throughout the year.', ctaLabel: 'Book a Visit', ctaHref: 'book-a-visit.html' },
       ]),
@@ -517,6 +518,60 @@ export const pages: Record<string, Page> = {
     ],
   },
 
+  // Off primary nav, a child of Admissions (SEO review, 2026-10-14): a page of its own so a search
+  // for occasional places lands on a page entirely about them, not a section of the Admissions hub.
+  'admissions-occasional-places': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: 'Admissions', heading: 'Occasional Places', body: 'Places in other year groups do become available, usually when families relocate.',
+        mediaLabel: 'A new pupil being shown around the school',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Occasional Places', href: 'admissions-occasional-places.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Our standard entry points are 7+, 11+ and 16+, and every year group is usually full. Now and then a family relocates, and a place opens up in another year group.'] } },
+      {
+        component: 'wf-table', props: {
+          heading: 'Year groups where places may come up',
+          rowHeader: 'School', columns: ['Year groups'],
+          rows: [
+            { label: 'Prep School', cells: ['Years 4 and 5'] },
+            { label: 'Senior School', cells: ['Years 8 and 9'] },
+          ],
+        },
+      },
+      {
+        component: 'wf-timeline', props: {
+          heading: 'How it works',
+          items: [
+            { heading: 'Express your interest', description: 'Use the form below and we will keep your details on file.' },
+            { heading: 'Places confirmed', description: 'Availability is usually confirmed early in the spring term.' },
+            { heading: 'Register', description: 'If a place is available, we invite you to register and pay the non-refundable registration fee.' },
+            { heading: 'Assessment and interview', description: 'Your child is invited in for an entrance assessment and interview.' },
+            { heading: 'Join in September', description: 'Successful candidates join us the following September.' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['For Year 8 entry, applicants who previously sat our 11+ assessments are only reconsidered if they reached the interview stage.'] } },
+      {
+        component: 'wf-form', props: {
+          heading: 'Express your interest', submitLabel: 'Send', submitId: 'submit-occasional-places',
+          successHeading: 'Thank you for your interest', successBody: 'We will contact you if a place becomes available in your child’s year group.',
+          fields: [
+            { name: 'parentName', label: 'Parent / guardian name', type: 'text', required: true },
+            { name: 'email', label: 'Email address', type: 'email', required: true },
+            { name: 'phone', label: 'Phone number', type: 'tel', required: true },
+            { name: 'childName', label: 'Child’s full name', type: 'text', required: true },
+            { name: 'yearGroup', label: 'Year group you are applying for', type: 'select', required: true, options: ['Year 4', 'Year 5', 'Year 8', 'Year 9'] },
+            { name: 'currentSchool', label: 'Current school', type: 'text' },
+            { name: 'message', label: 'Anything else we should know?', type: 'textarea' },
+          ],
+        },
+      },
+    ],
+  },
+
   // Register Online is now a landing page: one form page per entry point, as on the live site
   // (SEO review, 2026-10-14). Buttons on stage-specific pages link straight to their own form.
   register: {
@@ -536,7 +591,7 @@ export const pages: Record<string, Page> = {
             { href: 'register-7plus.html', id: 'cta-register-7plus', heading: '7+ Registration', description: 'Joining the Prep in Year 3.', linkText: 'Register for 7+' },
             { href: 'register-11plus.html', id: 'cta-register-11plus', heading: '11+ Registration', description: 'Joining the Senior School in Year 7.', linkText: 'Register for 11+' },
             { href: 'register-16plus.html', id: 'cta-register-16plus', heading: '16+ Registration', description: 'Joining the Sixth Form in Year 12.', linkText: 'Register for 16+' },
-            { href: 'contact.html', heading: 'Occasional places', description: 'Places in other year groups do come up. Contact our admissions team to ask.', linkText: 'Contact admissions' },
+            { href: 'admissions-occasional-places.html', heading: 'Occasional places', description: 'Places in other year groups do come up, usually in Years 4, 5, 8 and 9.', linkText: 'About occasional places' },
           ],
         },
       },
@@ -2926,6 +2981,7 @@ export const corePages: CorePage[] = [
   { label: 'News article', href: 'news-article-c.html', type: 'Article' },
 
   { label: 'Book a Visit', href: 'book-a-visit.html', type: 'Form' },
+  { label: 'Occasional Places', href: 'admissions-occasional-places.html', type: 'Form' },
   { label: 'Register Online', href: 'register.html', type: 'Content' },
   { label: '7+ Registration', href: 'register-7plus.html', type: 'Form' },
   { label: '11+ Registration', href: 'register-11plus.html', type: 'Form' },
@@ -3028,6 +3084,7 @@ export const flows: Flow[] = [
 export interface ChangelogEntry { date: string; type: 'Added' | 'Changed' | 'Removed' | 'Fixed'; text: string }
 
 export const changelog: ChangelogEntry[] = [
+  { date: '2026-10-14', type: 'Added', text: 'Occasional Places page under Admissions, off the menu, at the SEO director\'s recommendation: a page entirely about occasional places ranks better for that search than a section on the Admissions hub. Content from the live page (year groups, how it works, expression of interest form). Linked from Admissions "Find your journey", the Admissions FAQs and the Register Online landing page, which used to send these enquiries to Contact.' },
   { date: '2026-10-14', type: 'Added', text: 'From the SEO review: a Term Dates page in School Life, above the calendar (now "Events Calendar"), because "term dates" drives far more search traffic than "calendar". Register Online is now a landing page leading to separate 7+, 11+ and 16+ registration forms, as on the live site; stage-specific buttons link straight to their own form.' },
   { date: '2026-10-14', type: 'Added', text: 'CCF, Duke of Edinburgh\'s Award and Sea Scouts pages under Senior Co-Curriculum (also linked from Trips & Visits), an Acceptance Deposit form page (off the menu, linked from Starting at Bancroft\'s) and a Spiritual Life page linked from Senior Pastoral Care.' },
   { date: '2026-10-14', type: 'Changed', text: 'Senior Pastoral Care\'s separate promo blocks are now one "Support and wellbeing" card row (Learning for Life, Learning Support, Spiritual Life, Starting at Bancroft\'s). Starting at Bancroft\'s gains "Devices and IT" from the live IT information page, and Fees lists the Year 7 iPad as bought separately.' },

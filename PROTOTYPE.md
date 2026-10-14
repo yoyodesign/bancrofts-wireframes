@@ -275,6 +275,10 @@ From the SEO director's review of live URLs that had no home in the new sitemap.
 - **Acceptance Deposit** (`acceptance-deposit.html`): a functional form page, off the menu, linked
   from Starting at Bancroft's. In the real build it should be hidden from search (noindex); the live
   `/depositpayment/` currently isn't.
+- **Occasional Places** (`admissions-occasional-places.html`): its own page under Admissions, off the
+  menu, so a search for occasional places lands on a page entirely about them rather than a section
+  of the Admissions hub. Linked from "Find your journey" on Admissions, the Admissions FAQs and the
+  Register Online landing page.
 - **Spiritual Life** (`senior-spiritual-life.html`), off the menu. Senior Pastoral Care's separate
   promo blocks became one "Support and wellbeing" card row to make room for it.
 - **New-parent information:** the live Prep page (`/information-for-new-pupils-parents/`) is

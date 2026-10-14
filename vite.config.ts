@@ -17,6 +17,7 @@ export default defineConfig({
         admissions_11plus_starting: resolve(root, 'admissions-11plus-starting.html'),
         admissions_16plus_journey: resolve(root, 'admissions-16plus-journey.html'),
         book_a_visit: resolve(root, 'book-a-visit.html'),
+        admissions_occasional_places: resolve(root, 'admissions-occasional-places.html'),
         register: resolve(root, 'register.html'),
         register_7plus: resolve(root, 'register-7plus.html'),
         register_11plus: resolve(root, 'register-11plus.html'),
