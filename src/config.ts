@@ -804,7 +804,8 @@ export const pages: Record<string, Page> = {
           rowHeader: 'Stage',
           columns: ['When'],
           rows: [
-            { label: 'Open Mornings and tours', cells: ['Throughout the year'] },
+            { label: '11+ Open Morning', cells: ['Thursday 17 September 2026'] },
+            { label: 'Personal tours', cells: ['Throughout the year'] },
             { label: 'Registration opens', cells: ['Spring of Year 5'] },
             { label: 'Registration closes', cells: ['Autumn of Year 6'] },
             { label: 'Assessments and interview', cells: ['January of Year 6'] },
@@ -814,14 +815,26 @@ export const pages: Record<string, Page> = {
       },
       {
         component: 'wf-cards', props: {
-          heading: 'Past papers', cols: 3,
+          heading: 'Past papers: 2017', cols: 3,
           items: [
-            { href: '#', category: 'Maths', heading: '11+ Maths paper', description: 'Full paper with answers. PDF download.', linkText: 'Download (PDF)' },
-            { href: '#', category: 'English', heading: '11+ English paper', description: 'Comprehension and writing tasks. PDF download.', linkText: 'Download (PDF)' },
-            { category: 'Placeholder', heading: 'More recent papers', description: 'The papers currently online date from 2017. Slots here are for newer papers, grouped by year, once supplied.' },
+            { href: '#past-papers', category: '2017 - Maths', heading: '11+ Maths paper', description: 'The full paper, with answers. PDF download.', linkText: 'Download (PDF)' },
+            { href: '#past-papers', category: '2017 - English', heading: '11+ English paper', description: 'Comprehension and writing tasks, with answers. PDF download.', linkText: 'Download (PDF)' },
+            { href: 'admissions-occasional-places.html', category: '2015 - Maths', heading: '13+ Maths sample paper', description: 'For families applying for an occasional place in Year 9. PDF download.', linkText: 'About occasional places' },
+          ],
+        },
+        anchorId: 'past-papers',
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'More recent years', cols: 3,
+          items: [
+            { category: 'Placeholder', heading: '2025 papers', description: 'Maths and English, with answers. To be supplied.' },
+            { category: 'Placeholder', heading: '2024 papers', description: 'Maths and English, with answers. To be supplied.' },
+            { category: 'Placeholder', heading: '2023 papers', description: 'Maths and English, with answers. To be supplied.' },
           ],
         },
       },
+      { component: 'wf-text', props: { body: ['Wireframe note: papers are grouped by year, newest first, each with its answers. Which years the school is willing to publish, and whether answers are included, is still to confirm. The existing PDF addresses should stay live or redirect here so their search rankings carry across.'] } },
       {
         component: 'wf-text-media', props: {
           heading: 'How to prepare', side: 'right', mediaLabel: 'Parent and child reading together',
@@ -943,6 +956,41 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text-media', props: { heading: 'Co-Curriculum', side: 'left', mediaLabel: 'Prep pupils at a co-curricular club', body: ['Weekly clubs, from sport and drama to coding and chess.'], ctaLabel: 'Explore the Co-Curriculum', ctaHref: 'prep-co-curriculum.html' } },
       { component: 'wf-text-media', props: { heading: 'Pastoral Care', side: 'right', mediaLabel: 'Teacher with a small group of pupils', body: ['Settling in and being known as an individual.'], ctaLabel: 'Read about pastoral care', ctaHref: 'prep-pastoral-care.html' } },
       { component: 'wf-text-media', props: { heading: 'Meet the Staff', side: 'left', mediaLabel: 'Prep teaching staff', body: ['The teachers who lead the Prep years.'], ctaLabel: 'Meet the team', ctaHref: 'prep-staff.html' } },
+      // "Joining at 7+" - the admissions summary that makes this overview work as the 7+
+      // hub the SEO report asks for (process, key dates, fees, assessment). Detail stays on the Journey page.
+      {
+        component: 'wf-timeline', props: {
+          heading: 'Joining at 7+',
+          items: [
+            { heading: 'Visit', description: 'Come to an Open Morning or book a personal tour of the Prep.' },
+            { heading: 'Register', description: 'Register online in the autumn term before entry.' },
+            { heading: 'Assess and offer', description: 'A taster morning and an informal assessment, followed by an offer decision.' },
+          ],
+        },
+      },
+      {
+        component: 'wf-table', props: {
+          heading: 'Key dates for 7+ entry',
+          rowHeader: 'Stage', columns: ['When'],
+          rows: [
+            { label: 'Open Morning', cells: ['Thursday 24 September 2026'] },
+            { label: 'Registration', cells: ['Autumn term before entry'] },
+            { label: 'Taster morning and assessment', cells: ['To be supplied'] },
+            { label: 'Offers', cells: ['To be supplied'] },
+          ],
+        },
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Fees and assessment', cols: 3,
+          items: [
+            { href: 'fees.html', heading: 'Fees', description: '£8,722 a term for the Prep, including VAT.', linkText: 'See fees' },
+            { href: 'admissions-7plus-journey.html', heading: 'Assessment', description: 'A gentle taster morning and informal assessment, not a formal exam.', linkText: 'What to expect' },
+            { href: 'admissions-7plus-journey.html', heading: 'Your full 7+ journey', description: 'Every step of the process, in detail.', linkText: 'See the 7+ journey' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: assessment and offer dates to be supplied by admissions.'] } },
       faqs([
         { heading: 'What ages is the Prep for?', body: 'Ages 7 to 11, from Alphas (Year 3) through to Prep 2 (Year 6).' },
         { heading: 'Where is the Prep?', body: 'On Whitehall Road, a short walk from the Senior School entrance.', ctaLabel: 'Find us', ctaHref: 'contact.html' },
@@ -950,6 +998,8 @@ export const pages: Record<string, Page> = {
         { heading: 'How will my child get to school?', body: 'Our school bus service is open to all pupils. Alphas (Year 3) must be accompanied by a sibling in Year 5 or above.', ctaLabel: 'See the School Bus Service', ctaHref: 'school-bus-service.html' },
         { heading: 'Who looks after my child day to day?', body: 'Every child is known as an individual from day one.', ctaLabel: 'Read about Prep pastoral care', ctaHref: 'prep-pastoral-care.html' },
         { heading: 'What is the Bancroft’s Family of Schools?', body: 'Bancroft’s Prep is part of the Bancroft’s Family of Schools.', ctaLabel: 'Part of the Bancroft’s Family of Schools', ctaHref: '#' },
+        { heading: 'When should we register for 7+?', body: 'Most families register in the autumn term for entry the following September.', ctaLabel: 'Register Online', ctaHref: 'register-7plus.html' },
+        { heading: 'Are bursaries available at 7+?', body: 'Our bursary programme applies at 11+ and 16+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
       ], 'Prep questions'),
       {
         component: 'wf-text-media', props: {
@@ -1142,6 +1192,43 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text-media', props: { heading: 'Sport & Arts', side: 'left', mediaLabel: 'Pupils on the sports pitch', body: ['Fixtures and ensembles beyond the classroom.'], ctaLabel: 'Explore life beyond the classroom', ctaHref: 'senior-sport-arts.html' } },
       { component: 'wf-text-media', props: { heading: 'Co-Curriculum', side: 'right', mediaLabel: 'Pupils at a lunchtime club', body: ['250+ clubs and societies, from debating to Duke of Edinburgh.'], ctaLabel: 'Explore the Co-Curriculum', ctaHref: 'senior-co-curriculum.html' } },
       { component: 'wf-text-media', props: { heading: 'Pastoral Care', side: 'left', mediaLabel: 'Tutor group meeting', body: ['How every Senior pupil is known, supported and challenged.'], ctaLabel: 'Read about pastoral care', ctaHref: 'senior-pastoral-care.html' } },
+      // "Joining at 11+" - the admissions summary that makes this overview work as the 11+
+      // hub the SEO report asks for (process, key dates, fees, assessment). Detail stays on the Journey page.
+      {
+        component: 'wf-timeline', props: {
+          heading: 'Joining at 11+',
+          items: [
+            { heading: 'Visit', description: 'Come to an Open Morning or book a personal tour.' },
+            { heading: 'Register', description: 'Registration opens in the spring of Year 5.' },
+            { heading: 'Assess', description: 'English and Maths assessments and an interview in January of Year 6.' },
+            { heading: 'Offer', description: 'Offers are made in February.' },
+          ],
+        },
+      },
+      {
+        component: 'wf-table', props: {
+          heading: 'Key dates for 11+ entry',
+          rowHeader: 'Stage', columns: ['When'],
+          rows: [
+            { label: 'Open Morning', cells: ['Thursday 17 September 2026'] },
+            { label: 'Registration opens', cells: ['Spring of Year 5'] },
+            { label: 'Registration closes', cells: ['Autumn of Year 6'] },
+            { label: 'Assessments and interview', cells: ['January of Year 6'] },
+            { label: 'Offers made', cells: ['February of Year 6'] },
+          ],
+        },
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Fees and assessment', cols: 3,
+          items: [
+            { href: 'fees.html', heading: 'Fees', description: '£10,400 a term for the Senior School, including VAT. Scholarships and bursaries are available.', linkText: 'See fees' },
+            { href: 'admissions-11plus-past-papers.html', heading: 'Assessment', description: 'English and Maths papers and an interview, with past papers to practise.', linkText: 'See the past papers' },
+            { href: 'admissions-11plus-journey.html', heading: 'Your full 11+ journey', description: 'Every step of the process, in detail.', linkText: 'See the 11+ journey' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: dates match the 11+ Exam & Past Papers page; exact dates for each year to be supplied by admissions.'] } },
       {
         component: 'wf-text-media', props: {
           heading: 'Preparing for the 11+?', side: 'right', mediaLabel: 'Pupil working through a practice paper',
@@ -1157,6 +1244,7 @@ export const pages: Record<string, Page> = {
         { heading: 'How will my child get to school?', body: 'Bancroft’s is a short walk from the Central Line and is served by our own school bus service.', ctaLabel: 'See the School Bus Service', ctaHref: 'school-bus-service.html' },
         { heading: 'How do new pupils settle in?', body: 'An induction day in the summer term, a tutor group and a house mean new pupils start September with familiar faces.', ctaLabel: 'See Starting at Bancroft’s', ctaHref: 'admissions-11plus-starting.html' },
         { heading: 'Are scholarships and bursaries available?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 11+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'When do we need to register for 11+?', body: 'Registration opens in the spring of Year 5 and typically closes in the autumn of Year 6.', ctaLabel: 'Register Online', ctaHref: 'register-11plus.html' },
       ], 'Senior School questions'),
       {
         component: 'wf-text-media', props: {
@@ -1905,12 +1993,51 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text-media', props: { heading: 'Co-Curriculum', side: 'right', mediaLabel: 'Sixth Former leading a club', body: ['Where Sixth Formers lead clubs and societies, not just attend them.'], ctaLabel: 'Explore the Co-Curriculum', ctaHref: 'sixth-form-co-curriculum.html' } },
       { component: 'wf-text-media', props: { heading: 'Leavers’ Destinations', side: 'left', mediaLabel: 'Graduating Sixth Form pupils', body: ['Where recent leavers have gone on to.'], ctaLabel: 'See where leavers go next', ctaHref: 'sixth-form-leavers-destinations.html' } },
       { component: 'wf-text-media', props: { heading: 'A Level Results', side: 'right', mediaLabel: 'Pupils on A Level results day', body: ['A Level outcomes and value added.'], ctaLabel: 'See our results', ctaHref: 'sixth-form-examination-results.html' } },
+      // "Joining at 16+" - the admissions summary that makes this overview work as the 16+
+      // hub the SEO report asks for (process, key dates, fees, assessment). Detail stays on the Journey page.
+      {
+        component: 'wf-timeline', props: {
+          heading: 'Joining at 16+',
+          items: [
+            { heading: 'Visit', description: 'Come to a Sixth Form Open Evening or book a personal tour.' },
+            { heading: 'Register', description: 'Register your interest online. There is no registration fee at 16+.' },
+            { heading: 'Interview and assessment', description: 'An interview and, for some subjects, a short written task.' },
+            { heading: 'Offer', description: 'Offers are usually made by the end of the spring term, conditional on GCSE results.' },
+          ],
+        },
+      },
+      {
+        component: 'wf-table', props: {
+          heading: 'Key dates for 16+ entry',
+          rowHeader: 'Stage', columns: ['When'],
+          rows: [
+            { label: 'Open Evening', cells: ['Thursday 8 October 2026'] },
+            { label: 'Registration closes', cells: ['To be supplied'] },
+            { label: 'Interviews', cells: ['To be supplied'] },
+            { label: 'Offers made', cells: ['By the end of the spring term'] },
+            { label: 'GCSE results', cells: ['August'] },
+          ],
+        },
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Fees and assessment', cols: 3,
+          items: [
+            { href: 'fees.html', heading: 'Fees', description: 'Sixth Form fees are the Senior School fee, £10,400 a term including VAT. Scholarships and bursaries are available.', linkText: 'See fees' },
+            { href: 'admissions-16plus-journey.html', heading: 'Assessment', description: 'Places are offered on predicted GCSE grades, an interview and, for some subjects, a short written task.', linkText: 'What to expect' },
+            { href: 'admissions-16plus-journey.html', heading: 'Your full 16+ journey', description: 'Every step of the process, in detail.', linkText: 'See the 16+ journey' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: that Sixth Form fees match the Senior School fee, and the registration and interview dates, are to be confirmed with admissions.'] } },
       faqs([
         { heading: 'How many A Levels do pupils take?', body: 'Pupils typically choose three or four A Level subjects.', ctaLabel: 'See the subjects on offer', ctaHref: 'sixth-form-curriculum-subjects.html' },
         { heading: 'What are the A Level results like?', body: 'Our results are published each year, with a five-year view alongside.', ctaLabel: 'See A Level Results', ctaHref: 'sixth-form-examination-results.html' },
         { heading: 'Where do leavers go next?', body: 'Recent leavers have gone on to a wide range of universities, apprenticeships and careers.', ctaLabel: 'See Leavers’ Destinations', ctaHref: 'sixth-form-leavers-destinations.html' },
         { heading: 'Can I join from another school?', body: 'Yes. Some pupils join us for the first time at 16.', ctaLabel: 'See Your 16+ Journey', ctaHref: 'admissions-16plus-journey.html' },
         { heading: 'How is Sixth Form different from Year 11?', body: 'More independence, more responsibility and a more grown-up school day.', ctaLabel: 'See Sixth Form Life', ctaHref: 'sixth-form-life.html' },
+        { heading: 'What GCSE grades do I need?', body: 'Offers are conditional on GCSE results in August. (Wireframe note: entry requirements by subject to be supplied.)', ctaLabel: 'See Your 16+ Journey', ctaHref: 'admissions-16plus-journey.html' },
+        { heading: 'Are scholarships and bursaries available at 16+?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 16+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
       ], 'Sixth Form questions'),
       {
         component: 'wf-text-media', props: {
@@ -3084,6 +3211,8 @@ export const flows: Flow[] = [
 export interface ChangelogEntry { date: string; type: 'Added' | 'Changed' | 'Removed' | 'Fixed'; text: string }
 
 export const changelog: ChangelogEntry[] = [
+  { date: '2026-10-15', type: 'Changed', text: '11+ Entrance Exam & Past Papers, checked against the SEO report\'s hub structure: papers are now grouped by year with answers (2017 Maths and English, plus placeholder slots for recent years), the 2015 13+ Maths sample paper is added for occasional-place families, and Key dates gives the 11+ Open Morning date alongside personal tours.' },
+  { date: '2026-10-15', type: 'Added', text: 'The 7+ Prep, 11+ Senior and 16+ Sixth Form overview pages now work as the entry-point hubs the SEO report asks for: each gains a "Joining at" section (process timeline, key dates table, fees and assessment summary, link to the full Journey page) and two or three admissions questions in its FAQs. The Journey pages keep the full detail.' },
   { date: '2026-10-14', type: 'Added', text: 'Occasional Places page under Admissions, off the menu, at the SEO director\'s recommendation: a page entirely about occasional places ranks better for that search than a section on the Admissions hub. Content from the live page (year groups, how it works, expression of interest form). Linked from Admissions "Find your journey", the Admissions FAQs and the Register Online landing page, which used to send these enquiries to Contact.' },
   { date: '2026-10-14', type: 'Added', text: 'From the SEO review: a Term Dates page in School Life, above the calendar (now "Events Calendar"), because "term dates" drives far more search traffic than "calendar". Register Online is now a landing page leading to separate 7+, 11+ and 16+ registration forms, as on the live site; stage-specific buttons link straight to their own form.' },
   { date: '2026-10-14', type: 'Added', text: 'CCF, Duke of Edinburgh\'s Award and Sea Scouts pages under Senior Co-Curriculum (also linked from Trips & Visits), an Acceptance Deposit form page (off the menu, linked from Starting at Bancroft\'s) and a Spiritual Life page linked from Senior Pastoral Care.' },

@@ -256,6 +256,17 @@ ends on, plus the always-present header CTA. None of the four hero CTA ids (`cta
 `cta-7plus-journey-hero`, `cta-11plus-journey-hero`, `cta-16plus-journey-hero`) were referenced by any
 user journey walkthrough, so nothing else needed updating.
 
+### Overview pages as entry-point hubs (2026-10-15)
+
+The SEO report asks for one hub per entry point (its `/prep/`, `/senior/`, `/sixth-form/`), covering
+the process, key dates, fees, assessment, FAQs and a next step. Those hubs are the existing 7+ Prep,
+11+ Senior and 16+ Sixth Form overview pages; they already covered the stage and the next step, but
+the admissions detail sat only on the Journey pages. Each overview now has a **"Joining at 7+/11+/16+"**
+section (timeline, key dates table, a fees and assessment card row linking to the full Journey page)
+placed after the stage blocks and before the FAQs, plus a few admissions questions in its FAQs. The
+Journey pages stay the detailed guides. In the real build the overviews should take those exact
+addresses. Still open: a line naming Woodford Green and the areas served on each overview.
+
 ### SEO review (2026-10-14)
 
 From the SEO director's review of live URLs that had no home in the new sitemap.
