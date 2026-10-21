@@ -31,14 +31,16 @@ export interface SitemapSource {
   markerKey: Record<string, string>
 }
 
-/** Greyscale only, like the rest of the wireframe — types are told apart by weight, not colour. */
+/** Coloured per the client's own tag convention (not the greyscale-only rule the rest of the
+ *  wireframe follows) — this is a tooling page, same exception already given to the Prototype
+ *  navigator button, so a type is told apart by colour here rather than weight. */
 const TAG: Record<string, string> = {
-  Homepage: 'bg-gray-900 text-white border-gray-900',
-  Content: 'bg-gray-100 text-gray-600 border-gray-300',
-  Listing: 'bg-gray-300 text-gray-800 border-gray-400',
-  Article: 'bg-white text-gray-700 border-gray-400',
-  Detail: 'bg-white text-gray-500 border-gray-300 border-dashed',
-  Form: 'bg-gray-600 text-white border-gray-600',
+  Content: 'bg-orange-400 text-gray-900 border-orange-500',
+  Detail: 'bg-amber-400 text-gray-900 border-amber-500',
+  Form: 'bg-red-400 text-gray-900 border-red-500',
+  Listing: 'bg-cyan-300 text-gray-900 border-cyan-400',
+  Article: 'bg-indigo-400 text-gray-900 border-indigo-500',
+  Homepage: 'bg-emerald-400 text-gray-900 border-emerald-500',
 }
 const TAG_FALLBACK = 'bg-white text-gray-400 border-gray-300'
 const LINE = 'border-gray-400'
