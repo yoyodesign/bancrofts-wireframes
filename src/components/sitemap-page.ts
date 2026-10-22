@@ -47,7 +47,7 @@ const TAG: Record<string, string> = {
   Landing: 'bg-[#B277FF] text-gray-900 border-[#9765D9]',
   Content: 'bg-orange-400 text-gray-900 border-orange-500',
   Listing: 'bg-cyan-300 text-gray-900 border-cyan-400',
-  Article: 'bg-indigo-400 text-gray-900 border-indigo-500',
+  Article: 'bg-red-400 text-gray-900 border-red-500',
 }
 const TAG_FALLBACK = 'bg-white text-gray-400 border-gray-300'
 /** Same hues as TAG, fill colour only — the small dot shown on each card in place of a full tag. */
@@ -56,7 +56,7 @@ const DOT: Record<string, string> = {
   Landing: 'bg-[#B277FF]',
   Content: 'bg-orange-400',
   Listing: 'bg-cyan-300',
-  Article: 'bg-indigo-400',
+  Article: 'bg-red-400',
 }
 const DOT_FALLBACK = 'bg-gray-300'
 const LINE = 'border-gray-400'
