@@ -45,7 +45,7 @@ export interface SitemapSource {
 const TAG: Record<string, string> = {
   Homepage: 'bg-emerald-400 text-gray-900 border-emerald-500',
   Landing: 'bg-[#B277FF] text-gray-900 border-[#9765D9]',
-  Content: 'bg-orange-400 text-gray-900 border-orange-500',
+  Content: 'bg-[#FFC505] text-gray-900 border-[#D8A704]',
   Listing: 'bg-cyan-300 text-gray-900 border-cyan-400',
   Article: 'bg-red-400 text-gray-900 border-red-500',
 }
@@ -54,7 +54,7 @@ const TAG_FALLBACK = 'bg-white text-gray-400 border-gray-300'
 const DOT: Record<string, string> = {
   Homepage: 'bg-emerald-400',
   Landing: 'bg-[#B277FF]',
-  Content: 'bg-orange-400',
+  Content: 'bg-[#FFC505]',
   Listing: 'bg-cyan-300',
   Article: 'bg-red-400',
 }
