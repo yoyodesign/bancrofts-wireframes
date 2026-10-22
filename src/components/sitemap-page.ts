@@ -1,7 +1,7 @@
 import { html, type TemplateResult } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { Light } from '../base'
-import { pages, primaryNav, corePages, footerColumns, footerLegalLinks, headerCta, CORE_PAGE_TYPES } from '../config'
+import { pages, primaryNav, corePages, footerColumns, footerLegalLinks, headerUtilityLinks, headerCta, CORE_PAGE_TYPES } from '../config'
 
 export interface SitemapNode {
   href: string
@@ -10,6 +10,12 @@ export interface SitemapNode {
   /** Anything that sets a page apart from an ordinary menu page (e.g. "Not in menu", "Header
    *  button") — shown as a small dashed marker, with the block itself outlined dashed. */
   marker: string
+  /** Markers about what's ON the page rather than how it's reached (e.g. "Has a form") - same
+   *  dashed-pill badge as `marker` above, but purely informational: unlike `marker`, these never
+   *  put the card's own outline into dashed, since that's reserved for "you can't get here from
+   *  the menu," a different fact from "this Content page happens to include a form." A node can
+   *  carry any number of these, where `marker` is always at most one. */
+  contentMarkers?: string[]
   /** Optional small line under the label, e.g. where a menu item redirects to. */
   note?: string
   children: SitemapNode[]
@@ -33,16 +39,26 @@ export interface SitemapSource {
 
 /** Coloured per the client's own tag convention (not the greyscale-only rule the rest of the
  *  wireframe follows) — this is a tooling page, same exception already given to the Prototype
- *  navigator button, so a type is told apart by colour here rather than weight. */
+ *  navigator button, so a type is told apart by colour here rather than weight. Used for the type
+ *  key row's labelled pills; tree/list cards use the bare-dot `DOT` map below instead, so the
+ *  page name carries the visual weight rather than a text badge. */
 const TAG: Record<string, string> = {
   Content: 'bg-orange-400 text-gray-900 border-orange-500',
   Detail: 'bg-amber-400 text-gray-900 border-amber-500',
-  Form: 'bg-red-400 text-gray-900 border-red-500',
   Listing: 'bg-cyan-300 text-gray-900 border-cyan-400',
   Article: 'bg-indigo-400 text-gray-900 border-indigo-500',
   Homepage: 'bg-emerald-400 text-gray-900 border-emerald-500',
 }
 const TAG_FALLBACK = 'bg-white text-gray-400 border-gray-300'
+/** Same hues as TAG, fill colour only — the small dot shown on each card in place of a full tag. */
+const DOT: Record<string, string> = {
+  Content: 'bg-orange-400',
+  Detail: 'bg-amber-400',
+  Listing: 'bg-cyan-300',
+  Article: 'bg-indigo-400',
+  Homepage: 'bg-emerald-400',
+}
+const DOT_FALLBACK = 'bg-gray-300'
 const LINE = 'border-gray-400'
 
 const hrefOf = (key: string) => (key === 'homepage' ? 'index.html' : `${key}.html`)
@@ -184,11 +200,13 @@ export class WfSitemapPage extends Light {
       const trail: { label: string; href: string }[] = (page.hero?.props?.breadcrumb || []).slice(1)
       const self = trail.length && trail[trail.length - 1].href === href ? trail[trail.length - 1] : null
       const ancestors = self ? trail.slice(0, -1) : trail
+      const hasForm = page.blocks.some((b) => b.component === 'wf-form' || b.component === 'wf-signup-form')
       nodes.set(href, {
         href,
         label: key === 'homepage' ? 'Homepage' : self?.label || page.hero?.props?.heading || key,
         type: typeByHref.get(href) || 'Untyped',
         marker: menuOrder.has(href) || key === 'homepage' ? '' : href === headerCta.href ? 'Header button' : 'Not in menu',
+        contentMarkers: hasForm ? ['Has a form'] : [],
         children: [],
       })
       parentOf.set(href, ancestors.length ? ancestors[ancestors.length - 1].href : null)
@@ -217,9 +235,18 @@ export class WfSitemapPage extends Light {
       title: 'Sitemap',
       home: nodes.get('index.html'),
       sections: primaryNav.map((n) => nodes.get(n.href)).filter((n): n is SitemapNode => !!n),
-      lists: [{ tag: 'Footer', items: footerLinks.map((l) => ({ label: l.label, node: nodes.get(l.href), type: 'External' })) }],
+      // Two separate blocks, not one combined list - the footer and the header's persistent
+      // Contact/Portal rail are different areas of the site, reached different ways, so drawing
+      // them as one card would blur that distinction.
+      lists: [
+        { tag: 'Footer', items: footerLinks.map((l) => ({ label: l.label, node: nodes.get(l.href), type: 'External' })) },
+        { tag: 'Quick links', items: headerUtilityLinks.map((l) => ({ label: l.label, node: nodes.get(l.href), type: 'External' })) },
+      ],
       unplaced,
-      markerKey: { 'Not in menu': 'a real page reached by links, not the menu' },
+      markerKey: {
+        'Not in menu': 'a real page reached by links, not the menu',
+        'Has a form': 'a Content/Detail/Listing page that includes a form component',
+      },
     }
   }
 
@@ -255,15 +282,22 @@ export class WfSitemapPage extends Light {
   }
 
   private card(node: SitemapNode, from: string): TemplateResult {
+    // Marker pills sit under the name now, not up with the type — they're a secondary fact about
+    // the page (not reached by menu, has a form), and shouldn't compete with the name for the
+    // first thing read on the card.
+    const markers = [node.marker, ...(node.contentMarkers || [])].filter(Boolean)
     return html`
       <a href=${node.href} target=${/^https?:/.test(node.href) ? '_blank' : '_self'} rel="noopener" aria-label="${node.label} (${node.type})"
         class="block w-44 rounded-md border bg-white overflow-hidden shadow-sm hover:border-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2
           ${node.marker ? 'border-dashed border-gray-400' : 'border-gray-300'} ${node.href === from ? 'ring-2 ring-gray-900 ring-offset-2' : ''}">
         ${this.windowBar()}
         <span class="block px-2.5 py-2">
-          <span class="flex flex-wrap gap-1">${this.tag(node.type)}${node.marker ? this.marker(node.marker) : ''}</span>
-          <span class="mt-1.5 block text-xs font-semibold text-gray-900 leading-snug">${node.label}</span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block h-2.5 w-2.5 shrink-0 rounded-full ${DOT[node.type] || DOT_FALLBACK}" title=${node.type}></span>
+            <span class="text-xs font-semibold text-gray-900 leading-snug">${node.label}</span>
+          </span>
           ${node.note ? html`<span class="mt-0.5 block text-[10px] text-gray-500 leading-snug">${node.note}</span>` : ''}
+          ${markers.length ? html`<span class="mt-1.5 flex flex-wrap gap-1">${markers.map((m) => this.marker(m))}</span>` : ''}
         </span>
       </a>`
   }
@@ -293,7 +327,7 @@ export class WfSitemapPage extends Light {
     // The six core types first, in their usual order, then any other type the source uses.
     const typeNames = [...new Set([...(CORE_PAGE_TYPES as string[]), ...all.map((n) => n.type)])]
     const types = typeNames.map((t) => ({ type: t, count: all.filter((n) => n.type === t).length })).filter((t) => t.count)
-    const markers = [...new Set(all.map((n) => n.marker).filter(Boolean))].filter((m) => data.markerKey[m])
+    const markers = [...new Set(all.flatMap((n) => [n.marker, ...(n.contentMarkers || [])]).filter(Boolean))].filter((m) => data.markerKey[m])
 
     return html`
       <div class="space-y-6 pb-4">

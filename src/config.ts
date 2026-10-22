@@ -3018,8 +3018,8 @@ export const pages: Record<string, Page> = {
 // Prototype navigator — core pages (grouped by template type), user journeys, changelog.
 // ---------------------------------------------------------------------------
 
-export type CorePageType = 'Homepage' | 'Content' | 'Listing' | 'Article' | 'Detail' | 'Form'
-export const CORE_PAGE_TYPES: CorePageType[] = ['Homepage', 'Content', 'Listing', 'Article', 'Detail', 'Form']
+export type CorePageType = 'Homepage' | 'Content' | 'Listing' | 'Article' | 'Detail'
+export const CORE_PAGE_TYPES: CorePageType[] = ['Homepage', 'Content', 'Listing', 'Article', 'Detail']
 
 export interface CorePage { label: string; href: string; type: CorePageType; inferred?: boolean }
 
@@ -3107,14 +3107,14 @@ export const corePages: CorePage[] = [
   { label: 'News article', href: 'news-article-b.html', type: 'Article' },
   { label: 'News article', href: 'news-article-c.html', type: 'Article' },
 
-  { label: 'Book a Visit', href: 'book-a-visit.html', type: 'Form' },
-  { label: 'Occasional Places', href: 'admissions-occasional-places.html', type: 'Form' },
+  { label: 'Book a Visit', href: 'book-a-visit.html', type: 'Content' },
+  { label: 'Occasional Places', href: 'admissions-occasional-places.html', type: 'Content' },
   { label: 'Register Online', href: 'register.html', type: 'Content' },
-  { label: '7+ Registration', href: 'register-7plus.html', type: 'Form' },
-  { label: '11+ Registration', href: 'register-11plus.html', type: 'Form' },
-  { label: '16+ Registration', href: 'register-16plus.html', type: 'Form' },
-  { label: 'Acceptance Deposit', href: 'acceptance-deposit.html', type: 'Form' },
-  { label: 'Contact', href: 'contact.html', type: 'Form', inferred: true },
+  { label: '7+ Registration', href: 'register-7plus.html', type: 'Content' },
+  { label: '11+ Registration', href: 'register-11plus.html', type: 'Content' },
+  { label: '16+ Registration', href: 'register-16plus.html', type: 'Content' },
+  { label: 'Acceptance Deposit', href: 'acceptance-deposit.html', type: 'Content' },
+  { label: 'Contact', href: 'contact.html', type: 'Content', inferred: true },
 ]
 
 export interface WalkStep { href: string; targetId: string; label: string; instruction: string }
