@@ -327,7 +327,8 @@ export class WfSitemapPage extends Light {
     // The six core types first, in their usual order, then any other type the source uses.
     const typeNames = [...new Set([...(CORE_PAGE_TYPES as string[]), ...all.map((n) => n.type)])]
     const types = typeNames.map((t) => ({ type: t, count: all.filter((n) => n.type === t).length })).filter((t) => t.count)
-    const markers = [...new Set(all.flatMap((n) => [n.marker, ...(n.contentMarkers || [])]).filter(Boolean))].filter((m) => data.markerKey[m])
+    const markerNames = [...new Set(all.flatMap((n) => [n.marker, ...(n.contentMarkers || [])]).filter(Boolean))].filter((m) => data.markerKey[m])
+    const markers = markerNames.map((m) => ({ marker: m, count: all.filter((n) => n.marker === m || (n.contentMarkers || []).includes(m)).length }))
 
     return html`
       <div class="space-y-6 pb-4">
@@ -341,7 +342,7 @@ export class WfSitemapPage extends Light {
         <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 lg:sticky lg:top-[calc(var(--wf-bar-h)+4rem)] lg:z-30 lg:bg-gray-50/95 lg:py-3">
           <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-600">
             ${types.map((t) => html`<span class="inline-flex items-center gap-1.5">${this.tag(t.type)} ${t.count}</span>`)}
-            ${markers.map((m) => this.marker(m))}
+            ${markers.map((m) => html`<span class="inline-flex items-center gap-1.5">${this.marker(m.marker)} ${m.count}</span>`)}
           </div>
           ${this.zoomControls()}
         </div>
