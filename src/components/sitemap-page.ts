@@ -43,20 +43,20 @@ export interface SitemapSource {
  *  key row's labelled pills; tree/list cards use the bare-dot `DOT` map below instead, so the
  *  page name carries the visual weight rather than a text badge. */
 const TAG: Record<string, string> = {
+  Homepage: 'bg-emerald-400 text-gray-900 border-emerald-500',
+  Landing: 'bg-[#B277FF] text-gray-900 border-[#9765D9]',
   Content: 'bg-orange-400 text-gray-900 border-orange-500',
-  Detail: 'bg-amber-400 text-gray-900 border-amber-500',
   Listing: 'bg-cyan-300 text-gray-900 border-cyan-400',
   Article: 'bg-indigo-400 text-gray-900 border-indigo-500',
-  Homepage: 'bg-emerald-400 text-gray-900 border-emerald-500',
 }
 const TAG_FALLBACK = 'bg-white text-gray-400 border-gray-300'
 /** Same hues as TAG, fill colour only — the small dot shown on each card in place of a full tag. */
 const DOT: Record<string, string> = {
+  Homepage: 'bg-emerald-400',
+  Landing: 'bg-[#B277FF]',
   Content: 'bg-orange-400',
-  Detail: 'bg-amber-400',
   Listing: 'bg-cyan-300',
   Article: 'bg-indigo-400',
-  Homepage: 'bg-emerald-400',
 }
 const DOT_FALLBACK = 'bg-gray-300'
 const LINE = 'border-gray-400'
@@ -245,7 +245,7 @@ export class WfSitemapPage extends Light {
       unplaced,
       markerKey: {
         'Not in menu': 'a real page reached by links, not the menu',
-        'Has a form': 'a Content/Detail/Listing page that includes a form component',
+        'Has a form': 'the page includes a form component',
       },
     }
   }

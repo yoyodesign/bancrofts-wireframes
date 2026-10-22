@@ -3018,15 +3018,15 @@ export const pages: Record<string, Page> = {
 // Prototype navigator — core pages (grouped by template type), user journeys, changelog.
 // ---------------------------------------------------------------------------
 
-export type CorePageType = 'Homepage' | 'Content' | 'Listing' | 'Article' | 'Detail'
-export const CORE_PAGE_TYPES: CorePageType[] = ['Homepage', 'Content', 'Listing', 'Article', 'Detail']
+export type CorePageType = 'Homepage' | 'Landing' | 'Content' | 'Listing' | 'Article'
+export const CORE_PAGE_TYPES: CorePageType[] = ['Homepage', 'Landing', 'Content', 'Listing', 'Article']
 
 export interface CorePage { label: string; href: string; type: CorePageType; inferred?: boolean }
 
 export const corePages: CorePage[] = [
   { label: 'Homepage', href: 'index.html', type: 'Homepage' },
 
-  { label: 'Admissions', href: 'admissions.html', type: 'Content' },
+  { label: 'Admissions', href: 'admissions.html', type: 'Landing' },
   { label: 'Your 7+ Journey', href: 'admissions-7plus-journey.html', type: 'Content' },
   { label: 'Your 11+ Journey', href: 'admissions-11plus-journey.html', type: 'Content' },
   { label: 'Starting at Bancroft’s (11+)', href: 'admissions-11plus-starting.html', type: 'Content' },
@@ -3036,7 +3036,7 @@ export const corePages: CorePage[] = [
   { label: 'Scholarships & Bursaries', href: 'scholarships-bursaries.html', type: 'Content' },
   { label: 'Frequently Asked Questions', href: 'admissions-faqs.html', type: 'Content' },
 
-  { label: '7+ Prep', href: 'prep.html', type: 'Content' },
+  { label: '7+ Prep', href: 'prep.html', type: 'Landing' },
   { label: 'Why Bancroft’s Prep', href: 'prep-why.html', type: 'Content' },
   { label: 'Prep School Life', href: 'prep-life.html', type: 'Content' },
   { label: 'Prep: Curriculum', href: 'prep-curriculum.html', type: 'Content' },
@@ -3044,36 +3044,36 @@ export const corePages: CorePage[] = [
   { label: 'Prep: Pastoral Care', href: 'prep-pastoral-care.html', type: 'Content' },
   { label: 'Prep: Meet the Staff', href: 'prep-staff.html', type: 'Content' },
 
-  { label: '11+ Senior', href: 'senior.html', type: 'Content' },
+  { label: '11+ Senior', href: 'senior.html', type: 'Landing' },
   { label: 'Why Bancroft’s Senior', href: 'senior-why.html', type: 'Content' },
   { label: 'Senior: GCSE Results', href: 'senior-academic-results.html', type: 'Content' },
   { label: 'Senior: Curriculum', href: 'senior-curriculum.html', type: 'Content' },
-  { label: 'Senior: Sport & Arts', href: 'senior-sport-arts.html', type: 'Content' },
+  { label: 'Senior: Sport & Arts', href: 'senior-sport-arts.html', type: 'Landing' },
   { label: 'Senior: Co-Curriculum', href: 'senior-co-curriculum.html', type: 'Content' },
   { label: 'Senior: Pastoral Care', href: 'senior-pastoral-care.html', type: 'Content' },
   { label: 'Senior: Learning for Life', href: 'senior-learning-for-life.html', type: 'Content' },
   { label: 'Senior: Learning Support', href: 'senior-learning-support.html', type: 'Content' },
   { label: 'Senior: Trips & Visits', href: 'senior-trips-visits.html', type: 'Content' },
   { label: 'Senior: Spiritual Life', href: 'senior-spiritual-life.html', type: 'Content' },
-  { label: 'Co-Curriculum: CCF', href: 'senior-co-curriculum-ccf.html', type: 'Detail' },
-  { label: 'Co-Curriculum: Duke of Edinburgh’s Award', href: 'senior-co-curriculum-dofe.html', type: 'Detail' },
-  { label: 'Co-Curriculum: Sea Scouts', href: 'senior-co-curriculum-sea-scouts.html', type: 'Detail' },
+  { label: 'Co-Curriculum: CCF', href: 'senior-co-curriculum-ccf.html', type: 'Content' },
+  { label: 'Co-Curriculum: Duke of Edinburgh’s Award', href: 'senior-co-curriculum-dofe.html', type: 'Content' },
+  { label: 'Co-Curriculum: Sea Scouts', href: 'senior-co-curriculum-sea-scouts.html', type: 'Content' },
   { label: 'Sport (listing)', href: 'senior-sport.html', type: 'Listing' },
-  { label: 'Sport: Football', href: 'senior-sport-football.html', type: 'Detail' },
-  { label: 'Sport: Rugby', href: 'senior-sport-rugby.html', type: 'Detail' },
-  { label: 'Sport: Hockey', href: 'senior-sport-hockey.html', type: 'Detail' },
-  { label: 'Sport: Netball', href: 'senior-sport-netball.html', type: 'Detail' },
-  { label: 'Sport: Cricket', href: 'senior-sport-cricket.html', type: 'Detail' },
-  { label: 'Sport: Athletics', href: 'senior-sport-athletics.html', type: 'Detail' },
-  { label: 'Sport: Swimming', href: 'senior-sport-swimming.html', type: 'Detail' },
-  { label: 'Sport: Tennis', href: 'senior-sport-tennis.html', type: 'Detail' },
-  { label: 'Sport: Badminton', href: 'senior-sport-badminton.html', type: 'Detail' },
+  { label: 'Sport: Football', href: 'senior-sport-football.html', type: 'Content' },
+  { label: 'Sport: Rugby', href: 'senior-sport-rugby.html', type: 'Content' },
+  { label: 'Sport: Hockey', href: 'senior-sport-hockey.html', type: 'Content' },
+  { label: 'Sport: Netball', href: 'senior-sport-netball.html', type: 'Content' },
+  { label: 'Sport: Cricket', href: 'senior-sport-cricket.html', type: 'Content' },
+  { label: 'Sport: Athletics', href: 'senior-sport-athletics.html', type: 'Content' },
+  { label: 'Sport: Swimming', href: 'senior-sport-swimming.html', type: 'Content' },
+  { label: 'Sport: Tennis', href: 'senior-sport-tennis.html', type: 'Content' },
+  { label: 'Sport: Badminton', href: 'senior-sport-badminton.html', type: 'Content' },
   { label: 'The Arts (listing)', href: 'senior-arts.html', type: 'Listing' },
-  { label: 'The Arts: Visual Arts', href: 'senior-arts-visual-arts.html', type: 'Detail' },
-  { label: 'The Arts: Drama', href: 'senior-arts-drama.html', type: 'Detail' },
-  { label: 'The Arts: Music', href: 'senior-arts-music.html', type: 'Detail' },
+  { label: 'The Arts: Visual Arts', href: 'senior-arts-visual-arts.html', type: 'Content' },
+  { label: 'The Arts: Drama', href: 'senior-arts-drama.html', type: 'Content' },
+  { label: 'The Arts: Music', href: 'senior-arts-music.html', type: 'Content' },
 
-  { label: '16+ Sixth Form', href: 'sixth-form.html', type: 'Content' },
+  { label: '16+ Sixth Form', href: 'sixth-form.html', type: 'Landing' },
   { label: 'Why Bancroft’s Sixth Form', href: 'sixth-form-why.html', type: 'Content' },
   { label: 'Sixth Form Life', href: 'sixth-form-life.html', type: 'Content' },
   { label: 'Sixth Form: Co-Curriculum', href: 'sixth-form-co-curriculum.html', type: 'Content' },
@@ -3082,7 +3082,7 @@ export const corePages: CorePage[] = [
   { label: 'Sixth Form: Staying On', href: 'sixth-form-staying-on.html', type: 'Content' },
   { label: 'Sixth Form: A Level Results', href: 'sixth-form-examination-results.html', type: 'Content' },
 
-  { label: 'School Life', href: 'school-life.html', type: 'Content' },
+  { label: 'School Life', href: 'school-life.html', type: 'Landing' },
   { label: 'Our Community', href: 'school-life-community.html', type: 'Content' },
   { label: 'Term Dates', href: 'term-dates.html', type: 'Content' },
   { label: 'Events Calendar', href: 'calendar.html', type: 'Content' },
@@ -3091,7 +3091,7 @@ export const corePages: CorePage[] = [
   { label: 'Uniform', href: 'uniform.html', type: 'Content' },
   { label: 'Parent Association', href: 'parent-association.html', type: 'Content' },
 
-  { label: 'About', href: 'about.html', type: 'Content' },
+  { label: 'About', href: 'about.html', type: 'Landing' },
   { label: 'Welcome from the Head', href: 'about-welcome.html', type: 'Content' },
   { label: 'What We Stand For', href: 'about-what-we-stand-for.html', type: 'Content' },
   { label: 'Rankings & Recognition', href: 'about-rankings-recognition.html', type: 'Content' },
