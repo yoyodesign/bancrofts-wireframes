@@ -9,7 +9,7 @@ export class WfSiteFooter extends Light {
     return html`
       <footer class="mt-20 border-t border-gray-200 bg-white">
         <div class="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 py-14">
-          <div class="grid gap-10 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+          <div class="grid gap-10 lg:grid-cols-[2fr_1fr_1fr]">
             <div>
               <a href="index.html" class="text-base font-semibold text-gray-900">${siteName}</a>
               <p class="mt-3 max-w-xs text-sm text-gray-500">${footerTagline}</p>

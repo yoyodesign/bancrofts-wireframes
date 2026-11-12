@@ -89,6 +89,14 @@ export class WfPageBody extends Light {
   }
 
   render() {
+    // The homepage is a bespoke 5-screen scroll storyboard (see homepage-storyboard.ts),
+    // not the standard hero/blocks composition every other page uses — rendered directly
+    // here rather than via renderHero/renderBlock. pages.homepage still exists in
+    // config.ts (breadcrumb label, sitemap node, walkthrough hrefs all depend on the key
+    // being present) but its hero/blocks content is no longer what's shown.
+    if (this.page === 'homepage') {
+      return html`<wf-homepage-storyboard></wf-homepage-storyboard>`
+    }
     const page = pages[this.page]
     if (!page) {
       return html`<div class="py-24 text-center text-gray-500">Page not found: ${this.page}</div>`

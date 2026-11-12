@@ -191,6 +191,13 @@ export class WfSitemapPage extends Light {
       menuOrder.set(item.href, menuOrder.size)
       for (const c of item.children || []) if (!menuOrder.has(c.href)) menuOrder.set(c.href, menuOrder.size)
     }
+    // Per-section override (see NavItem.sitemapChildren) - a href → local-index map, one per
+    // section that defines it, used in place of the shared `menuOrder` when sorting that one
+    // section's own branch.
+    const sitemapChildOrder = new Map<string, Map<string, number>>()
+    for (const item of primaryNav) {
+      if (item.sitemapChildren) sitemapChildOrder.set(item.href, new Map(item.sitemapChildren.map((href, i) => [href, i])))
+    }
 
     const nodes = new Map<string, SitemapNode>()
     const parentOf = new Map<string, string | null>()
@@ -214,19 +221,26 @@ export class WfSitemapPage extends Light {
 
     const footerLinks = [...footerColumns.flatMap((c) => c.links), ...footerLegalLinks]
     const footerHrefs = new Set(footerLinks.map((l) => l.href))
+    // Same exemption as footer links below: a quick-link page with no breadcrumb parent isn't
+    // truly unplaced - the "Quick links" card (see `lists` below) is its placement.
+    const quickLinkHrefs = new Set(headerUtilityLinks.map((l) => l.href))
     const sectionHrefs = new Set(primaryNav.map((n) => n.href))
     const unplaced: SitemapNode[] = []
     for (const [href, node] of nodes) {
       if (href === 'index.html' || sectionHrefs.has(href)) continue
       const parent = parentOf.get(href)
       if (parent && nodes.has(parent)) nodes.get(parent)!.children.push(node)
-      else if (!footerHrefs.has(href)) unplaced.push(node)
+      else if (!footerHrefs.has(href) && !quickLinkHrefs.has(href)) unplaced.push(node)
     }
-    // Menu pages first, in menu order; pages outside the menu keep their config.ts order after them.
+    // Menu pages first, in menu order; pages outside the menu keep their config.ts order after
+    // them. A section with its own sitemapChildren override (see above) uses that order instead.
     for (const node of nodes.values()) {
+      const order = sitemapChildOrder.get(node.href)
       node.children = node.children
         .map((child, i) => ({ child, i }))
-        .sort((a, b) => (menuOrder.get(a.child.href) ?? Infinity) - (menuOrder.get(b.child.href) ?? Infinity) || a.i - b.i)
+        .sort((a, b) => order
+          ? (order.get(a.child.href) ?? Infinity) - (order.get(b.child.href) ?? Infinity) || a.i - b.i
+          : (menuOrder.get(a.child.href) ?? Infinity) - (menuOrder.get(b.child.href) ?? Infinity) || a.i - b.i)
         .map((x) => x.child)
     }
 

@@ -31,6 +31,13 @@ export interface NavItem {
   label: string
   href: string
   children?: NavChild[]
+  /** Sitemap-tree-only override for this section's branch order (sitemap-page.ts) - the real
+   *  nav always follows `children` above. Needed when a page's sitemap parent (its own
+   *  breadcrumb) isn't the same section that lists it in the real nav: the tree's default sort
+   *  otherwise falls back to that OTHER section's nav position, which can't be interleaved with
+   *  this section's own children via a plain two-key sort. Lists every href this branch should
+   *  show, in order; anything not listed falls back to the default sort. */
+  sitemapChildren?: string[]
 }
 
 // ---------------------------------------------------------------------------
@@ -42,44 +49,17 @@ export interface NavItem {
 export const headerCta = { label: 'Book a Visit', href: 'book-a-visit.html' }
 
 // Small utility row shown at the foot of the burger takeover panel — quick access to Contact and
-// the three portals, kept out of the main section list so it doesn't compete with the primary IA.
-// The three portals each expand in place (see header-nav.ts) to their own real sub-systems —
-// they're login shortcuts for the already-enrolled community, distinct in kind from the primary
-// IA's "explore the school" sections, so they stay a flat expandable list here rather than being
-// promoted into primaryNav. Uniform is the one exception: it's informational content a prospective
-// family cares about too, so it lives as a real page under School Life instead (see primaryNav)
-// and isn't duplicated here.
-export const headerUtilityLinks: { label: string; href: string; children?: { label: string; href: string }[] }[] = [
+// the three audience pages, kept out of the main section list so it doesn't compete with the
+// primary IA. Parent/Pupil/Staff Portal used to be external login shortcuts with their own
+// expandable sub-system lists; the client replaced those with three real internal pages (Parents,
+// Pupils, Staff), each just a page of clear quick links to the underlying systems (see
+// parents/pupils/staff in pages below) — so these are flat links again, no children, matching
+// the footer's former "Portals" column which these pages now also absorb.
+export const headerUtilityLinks: { label: string; href: string }[] = [
   { label: 'Contact', href: 'contact.html' },
-  {
-    label: 'Parent Portal', href: '#',
-    children: [
-      { label: 'iSAMS Parent Portal', href: '#' },
-      { label: 'Parents’ Evening System', href: '#' },
-      { label: 'SOCS (Trips & Consent)', href: '#' },
-      { label: 'Online Payments', href: '#' },
-    ],
-  },
-  {
-    label: 'Pupil Portal', href: '#',
-    children: [
-      { label: 'Pupil Portal (iSAMS)', href: '#' },
-      { label: 'Prep VLE', href: '#' },
-      { label: 'Senior VLE', href: '#' },
-      { label: 'Office 365 & Teams', href: '#' },
-      { label: 'Planet eStream', href: '#' },
-    ],
-  },
-  {
-    label: 'Staff Portal', href: '#',
-    children: [
-      { label: 'Staff Remote Access', href: '#' },
-      { label: 'Office 365', href: '#' },
-      { label: 'iSAMS', href: '#' },
-      { label: 'CPOMS', href: '#' },
-      { label: 'VLEs', href: '#' },
-    ],
-  },
+  { label: 'Parents', href: 'parents.html' },
+  { label: 'Pupils', href: 'pupils.html' },
+  { label: 'Staff', href: 'staff.html' },
 ]
 
 // ---------------------------------------------------------------------------
@@ -94,12 +74,17 @@ export const primaryNav: NavItem[] = [
     slug: 'admissions', label: 'Admissions', href: 'admissions.html',
     children: [
       { label: 'Admissions overview', href: 'admissions.html', description: 'Entry points, how to apply and what happens next.' },
-      { label: 'Your 7+ Journey', href: 'admissions-7plus-journey.html', description: 'The application process and key dates for entry at 7+.' },
-      { label: 'Your 11+ Journey', href: 'admissions-11plus-journey.html', description: 'The application process and key dates for entry at 11+.' },
-      { label: 'Your 16+ Journey', href: 'admissions-16plus-journey.html', description: 'The application process and key dates for Sixth Form entry.' },
+      { label: 'Joining at 7+', href: 'admissions-7plus-journey.html', description: 'The application process and key dates for entry at 7+.' },
+      { label: 'Joining at 11+', href: 'admissions-11plus-journey.html', description: 'The application process and key dates for entry at 11+.' },
+      { label: 'Joining at 16+', href: 'admissions-16plus-journey.html', description: 'The application process and key dates for Sixth Form entry.' },
+      { label: 'Visit Us', href: 'book-a-visit.html', description: 'Open Mornings and personal tours, and how to book one.' },
+      // Deliberately below the joining pages and Visit Us, not straight after them, so it reads
+      // as the secondary action it is - Book a Visit stays the dominant CTA (see headerCta and
+      // every stage/joining page's primary vs secondary CTA pairing).
       { label: 'Register Online', href: 'register.html', description: 'Start a formal application for a place at Bancroft’s.' },
       { label: 'Fees', href: 'fees.html', description: 'Termly fees for Prep and Senior School, inclusive of VAT.' },
-      { label: 'Scholarships & Bursaries', href: 'scholarships-bursaries.html', description: 'Academic and music awards, and means-tested financial support.' },
+      { label: 'Scholarships & Awards', href: 'scholarships-awards.html', description: 'Academic and music awards for exceptional candidates.' },
+      { label: 'Bursaries', href: 'bursaries.html', description: 'Means-tested financial support towards the fees.' },
       { label: 'Frequently Asked Questions', href: 'admissions-faqs.html', description: 'Quick answers to the questions we hear most.' },
     ],
   },
@@ -109,22 +94,24 @@ export const primaryNav: NavItem[] = [
       { label: '7+ Prep overview', href: 'prep.html', description: 'The first steps into Bancroft’s, for ages 7 to 11.' },
       { label: 'Why Bancroft’s Prep', href: 'prep-why.html', description: 'What makes the Prep years distinctive.' },
       { label: 'Prep School Life', href: 'prep-life.html', description: 'What a day at the Prep looks and feels like.' },
-      { label: 'Curriculum', href: 'prep-curriculum.html', description: 'What Prep pupils learn in the classroom, from Year 3 onwards.' },
-      { label: 'Co-Curriculum', href: 'prep-co-curriculum.html', description: 'Weekly clubs, from sport and drama to coding and chess.' },
+      { label: 'Academic Life', href: 'prep-academic-life.html', description: 'What Prep pupils learn in the classroom, from Year 3 onwards.' },
+      { label: 'Beyond the Classroom', href: 'prep-beyond-the-classroom.html', description: 'Sport, music, drama and clubs outside lessons.' },
+      { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html', description: 'The House system and how every pupil is known and supported.' },
+      { label: 'Learning Support', href: 'learning-support.html', description: 'How pupils with additional needs are identified and supported.' },
       { label: 'Meet the Staff', href: 'prep-staff.html', description: 'The teachers and support staff who lead the Prep years.' },
-      { label: 'Pastoral Care', href: 'prep-pastoral-care.html', description: 'Settling in and being known as an individual from day one.' },
     ],
   },
   {
     slug: 'senior', label: '11+ Senior', href: 'senior.html',
     children: [
       { label: '11+ Senior overview', href: 'senior.html', description: 'Academic life, pastoral care and results for ages 11 to 16.' },
-      { label: 'Why Bancroft’s Senior', href: 'senior-why.html', description: 'What makes the Senior School distinctive.' },
-      { label: 'GCSE Results', href: 'senior-academic-results.html', description: 'GCSE outcomes and how pupils are stretched and supported.' },
-      { label: 'Curriculum', href: 'senior-curriculum.html', description: 'Subjects studied from Year 7 through to GCSE.' },
-      { label: 'Sport & Arts', href: 'senior-sport-arts.html', description: 'Fixtures and ensembles beyond the classroom.' },
-      { label: 'Co-Curriculum', href: 'senior-co-curriculum.html', description: '250+ clubs and societies, from debating to Duke of Edinburgh.' },
-      { label: 'Pastoral Care', href: 'senior-pastoral-care.html', description: 'How every pupil is known, supported and challenged.' },
+      { label: 'Why Bancroft’s', href: 'senior-why.html', description: 'What makes the Senior School distinctive.' },
+      { label: 'Senior School Life', href: 'senior-life.html', description: 'What a day in the Senior School looks and feels like.' },
+      { label: 'Academic Life', href: 'senior-academic-life.html', description: 'Subjects studied from Year 7 through to GCSE.' },
+      { label: 'Beyond the Classroom', href: 'senior-beyond-the-classroom.html', description: 'Sport, music, drama and 250+ clubs and societies.' },
+      { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html', description: 'The House system and how every pupil is known and supported.' },
+      { label: 'Learning Support', href: 'learning-support.html', description: 'How pupils with additional needs are identified and supported.' },
+      { label: 'Results & Destinations', href: 'results-destinations.html', description: 'GCSE outcomes and where pupils go on to next.' },
     ],
   },
   {
@@ -132,12 +119,13 @@ export const primaryNav: NavItem[] = [
     children: [
       { label: '16+ Sixth Form overview', href: 'sixth-form.html', description: 'The next step, for pupils joining or staying on at 16.' },
       { label: 'Why Bancroft’s Sixth Form', href: 'sixth-form-why.html', description: 'What makes the Sixth Form distinctive.' },
-      { label: 'A Level Results', href: 'sixth-form-examination-results.html', description: 'A Level outcomes and value added.' },
       { label: 'Sixth Form Life', href: 'sixth-form-life.html', description: 'For pupils: what your days will actually be like.' },
-      { label: 'Curriculum & Subjects', href: 'sixth-form-curriculum-subjects.html', description: 'A Level subjects and how choices are guided.' },
-      { label: 'Co-Curriculum', href: 'sixth-form-co-curriculum.html', description: 'Where Sixth Formers lead clubs and societies, not just attend them.' },
-      { label: 'Leavers’ Destinations', href: 'sixth-form-leavers-destinations.html', description: 'Where recent leavers have gone on to study and work.' },
-      { label: 'Staying On', href: 'sixth-form-staying-on.html', description: 'Moving from Year 11 into the Sixth Form at Bancroft’s.' },
+      { label: 'Academic Life', href: 'sixth-form-academic-life.html', description: 'A Level subjects and how choices are guided.' },
+      { label: 'Beyond the Classroom', href: 'sixth-form-beyond-the-classroom.html', description: 'Sport, music, drama and where Sixth Formers lead, not just attend.' },
+      { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html', description: 'The House system and how every pupil is known and supported.' },
+      { label: 'Learning Support', href: 'learning-support.html', description: 'How pupils with additional needs are identified and supported.' },
+      { label: 'Results & Destinations', href: 'results-destinations.html', description: 'A Level outcomes and where recent leavers have gone on to.' },
+      { label: 'Preparing for Life Beyond Bancroft’s', href: 'sixth-form-preparing-for-life.html', description: 'Careers guidance, futures and alumni stories.' },
     ],
   },
   {
@@ -146,9 +134,8 @@ export const primaryNav: NavItem[] = [
       { label: 'School Life overview', href: 'school-life.html', description: 'Day-to-day life at Bancroft’s, for current families.' },
       { label: 'Our Community', href: 'school-life-community.html', description: 'Parents, alumni and the wider Bancroft’s network.' },
       { label: 'Term Dates', href: 'term-dates.html', description: 'Term starts, half terms and holidays for the year.' },
-      { label: 'Events Calendar', href: 'calendar.html', description: 'Events, Open Mornings and fixtures, month by month.' },
       { label: 'Weekly Menu', href: 'weekly-menu.html', description: 'What’s on the menu in the dining hall this week.' },
-      { label: 'School Bus Service', href: 'school-bus-service.html', description: 'Routes, timings and how to book a seat.' },
+      { label: 'Getting to Bancroft’s', href: 'getting-to-bancrofts.html', description: 'The school bus service, plus TfL and journey planning links.' },
       { label: 'Uniform', href: 'uniform.html', description: 'What to buy, where from, and second-hand options.' },
     ],
   },
@@ -159,19 +146,38 @@ export const primaryNav: NavItem[] = [
       { label: 'About overview', href: 'about.html', description: 'Who we are, our history and how the school is run.' },
       { label: 'Welcome from the Head', href: 'about-welcome.html', description: 'An introduction to Bancroft’s from the Head.' },
       { label: 'What We Stand For', href: 'about-what-we-stand-for.html', description: 'Our values and what they mean day to day.' },
-      { label: 'Rankings & Recognition', href: 'about-rankings-recognition.html', description: 'League tables, inspection reports and awards.' },
-      { label: 'Our History & Archives', href: 'about-history-archives.html', description: 'Bancroft’s story, from foundation to today.' },
-      { label: 'Governance & Leadership', href: 'about-governance-leadership.html', description: 'Our Board of Governors and Senior Leadership Team.' },
+      { label: 'Awards and Recognition', href: 'about-awards-recognition.html', description: 'League tables, inspection reports and awards.' },
+      { label: 'Our History', href: 'about-history.html', description: 'Bancroft’s story, from foundation to today.' },
+      { label: 'Leadership & Governance', href: 'about-leadership-governance.html', description: 'Our Board of Governors and Senior Leadership Team.' },
+      { label: 'Our Family of Schools', href: 'about-family-of-schools.html', description: 'Bancroft’s and its two partner schools, under one foundation.' },
+      { label: 'Results & Destinations', href: 'results-destinations.html', description: 'GCSE, A Level and leavers’ destinations in one place.' },
+    ],
+    // Sitemap-tree order only (client request) - see the field's own doc above for why this
+    // can't just be a `children` reorder: Pastoral Care & Houses and Learning Support are tree-
+    // parented here (whole-school pages) but are real nav children of Prep/Senior/Sixth Form, not
+    // of About, so they need their own explicit slot in this branch's display order.
+    sitemapChildren: [
+      'about-welcome.html',
+      'about-what-we-stand-for.html',
+      'about-history.html',
+      'about-leadership-governance.html',
+      'about-family-of-schools.html',
+      'pastoral-care-houses.html',
+      'learning-support.html',
+      'results-destinations.html',
+      'about-awards-recognition.html',
     ],
   },
 ]
 
 // ---------------------------------------------------------------------------
-// Footer columns — three real themes (footer.ts's layout is fixed at three link columns plus the
-// brand column). Family of Schools, Old Bancroftians and Foundation are each a separate
-// organisation with its own site, so they stay footer-only rather than earning primary nav
-// weight or a built page in this pass (confirmed in the brief). Portals are external
-// staff/parent/pupil systems, also footer-only.
+// Footer columns — two themes (footer.ts's own layout can take any number of columns; this pass
+// drops to two, down from three). Old Bancroftians is deliberately not here any more (it's a
+// child page of Our Community instead, reached from School Life - client request). Portals used
+// to be a third column of external parent/pupil/staff systems; those are now real internal pages
+// reached from the header's quick links instead (see headerUtilityLinks), not duplicated here.
+// Our Family of Schools and Foundation are each a built internal page now too (see
+// about-family-of-schools / foundation in pages below), not an external link.
 // ---------------------------------------------------------------------------
 
 export const footerColumns = [
@@ -184,16 +190,8 @@ export const footerColumns = [
   },
   {
     heading: "Bancroft's Family", links: [
-      { label: 'Family of Schools', href: '#' },
-      { label: 'Old Bancroftians', href: '#' },
-      { label: 'Foundation', href: '#' },
-    ],
-  },
-  {
-    heading: 'Portals', links: [
-      { label: 'Parent Portal', href: '#' },
-      { label: 'Pupil Portal', href: '#' },
-      { label: 'Staff Portal', href: '#' },
+      { label: 'Our Family of Schools', href: 'about-family-of-schools.html' },
+      { label: 'Foundation', href: 'foundation.html' },
     ],
   },
 ]
@@ -288,14 +286,14 @@ export const pages: Record<string, Page> = {
       {
         component: 'wf-text-media', props: {
           heading: 'An academic education that opens doors', body: ['85% of our leavers go on to top-25% universities. Every Sixth Former studies maths, not because it’s compulsory, but because that’s what Bancroft’s produces.'],
-          side: 'left', ctaLabel: 'Explore our academic results', ctaHref: 'senior-academic-results.html', ctaId: 'cta-home-academic-promo', mediaLabel: 'Pupils reviewing GCSE results',
+          side: 'left', ctaLabel: 'Explore our academic results', ctaHref: 'results-destinations.html', ctaId: 'cta-home-academic-promo', mediaLabel: 'Pupils reviewing GCSE results',
         },
       },
       {
         component: 'wf-logos', props: {
           heading: 'Recognised for our pastoral care and teaching',
           names: ['Independent Schools of the Year Finalist 2025', 'Pastoral Care Award Winner 2025', 'Innovation in Education Winner 2025', 'ISI Inspection 2025', 'The Drapers’ Company'],
-          ctaLabel: 'See our rankings and recognition', ctaHref: 'about-rankings-recognition.html',
+          ctaLabel: 'See our awards and recognition', ctaHref: 'about-awards-recognition.html',
         },
       },
       {
@@ -335,9 +333,9 @@ export const pages: Record<string, Page> = {
         component: 'wf-cards', props: {
           heading: 'Find your journey', cols: 4,
           items: [
-            { href: 'admissions-7plus-journey.html', heading: 'Your 7+ Journey', description: 'Joining the Prep years.', imageLabel: 'Prep pupils arriving at school', linkText: 'Start your 7+ journey' },
-            { href: 'admissions-11plus-journey.html', heading: 'Your 11+ Journey', description: 'Joining the Senior School.', imageLabel: 'Senior pupils arriving at school', linkText: 'Start your 11+ journey' },
-            { href: 'admissions-16plus-journey.html', heading: 'Your 16+ Journey', description: 'Joining or staying on for Sixth Form.', imageLabel: 'Sixth Form pupils arriving at school', linkText: 'Start your 16+ journey' },
+            { href: 'admissions-7plus-journey.html', heading: 'Joining at 7+', description: 'Joining the Prep years.', imageLabel: 'Prep pupils arriving at school', linkText: 'Start your 7+ journey' },
+            { href: 'admissions-11plus-journey.html', heading: 'Joining at 11+', description: 'Joining the Senior School.', imageLabel: 'Senior pupils arriving at school', linkText: 'Start your 11+ journey' },
+            { href: 'admissions-16plus-journey.html', heading: 'Joining at 16+', description: 'Joining or staying on for Sixth Form.', imageLabel: 'Sixth Form pupils arriving at school', linkText: 'Start your 16+ journey' },
             { href: 'admissions-occasional-places.html', heading: 'Occasional Places', description: 'Joining in another year group.', imageLabel: 'A new pupil being shown around the school', linkText: 'About occasional places' },
           ],
         },
@@ -347,8 +345,9 @@ export const pages: Record<string, Page> = {
           heading: 'Practical information', cols: 4,
           items: [
             { href: 'fees.html', heading: 'Fees', description: 'Termly fees for Prep and Senior School.' },
-            { href: 'scholarships-bursaries.html', heading: 'Scholarships & Bursaries', description: 'Awards and financial support.' },
-            { href: 'admissions-11plus-past-papers.html', heading: '11+ Exam & Past Papers', description: 'What the assessment involves, with papers to practise.' },
+            { href: 'scholarships-awards.html', heading: 'Scholarships & Awards', description: 'Academic and music awards.' },
+            { href: 'bursaries.html', heading: 'Bursaries', description: 'Means-tested financial support.' },
+            { href: 'admissions-11plus-past-papers.html', heading: '11+ Assessments & Past Papers', description: 'What the assessment involves, with papers to practise.' },
             { href: 'admissions-faqs.html', heading: 'Frequently Asked Questions', description: 'Quick answers to common questions.' },
           ],
         },
@@ -359,6 +358,12 @@ export const pages: Record<string, Page> = {
           body: ['Registering is the first formal step in applying for a place. Most families visit first, so you can picture your child here before you register.'],
           ctaLabel: 'Book a Visit', ctaHref: 'book-a-visit.html', ctaId: 'cta-admissions-book',
           secondaryLabel: 'Register Online', secondaryHref: 'register.html', secondaryId: 'cta-admissions-register',
+        },
+      },
+      {
+        component: 'wf-promo', props: {
+          heading: 'A place opened up outside the usual entry points?', body: 'Occasional places do become available, usually when families relocate. See where and how to express interest.',
+          ctaLabel: 'About occasional places', ctaHref: 'admissions-occasional-places.html', ctaId: 'cta-admissions-occasional-promo', mediaLabel: 'A new pupil being shown around the school',
         },
       },
       faqs([
@@ -377,8 +382,9 @@ export const pages: Record<string, Page> = {
       component: 'wf-standard-hero',
       props: {
         ctaLabel: 'Book a Visit', ctaHref: 'book-a-visit.html', ctaId: 'cta-7plus-journey-hero-book',
-        eyebrow: 'Admissions - 7+', heading: 'Your 7+ Journey', body: 'A step-by-step guide to joining Bancroft’s Prep, from registration to your child’s first day.',
-        mediaLabel: 'Prep pupils on their first day', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Your 7+ Journey', href: 'admissions-7plus-journey.html' }),
+        secondaryLabel: 'Register Online', secondaryHref: 'register-7plus.html', secondaryId: 'cta-7plus-journey-hero-register',
+        eyebrow: 'Admissions - 7+', heading: 'Joining at 7+', body: 'A step-by-step guide to joining Bancroft’s Prep, from registration to your child’s first day.',
+        mediaLabel: 'Prep pupils on their first day', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Joining at 7+', href: 'admissions-7plus-journey.html' }),
       },
     },
     blocks: [
@@ -390,15 +396,29 @@ export const pages: Record<string, Page> = {
             { heading: 'Visit', description: 'Book an Open Morning or a personal tour of the Prep.' },
             { heading: 'Register', description: 'Submit a registration form and pay the registration fee.' },
             { heading: 'Assess and offer', description: 'A taster morning, followed by an offer decision.' },
+            { heading: 'Start', description: 'Joining in September. See Starting at Bancroft’s below.' },
           ],
         },
       },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Practise at home', cols: 2,
+          items: [
+            { href: '#', heading: '7+ Past Paper', description: 'The full paper, with answers. PDF download.', linkText: 'Download (PDF)' },
+            { href: 'admissions-starting.html', heading: 'Starting at Bancroft’s', description: 'From accepting a place to your child’s first day.', linkText: 'See Starting at Bancroft’s' },
+          ],
+        },
+      },
+      { component: 'wf-quote', props: { items: [
+        { quote: 'Placeholder for a quote from a Prep parent about choosing Bancroft’s and settling in.', attribution: 'Prep parent' },
+      ] } },
       faqs([
         { heading: 'What does the 7+ assessment involve?', body: 'A short taster morning and an informal assessment, not a formal exam. It is deliberately gentle.' },
         { heading: 'When should we register for 7+?', body: 'Most families register in the autumn term for entry the following September.', ctaLabel: 'Register Online', ctaHref: 'register-7plus.html' },
         { heading: 'Does my child need to prepare?', body: 'No formal preparation is expected. We are looking for curious, kind children, not rehearsed answers.' },
-        { heading: 'Are bursaries available at 7+?', body: 'Our bursary programme applies at 11+ and 16+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'Are bursaries available at 7+?', body: 'Our bursary programme applies at 11+ and 16+.', ctaLabel: 'See Bursaries', ctaHref: 'bursaries.html' },
         { heading: 'What happens when Prep pupils reach 11?', body: 'Prep pupils have a guaranteed transfer to the Senior School, so the Prep years are not narrowed down to an 11+ entrance test.' },
+        { heading: 'How do we get to the Prep?', body: 'See Getting to Bancroft’s for the school bus service, plus TfL and journey planning links.', ctaLabel: 'Getting to Bancroft’s', ctaHref: 'getting-to-bancrofts.html' },
       ], '7+ questions'),
       bookVisitPromo('cta-7plus-journey-promo'),
     ],
@@ -409,8 +429,9 @@ export const pages: Record<string, Page> = {
       component: 'wf-standard-hero',
       props: {
         ctaLabel: 'Book a Visit', ctaHref: 'book-a-visit.html', ctaId: 'cta-11plus-journey-hero-book',
-        eyebrow: 'Admissions - 11+', heading: 'Your 11+ Journey', body: 'How entry to the Senior School works, from registration through to results day.',
-        mediaLabel: 'Pupils sitting entrance assessments', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Your 11+ Journey', href: 'admissions-11plus-journey.html' }),
+        secondaryLabel: 'Register Online', secondaryHref: 'register-11plus.html', secondaryId: 'cta-11plus-journey-hero-register',
+        eyebrow: 'Admissions - 11+', heading: 'Joining at 11+', body: 'How entry to the Senior School works, from registration through to results day.',
+        mediaLabel: 'Pupils sitting entrance assessments', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Joining at 11+', href: 'admissions-11plus-journey.html' }),
       },
     },
     blocks: [
@@ -428,18 +449,23 @@ export const pages: Record<string, Page> = {
         },
       },
       { component: 'wf-cards', props: { heading: 'You may also want', cols: 4, items: [
-        { href: 'admissions-11plus-past-papers.html', id: 'cta-11plus-journey-card-papers', heading: '11+ Exam & Past Papers', description: 'What the assessment involves, with papers to practise.' },
-        { href: 'senior-academic-results.html', heading: 'GCSE Results', description: 'See recent GCSE outcomes.' },
-        { href: 'scholarships-bursaries.html', heading: 'Scholarships & Bursaries', description: 'Academic and music awards, and bursary support.' },
-        { href: 'admissions-11plus-starting.html', heading: 'Starting at Bancroft’s', description: 'From accepting a place to the first day of Year 7.' },
+        { href: 'admissions-11plus-past-papers.html', id: 'cta-11plus-journey-card-papers', heading: '11+ Assessments & Past Papers', description: 'What the assessment involves, with papers to practise.' },
+        { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'See recent GCSE outcomes.' },
+        { href: 'scholarships-awards.html', heading: 'Scholarships & Awards', description: 'Academic and music awards.' },
+        { href: 'bursaries.html', heading: 'Bursaries', description: 'Means-tested financial support.' },
+        { href: 'admissions-starting.html', heading: 'Starting at Bancroft’s', description: 'From accepting a place to the first day of Year 7.' },
+        { href: 'getting-to-bancrofts.html', heading: 'Getting to Bancroft’s', description: 'The school bus service, plus TfL and journey planning links.' },
+      ] } },
+      { component: 'wf-quote', props: { items: [
+        { quote: 'Placeholder for a quote from a Year 7 parent about the 11+ process and settling in.', attribution: 'Year 7 parent' },
       ] } },
       faqs([
-        { heading: 'What does the 11+ assessment involve?', body: 'Written assessments in English and Maths, alongside an interview, held in January.', ctaLabel: 'See the 11+ exam and past papers', ctaHref: 'admissions-11plus-past-papers.html' },
+        { heading: 'What does the 11+ assessment involve?', body: 'Written assessments in English and Maths, alongside an interview, held in January.', ctaLabel: 'See 11+ Assessments & Past Papers', ctaHref: 'admissions-11plus-past-papers.html' },
         { heading: 'When is the registration deadline?', body: 'Registration opens in the spring of Year 5 and typically closes in the autumn of Year 6.', ctaLabel: 'Register Online', ctaHref: 'register-11plus.html' },
         { heading: 'When will we hear the outcome?', body: 'Offers are made in February, with a set acceptance deadline.' },
         { heading: 'Can we see past papers?', body: 'Yes. Past Maths and English papers are available to download.', ctaLabel: 'See past papers', ctaHref: 'admissions-11plus-past-papers.html' },
         { heading: 'Can my child apply to Bancroft’s and a grammar school?', body: 'Yes. Many families do both, and the two processes run alongside each other in Year 6.', ctaLabel: 'See all frequently asked questions', ctaHref: 'admissions-faqs.html' },
-        { heading: 'Are scholarships and bursaries available at 11+?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 11+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'Are scholarships and bursaries available at 11+?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 11+.', ctaLabel: 'See Scholarships & Awards', ctaHref: 'scholarships-awards.html' },
       ], '11+ questions'),
       bookVisitPromo('cta-11plus-journey-promo'),
     ],
@@ -450,68 +476,161 @@ export const pages: Record<string, Page> = {
       component: 'wf-standard-hero',
       props: {
         ctaLabel: 'Book a Visit', ctaHref: 'book-a-visit.html', ctaId: 'cta-16plus-journey-hero-book',
-        eyebrow: 'Admissions - 16+', heading: 'Your 16+ Journey', body: 'How to join our Sixth Form, whether you’re already at Bancroft’s or joining us for the first time.',
-        mediaLabel: 'Sixth Form pupils in a seminar', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Your 16+ Journey', href: 'admissions-16plus-journey.html' }),
+        secondaryLabel: 'Register Online', secondaryHref: 'register-16plus.html', secondaryId: 'cta-16plus-journey-hero-register',
+        eyebrow: 'Admissions - 16+', heading: 'Joining at 16+', body: 'How to join our Sixth Form, whether you’re already at Bancroft’s or joining us for the first time.',
+        mediaLabel: 'Sixth Form pupils in a seminar', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Joining at 16+', href: 'admissions-16plus-journey.html' }),
       },
     },
     blocks: [
-      {
-        component: 'wf-text-media', props: {
-          heading: 'Already at Bancroft’s?', body: ['How current Year 11 pupils move into Sixth Form.'],
-          side: 'left', mediaLabel: 'Year 11 pupil moving into Sixth Form',
-          ctaLabel: 'Staying On', ctaHref: 'sixth-form-staying-on.html',
-        },
-      },
+      // Replaces the old link out to a standalone "Staying On" page (now deleted) - current
+      // Year 11 pupils progress automatically, so this is a short section here rather than a
+      // page of its own, and it's the one thing on this page aimed at current families, not
+      // prospective ones.
+      { component: 'wf-text', props: { heading: 'Already at Bancroft’s? Moving up from Year 11', body: ['Progression from Year 11 into the Sixth Form is automatic for pupils meeting the normal academic requirements - there is no separate entrance assessment for current pupils.', 'Subject choices are made in the spring term of Year 11, guided by a Sixth Form options evening and one-to-one discussions with tutors. A levels are confirmed once GCSE results are known in August.'] } },
       { component: 'wf-text', props: { heading: 'New to Bancroft’s?', body: ['External candidates apply based on predicted GCSE grades, an interview and, for some subjects, a short written task.'] } },
       {
         component: 'wf-timeline', props: {
-          heading: 'Key steps',
+          heading: 'Key steps for new applicants',
           items: [
             { heading: 'Visit', description: 'Book an Open Morning or a personal tour of the Sixth Form.' },
             { heading: 'Register', description: 'Submit a registration form ahead of the deadline.' },
             { heading: 'Interview and assessment', description: 'An interview and, for some subjects, a short written task.' },
             { heading: 'Offer', description: 'Offers are usually made by the end of the spring term, conditional on GCSE results in August.' },
+            { heading: 'Start', description: 'Joining in September. See Starting at Bancroft’s below.' },
           ],
         },
       },
-      { component: 'wf-cards', props: { heading: 'Related pages', cols: 2, items: [
-        { href: 'sixth-form-curriculum-subjects.html', heading: 'Curriculum & Subjects', description: 'A Level subjects on offer.' },
-        { href: 'sixth-form-leavers-destinations.html', heading: 'Leavers’ Destinations', description: 'Where recent leavers have gone on to.' },
+      { component: 'wf-cards', props: { heading: 'Related pages', cols: 4, items: [
+        { href: 'sixth-form-academic-life.html', heading: 'Academic Life', description: 'A Level subjects on offer.' },
+        { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'Where recent leavers have gone on to.' },
+        { href: 'admissions-starting.html', heading: 'Starting at Bancroft’s', description: 'From accepting a place to your first day.' },
+        { href: 'getting-to-bancrofts.html', heading: 'Getting to Bancroft’s', description: 'The school bus service, plus TfL and journey planning links.' },
+      ] } },
+      { component: 'wf-quote', props: { items: [
+        { quote: 'Placeholder for a quote from a Sixth Form parent or pupil about joining at 16+.', attribution: 'Sixth Form parent' },
       ] } },
       faqs([
         { heading: 'Can I join the Sixth Form from another school?', body: 'Yes. External candidates apply based on predicted GCSE grades, an interview and, for some subjects, a short written task.' },
         { heading: 'What GCSE grades do I need?', body: 'Offers are conditional on GCSE results in August. (Wireframe note: entry requirements by subject to be supplied.)' },
         { heading: 'When are offers made?', body: 'Usually by the end of the spring term.' },
         { heading: 'Is there a registration fee?', body: 'No. There is no fee to register interest in the Sixth Form.', ctaLabel: 'Register Online', ctaHref: 'register-16plus.html' },
-        { heading: 'Are scholarships and bursaries available at 16+?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 16+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'Are scholarships and bursaries available at 16+?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 16+.', ctaLabel: 'See Scholarships & Awards', ctaHref: 'scholarships-awards.html' },
+        { heading: 'Do current Year 11 pupils need to reapply?', body: 'No. Progression into the Sixth Form is automatic for pupils meeting the normal academic requirements, confirmed once GCSE results are known.' },
       ], '16+ questions'),
       { component: 'wf-promo', props: { heading: 'Ready to apply?', body: 'Come to a Sixth Form Open Evening to see Bancroft’s for yourself, or register your interest and our admissions team will be in touch with next steps.', ctaLabel: 'Book a Visit', ctaHref: 'book-a-visit.html', ctaId: 'cta-16plus-journey-promo', secondaryLabel: 'Register Online', secondaryHref: 'register-16plus.html', secondaryId: 'cta-16plus-journey-promo-register', mediaLabel: 'Sixth Form pupil completing an application' } },
     ],
   },
 
+  // Renamed from "Book a Visit" to "Visit Us" (client request) - the header CTA keeps the
+  // "Book a Visit" label throughout, since that's the established persistent action; only this
+  // page's own heading changes. Href stays book-a-visit.html so the header CTA and every
+  // existing link to it keep working unchanged.
   'book-a-visit': {
     hero: {
       component: 'wf-page-header',
       props: {
-        heading: 'Book a Visit', subtitle: 'The best way to understand Bancroft’s is to come and see it for yourself.',
-        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Book a Visit', href: 'book-a-visit.html' }),
+        heading: 'Visit Us', subtitle: 'The best way to understand Bancroft’s is to come and see it for yourself.',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Visit Us', href: 'book-a-visit.html' }),
       },
     },
     blocks: [
-      { component: 'wf-text', props: { body: ['We run Open Mornings, Head’s Tours and Open Evenings throughout the year, alongside private tours for families who’d prefer a quieter visit. Choose an event and a date below to book your place.'] } },
+      // A listing, not a form (client request): the general combined form previously here
+      // duplicated the three event pages below with no real difference, muddying the "fast and
+      // clear" booking journey this page is meant to be. Each event keeps its own form instead.
+      { component: 'wf-text', props: { body: ['We run Open Mornings and Open Evenings throughout the year. Choose your event below to book your place.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Book your event', cols: 3,
+          items: [
+            { href: 'visit-7plus-open-morning.html', id: 'cta-visit-us-7plus', heading: '7+ Open Morning', description: 'Thursday 17 September 2026, for prospective Prep families.', linkText: 'Book this event' },
+            { href: 'visit-11plus-open-morning.html', id: 'cta-visit-us-11plus', heading: '11+ Open Morning', description: 'Thursday 24 September 2026, for prospective Senior families.', linkText: 'Book this event' },
+            { href: 'visit-sixth-form-open-evening.html', id: 'cta-visit-us-sixthform', heading: 'Sixth Form Open Evening', description: 'Thursday 8 October 2026, for prospective Sixth Form families.', linkText: 'Book this event' },
+          ],
+        },
+      },
+      { component: 'wf-quote', props: { items: [
+        { quote: 'Placeholder for a quote from a parent about what stood out on their visit.', attribution: 'Year 7 parent' },
+      ] } },
+      { component: 'wf-promo', props: { heading: 'Looking for something else?', body: 'A Head’s Tour, a private tour, or a different date - get in touch with our admissions team directly.', ctaLabel: 'Contact admissions', ctaHref: 'contact.html', ctaId: 'cta-visit-us-contact', mediaLabel: 'Parent speaking with admissions' } },
+    ],
+  },
+
+  // Three event booking pages, one shared template (Visit Us brief: this journey must be fast
+  // and clear - see PROTOTYPE.md). Each keeps the same shape (one short intro, one form) so a
+  // family booking an event never has to re-orient: what's different is the event itself, not
+  // the page around it.
+  'visit-7plus-open-morning': {
+    hero: {
+      component: 'wf-page-header',
+      props: {
+        heading: '7+ Open Morning', subtitle: 'Thursday 17 September 2026, 9.30am - 11.30am, for prospective Prep families.',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Visit Us', href: 'book-a-visit.html' }, { label: '7+ Open Morning', href: 'visit-7plus-open-morning.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['A guided tour of the Prep, a chance to meet the Head of Prep and current staff, and time to see a normal morning of lessons in progress. Suitable for families considering entry at 7+ (Year 3).'] } },
       {
         component: 'wf-form', props: {
-          heading: 'Book your visit', submitLabel: 'Book a Visit', submitId: 'submit-book-a-visit',
-          successHeading: 'You’re booked', successBody: 'We’ve emailed your confirmation with the event details.',
+          heading: 'Book your place', submitLabel: 'Book this event', submitId: 'submit-visit-7plus-open-morning',
+          successHeading: 'You’re booked', successBody: 'We’ve emailed your confirmation with arrival details.',
           fields: [
             { name: 'parentName', label: 'Parent / guardian name', type: 'text', required: true },
             { name: 'email', label: 'Email address', type: 'email', required: true },
             { name: 'phone', label: 'Phone number', type: 'tel', required: true },
-            { name: 'entryPoint', label: 'Entry point', type: 'select', required: true, options: ['7+ Prep', '11+ Senior', '16+ Sixth Form', 'Occasional place'] },
-            { name: 'event', label: 'Event', type: 'select', required: true, options: ['Open Morning', 'Head’s Tour', 'Open Evening', 'Private tour'] },
-            { name: 'eventDate', label: 'Date', type: 'select', required: true, options: ['Thursday 17 September 2026', 'Thursday 24 September 2026', 'Thursday 8 October 2026', 'Another date (private tour)'] },
             { name: 'childYear', label: 'Child’s current year group', type: 'text' },
-            { name: 'message', label: 'Anything else we should know?', type: 'textarea' },
+            { name: 'guests', label: 'Number of guests attending', type: 'text' },
+          ],
+        },
+      },
+    ],
+  },
+
+  'visit-11plus-open-morning': {
+    hero: {
+      component: 'wf-page-header',
+      props: {
+        heading: '11+ Open Morning', subtitle: 'Thursday 24 September 2026, 9.30am - 11.30am, for prospective Senior families.',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Visit Us', href: 'book-a-visit.html' }, { label: '11+ Open Morning', href: 'visit-11plus-open-morning.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['A guided tour of the Senior School, a chance to meet senior staff and current pupils, and time to see a normal morning of lessons in progress. Suitable for families considering entry at 11+ (Year 7).'] } },
+      {
+        component: 'wf-form', props: {
+          heading: 'Book your place', submitLabel: 'Book this event', submitId: 'submit-visit-11plus-open-morning',
+          successHeading: 'You’re booked', successBody: 'We’ve emailed your confirmation with arrival details.',
+          fields: [
+            { name: 'parentName', label: 'Parent / guardian name', type: 'text', required: true },
+            { name: 'email', label: 'Email address', type: 'email', required: true },
+            { name: 'phone', label: 'Phone number', type: 'tel', required: true },
+            { name: 'childYear', label: 'Child’s current year group', type: 'text' },
+            { name: 'guests', label: 'Number of guests attending', type: 'text' },
+          ],
+        },
+      },
+    ],
+  },
+
+  'visit-sixth-form-open-evening': {
+    hero: {
+      component: 'wf-page-header',
+      props: {
+        heading: 'Sixth Form Open Evening', subtitle: 'Thursday 8 October 2026, 6.00pm - 8.00pm, for prospective Sixth Form families.',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Visit Us', href: 'book-a-visit.html' }, { label: 'Sixth Form Open Evening', href: 'visit-sixth-form-open-evening.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['An evening introduction to the Sixth Form: subject stands staffed by teachers and current pupils, talks on the application process, and a chance to ask about A Level choices and life beyond Bancroft’s. Suitable for both external applicants and current Year 11 pupils.'] } },
+      {
+        component: 'wf-form', props: {
+          heading: 'Book your place', submitLabel: 'Book this event', submitId: 'submit-visit-sixth-form-open-evening',
+          successHeading: 'You’re booked', successBody: 'We’ve emailed your confirmation with arrival details.',
+          fields: [
+            { name: 'parentName', label: 'Parent / guardian name', type: 'text', required: true },
+            { name: 'email', label: 'Email address', type: 'email', required: true },
+            { name: 'phone', label: 'Phone number', type: 'tel', required: true },
+            { name: 'childYear', label: 'Child’s current year group', type: 'text' },
+            { name: 'guests', label: 'Number of guests attending', type: 'text' },
           ],
         },
       },
@@ -682,21 +801,75 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  // Functional payment page: kept out of the menu, and in the real build hidden from search
-  // (noindex). The live /depositpayment/ is currently indexable. Linked from Starting at Bancroft's.
-  'acceptance-deposit': {
+  // Three functional payment pages, one shared template, replacing the single "Acceptance
+  // Deposit" page (client request) - the amount and who pays it differs by case, so each gets
+  // its own URL rather than one form branching three ways. All kept out of the menu, and in the
+  // real build hidden from search engines (noindex). Payment provider to be confirmed.
+  'acceptance-deposit-fee': {
     hero: {
       component: 'wf-page-header',
       props: {
-        heading: 'Acceptance Deposit', subtitle: 'Secure your child’s place by paying the acceptance deposit.',
-        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Acceptance Deposit', href: 'acceptance-deposit.html' }),
+        heading: 'Acceptance Deposit: Fee', subtitle: 'Secure your child’s place by paying the standard acceptance deposit.',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Acceptance Deposit: Fee', href: 'acceptance-deposit-fee.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { body: ['Wireframe note: functional payment page, reached from offer emails and Starting at Bancroft’s. Not in the menu, and hidden from search engines in the real build. Payment provider to be confirmed.'] } },
       {
         component: 'wf-form', props: {
-          heading: 'Pay your deposit', submitLabel: 'Continue to payment', submitId: 'submit-deposit',
+          heading: 'Pay your deposit', submitLabel: 'Continue to payment', submitId: 'submit-deposit-fee',
+          successHeading: 'Deposit received', successBody: 'Thank you. We’ve emailed your receipt and confirmed your child’s place.',
+          fields: [
+            { name: 'childName', label: 'Child’s full name', type: 'text', required: true },
+            { name: 'entryPoint', label: 'Entry point', type: 'select', required: true, options: ['7+ Prep (Year 3)', '11+ Senior (Year 7)', '16+ Sixth Form (Year 12)', 'Occasional place'] },
+            { name: 'parentName', label: 'Parent / guardian name', type: 'text', required: true },
+            { name: 'email', label: 'Email address', type: 'email', required: true },
+          ],
+        },
+      },
+    ],
+  },
+
+  // Staff families pay a reduced or waived deposit under the staff fee remission scheme.
+  'acceptance-deposit-staff': {
+    hero: {
+      component: 'wf-page-header',
+      props: {
+        heading: 'Acceptance Deposit: Staff', subtitle: 'Secure your child’s place under the staff fee remission scheme.',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Acceptance Deposit: Staff', href: 'acceptance-deposit-staff.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Wireframe note: for staff families using the fee remission scheme. The deposit amount, if any, is to be confirmed with HR and the Bursar. Not in the menu, and hidden from search engines in the real build.'] } },
+      {
+        component: 'wf-form', props: {
+          heading: 'Confirm your place', submitLabel: 'Continue', submitId: 'submit-deposit-staff',
+          successHeading: 'Confirmed', successBody: 'Thank you. We’ve emailed your receipt and confirmed your child’s place.',
+          fields: [
+            { name: 'childName', label: 'Child’s full name', type: 'text', required: true },
+            { name: 'entryPoint', label: 'Entry point', type: 'select', required: true, options: ['7+ Prep (Year 3)', '11+ Senior (Year 7)', '16+ Sixth Form (Year 12)', 'Occasional place'] },
+            { name: 'staffName', label: 'Staff member’s name', type: 'text', required: true },
+            { name: 'email', label: 'Email address', type: 'email', required: true },
+          ],
+        },
+      },
+    ],
+  },
+
+  // Families with a means-tested bursary pay a deposit scaled to their bursary award, if any.
+  'acceptance-deposit-bursary': {
+    hero: {
+      component: 'wf-page-header',
+      props: {
+        heading: 'Acceptance Deposit: Bursary', subtitle: 'Secure your child’s place following a means-tested bursary award.',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Acceptance Deposit: Bursary', href: 'acceptance-deposit-bursary.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Wireframe note: for families whose place follows a means-tested bursary award. Whether a reduced deposit applies, scaled to the bursary percentage, is to be confirmed with the Bursar. Not in the menu, and hidden from search engines in the real build.'] } },
+      {
+        component: 'wf-form', props: {
+          heading: 'Pay your deposit', submitLabel: 'Continue to payment', submitId: 'submit-deposit-bursary',
           successHeading: 'Deposit received', successBody: 'Thank you. We’ve emailed your receipt and confirmed your child’s place.',
           fields: [
             { name: 'childName', label: 'Child’s full name', type: 'text', required: true },
@@ -752,36 +925,56 @@ export const pages: Record<string, Page> = {
       faqs([
         { heading: 'Are the fees shown inclusive of VAT?', body: 'Yes. The table shows the net fee and the fee payable each term including VAT.' },
         { heading: 'What do the fees include?', body: 'Tuition is included. See "What your fees include" above for what is covered and what is charged separately.' },
-        { heading: 'Is it worth the fees now VAT has been added?', body: 'The fairest way to judge is to look at what the fees cover, the support available and what pupils go on to achieve. (Wireframe note: answer to be agreed with the school.)', ctaLabel: 'See GCSE Results', ctaHref: 'senior-academic-results.html' },
+        { heading: 'Is it worth the fees now VAT has been added?', body: 'The fairest way to judge is to look at what the fees cover, the support available and what pupils go on to achieve. (Wireframe note: answer to be agreed with the school.)', ctaLabel: 'See Results & Destinations', ctaHref: 'results-destinations.html' },
         { heading: 'How does Bancroft’s compare with a grammar school?', body: 'Many families consider both. We have set out the main differences in our admissions questions.', ctaLabel: 'See all frequently asked questions', ctaHref: 'admissions-faqs.html' },
         { heading: 'When are fees due?', body: 'Fees are invoiced at the start of each term and due within 14 days, unless you’ve arranged a termly payment plan with our Finance team.' },
-        { heading: 'Is help with fees available?', body: 'Yes. Support with fees is available through our bursary programme at 11+ and 16+, alongside our academic and music scholarships.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'Is help with fees available?', body: 'Yes. Support with fees is available through our bursary programme at 11+ and 16+, alongside our academic and music scholarships.', ctaLabel: 'See Bursaries', ctaHref: 'bursaries.html' },
         { heading: 'Is there a registration fee?', body: 'A non-refundable registration fee applies at 7+ and 11+. There is no fee to register interest in the Sixth Form.' },
       ], 'Fees, explained'),
-      { component: 'wf-promo', props: { heading: 'Financial support available', body: 'Academic and music scholarships, plus a bursary programme at 11+ and 16+, are available to eligible families.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html', ctaId: 'cta-fees-promo', mediaLabel: 'Pupil receiving a scholarship award' } },
+      { component: 'wf-promo', props: { heading: 'Financial support available', body: 'Academic and music scholarships, plus a bursary programme at 11+ and 16+, are available to eligible families.', ctaLabel: 'See Scholarships & Awards', ctaHref: 'scholarships-awards.html', ctaId: 'cta-fees-promo', mediaLabel: 'Pupil receiving a scholarship award' } },
     ],
   },
 
-  'scholarships-bursaries': {
+  // Split from the former combined "Scholarships & Bursaries" page (client request) - awards
+  // are merit-based and assessed, bursaries are means-tested and confidential, different enough
+  // processes that a family only interested in one no longer has to read past the other.
+  'scholarships-awards': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'Admissions', heading: 'Scholarships & Bursaries', body: 'Recognising exceptional ability, and making a Bancroft’s education possible regardless of financial circumstance.',
-        mediaLabel: 'Pupil performing in a music award audition', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Scholarships & Bursaries', href: 'scholarships-bursaries.html' }),
+        eyebrow: 'Admissions', heading: 'Scholarships & Awards', body: 'Recognising academic and musical promise at 11+ and 16+.',
+        mediaLabel: 'Pupil performing in a music award audition', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Scholarships & Awards', href: 'scholarships-awards.html' }),
       },
     },
     blocks: [
       { component: 'wf-text-media', props: { heading: 'Academic Scholarships', side: 'left', mediaLabel: 'Pupil sitting a scholarship assessment', body: ['Awarded at 11+ and 16+ on the strength of assessment and interview performance, academic scholarships offer a fee reduction of up to 10 to 15 percent and recognise pupils of exceptional academic promise.'] } },
-      { component: 'wf-text-media', props: { heading: 'Music Awards', side: 'right', mediaLabel: 'Pupil playing violin', links: [{ label: 'Music at Bancroft’s', href: 'senior-arts-music.html' }], body: ['Music Awards are open to talented instrumentalists and singers at 11+ and 16+. Award holders receive free individual music lessons for the duration of their time at Bancroft’s, alongside opportunities to lead ensembles.'] } },
-      { component: 'wf-text-media', props: { heading: 'Bursaries', side: 'left', mediaLabel: 'Family meeting with the bursaries team', body: ['Means-tested bursaries can cover up to 100 percent of fees for families who would otherwise be unable to consider Bancroft’s. Applications are assessed confidentially, alongside your child’s registration.'] } },
+      { component: 'wf-text-media', props: { heading: 'Music Awards', side: 'right', mediaLabel: 'Pupil playing violin', links: [{ label: 'Music at Bancroft’s', href: 'senior-music.html' }], body: ['Music Awards are open to talented instrumentalists and singers at 11+ and 16+. Award holders receive free individual music lessons for the duration of their time at Bancroft’s, alongside opportunities to lead ensembles.'] } },
+      faqs([
+        { heading: 'How are academic scholarships awarded?', body: 'On the strength of assessment and interview performance at 11+ and 16+. They offer a fee reduction of up to 10 to 15 percent.' },
+        { heading: 'What does a Music Award include?', body: 'Free individual music lessons for the duration of your child’s time at Bancroft’s, alongside opportunities to lead ensembles.' },
+        { heading: 'Can I apply for a scholarship and a bursary?', body: 'Yes. The two are assessed separately and are not mutually exclusive.', ctaLabel: 'See Bursaries', ctaHref: 'bursaries.html' },
+      ], 'Scholarships and awards questions'),
+      bookVisitPromo('cta-scholarships-promo', 'Talk to our admissions team about scholarships and awards at an Open Morning or personal tour.'),
+    ],
+  },
+
+  bursaries: {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: 'Admissions', heading: 'Bursaries', body: 'Making a Bancroft’s education possible regardless of financial circumstance.',
+        mediaLabel: 'Family meeting with the bursaries team', breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Bursaries', href: 'bursaries.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { heading: 'Means-tested financial support', body: ['Means-tested bursaries can cover up to 100 percent of fees for families who would otherwise be unable to consider Bancroft’s. Applications are assessed confidentially, alongside your child’s registration.', 'Bursaries are available at 11+ and 16+.'] } },
       faqs([
         { heading: 'Who can apply for a bursary?', body: 'Bursaries are means-tested and intended for families who would otherwise be unable to consider Bancroft’s. They are available at 11+ and 16+.' },
         { heading: 'How much can a bursary cover?', body: 'Up to 100 percent of fees, depending on your family’s circumstances.' },
         { heading: 'How are bursary applications assessed?', body: 'Confidentially, alongside your child’s registration.', ctaLabel: 'Register Online', ctaHref: 'register.html' },
-        { heading: 'How are academic scholarships awarded?', body: 'On the strength of assessment and interview performance at 11+ and 16+. They offer a fee reduction of up to 10 to 15 percent.' },
-        { heading: 'What does a Music Award include?', body: 'Free individual music lessons for the duration of your child’s time at Bancroft’s, alongside opportunities to lead ensembles.' },
-      ], 'Scholarships and bursaries questions'),
-      bookVisitPromo('cta-scholarships-promo', 'Talk to our admissions team about scholarships and bursaries at an Open Morning or personal tour.'),
+        { heading: 'Can I apply for a bursary and a scholarship?', body: 'Yes. The two are assessed separately and are not mutually exclusive.', ctaLabel: 'See Scholarships & Awards', ctaHref: 'scholarships-awards.html' },
+      ], 'Bursaries questions'),
+      bookVisitPromo('cta-bursaries-promo', 'Talk to our admissions team about bursaries, confidentially, at an Open Morning or personal tour.'),
     ],
   },
 
@@ -791,9 +984,9 @@ export const pages: Record<string, Page> = {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'Admissions - 11+', heading: '11+ Entrance Exam & Past Papers', body: 'What the 11+ assessment at Bancroft’s involves, how to prepare, and past papers to practise with.',
+        eyebrow: 'Admissions - 11+', heading: '11+ Assessments & Past Papers', body: 'What the 11+ assessment at Bancroft’s involves, how to prepare, and past papers to practise with.',
         mediaLabel: 'Pupil working through a practice paper',
-        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Your 11+ Journey', href: 'admissions-11plus-journey.html' }, { label: '11+ Exam & Past Papers', href: 'admissions-11plus-past-papers.html' }),
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Joining at 11+', href: 'admissions-11plus-journey.html' }, { label: '11+ Assessments & Past Papers', href: 'admissions-11plus-past-papers.html' }),
       },
     },
     blocks: [
@@ -813,6 +1006,9 @@ export const pages: Record<string, Page> = {
           ],
         },
       },
+      // Wireframe placeholder only (see PROTOTYPE.md): a link, not working add-to-calendar
+      // functionality - which calendar format(s) to support is a build-stage decision.
+      { component: 'wf-button-row', props: { items: [{ label: 'Add key dates to calendar', href: '#' }] } },
       {
         component: 'wf-cards', props: {
           heading: 'Past papers: 2017', cols: 3,
@@ -839,7 +1035,7 @@ export const pages: Record<string, Page> = {
         component: 'wf-text-media', props: {
           heading: 'How to prepare', side: 'right', mediaLabel: 'Parent and child reading together',
           body: ['Past papers are most useful for getting familiar with the format and timing, not for memorising answers.', 'Wireframe note: practical guidance for parents and children to be written with the admissions team.'],
-          ctaLabel: 'See Your 11+ Journey', ctaHref: 'admissions-11plus-journey.html',
+          ctaLabel: 'See Joining at 11+', ctaHref: 'admissions-11plus-journey.html',
         },
       },
       faqs([
@@ -847,16 +1043,17 @@ export const pages: Record<string, Page> = {
         { heading: 'When does the 11+ assessment take place?', body: 'In January of Year 6, with offers made in February.' },
         { heading: 'Do the past papers come with answers?', body: 'Wireframe note: to confirm which papers have answers or mark schemes available.' },
         { heading: 'Does my child need a tutor?', body: 'Wireframe note: the school’s position on tutoring to be confirmed with the admissions team.' },
-        { heading: 'Are bursaries available at 11+?', body: 'Yes. Means-tested bursaries can cover up to 100 percent of fees.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'Are bursaries available at 11+?', body: 'Yes. Means-tested bursaries can cover up to 100 percent of fees.', ctaLabel: 'See Bursaries', ctaHref: 'bursaries.html' },
         { heading: 'How do we register?', body: 'Registration opens in the spring of Year 5 and typically closes in the autumn of Year 6.', ctaLabel: 'Register Online', ctaHref: 'register-11plus.html' },
       ], '11+ exam questions'),
       {
         component: 'wf-cards', props: {
-          heading: 'Next steps', cols: 3,
+          heading: 'Next steps', cols: 4,
           items: [
             { href: 'register-11plus.html', heading: 'Register Online', description: 'Start your child’s 11+ application.' },
-            { href: 'admissions-11plus-journey.html', heading: 'Your 11+ Journey', description: 'The full process, step by step.' },
-            { href: 'scholarships-bursaries.html', heading: 'Scholarships & Bursaries', description: 'Awards and financial support.' },
+            { href: 'admissions-11plus-journey.html', heading: 'Joining at 11+', description: 'The full process, step by step.' },
+            { href: 'scholarships-awards.html', heading: 'Scholarships & Awards', description: 'Academic and music awards.' },
+            { href: 'bursaries.html', heading: 'Bursaries', description: 'Means-tested financial support.' },
           ],
         },
       },
@@ -864,22 +1061,37 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  // Off primary nav, as a sub-page of Your 11+ Journey: the step after the offer. From parent research -
-  // content that supports a child's transition at 11+ and reduces anxieties. See PROTOTYPE.md.
-  'admissions-11plus-starting': {
+  // Moved from under Joining at 11+ to sit directly under Admissions (client request): one
+  // shared page with a section per entry point, linked from all three joining pages, rather
+  // than an 11+-only page. The original content (From offer to first day, FAQs) was written
+  // from 11+ parent research; the 7+ and 16+ sections below are drafted to the same pattern and
+  // flagged for the school to check, same as the rest of this page already was.
+  'admissions-starting': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'Becoming Bancroft’s', heading: 'Starting at Bancroft’s', body: 'What happens between accepting a place and the first day of Year 7, and how every new pupil is helped to settle.',
-        mediaLabel: 'New Year 7 pupils on their first day',
-        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Your 11+ Journey', href: 'admissions-11plus-journey.html' }, { label: 'Starting at Bancroft’s', href: 'admissions-11plus-starting.html' }),
+        eyebrow: 'Becoming Bancroft’s', heading: 'Starting at Bancroft’s', body: 'What happens between accepting a place and your child’s first day, however they’re joining us, and how every new pupil is helped to settle.',
+        mediaLabel: 'New pupils on their first day',
+        breadcrumb: bc({ label: 'Admissions', href: 'admissions.html' }, { label: 'Starting at Bancroft’s', href: 'admissions-starting.html' }),
       },
     },
     blocks: [
-      { component: 'wf-text', props: { body: ['Moving to a new school is a big step, for children and for parents. Most pupils joining at 11+ arrive knowing only a few others, and by half term that has changed. This page is for families who have accepted a place, and for anyone wondering what joining would really be like.', 'Wireframe note: the events and timings below are a draft structure to confirm with the school. The page comes from parent research: content from recent joiners that reassures children before they start.'] } },
+      { component: 'wf-text', props: { body: ['Moving to a new school is a big step, for children and for parents, whichever entry point you’re joining at. This page is for families who have accepted a place, and for anyone wondering what joining would really be like.', 'Wireframe note: the events and timings in each section below are a draft structure to confirm with the school. The 11+ section comes from parent research: content from recent joiners that reassures children before they start. The 7+ and 16+ sections follow the same pattern and should be checked the same way.'] } },
       {
         component: 'wf-timeline', props: {
-          heading: 'From offer to first day',
+          heading: 'Starting at 7+',
+          items: [
+            { heading: 'Accept your place', description: 'Offers are made after the taster morning and assessment. Accept online and pay the acceptance deposit to secure the place.' },
+            { heading: 'Welcome pack', description: 'Key dates, uniform and travel information, sent in the spring.' },
+            { heading: 'Taster day', description: 'In the summer term, new pupils spend a day with their class before the holidays.' },
+            { heading: 'Over the summer', description: 'Uniform, the school bus and anything else to sort before September.' },
+            { heading: 'First day', description: 'A gentle, settled start to Year 3.' },
+          ],
+        },
+      },
+      {
+        component: 'wf-timeline', props: {
+          heading: 'Starting at 11+',
           items: [
             { heading: 'Accept your place', description: 'Offers are made in February. Accept online and pay the acceptance deposit to secure the place.' },
             { heading: 'Welcome pack', description: 'Key dates, uniform and travel information, sent in the spring.' },
@@ -889,18 +1101,30 @@ export const pages: Record<string, Page> = {
           ],
         },
       },
-      { component: 'wf-text-media', props: { heading: 'Accepting your place', side: 'left', mediaLabel: 'Parent completing an online form', body: ['Once you have accepted an offer, the acceptance deposit secures your child’s place.'], links: [{ label: 'Pay the acceptance deposit', href: 'acceptance-deposit.html' }] } },
+      {
+        component: 'wf-timeline', props: {
+          heading: 'Starting at 16+',
+          items: [
+            { heading: 'Accept your place', description: 'Offers are usually made by the end of the spring term, conditional on GCSE results. Accept online and pay the acceptance deposit to secure the place.' },
+            { heading: 'Subject choices confirmed', description: 'Final A Level subject choices are confirmed once GCSE results are known in August.' },
+            { heading: 'Induction evening', description: 'In the summer term, new joiners meet their tutor and subject teachers.' },
+            { heading: 'Over the summer', description: 'Uniform, the school bus and anything else to sort before September.' },
+            { heading: 'First day', description: 'A settled start to Year 12, alongside current pupils moving up from Year 11.' },
+          ],
+        },
+      },
+      { component: 'wf-text-media', props: { heading: 'Accepting your place', side: 'left', mediaLabel: 'Parent completing an online form', body: ['Once you have accepted an offer, the acceptance deposit secures your child’s place.'], links: [{ label: 'Pay the acceptance deposit', href: 'acceptance-deposit-fee.html' }] } },
       { component: 'wf-quote', props: { items: [
-        { quote: 'Placeholder for a quote from a current Year 7 pupil about what they were worried about before they joined, and what actually happened.', attribution: 'Year 7 pupil' },
-        { quote: 'Placeholder for a quote from a parent about how their child settled in during the first half term.', attribution: 'Parent of a Year 7 pupil' },
+        { quote: 'Placeholder for a quote from a current pupil about what they were worried about before they joined, and what actually happened.', attribution: 'Year 7 pupil' },
+        { quote: 'Placeholder for a quote from a parent about how their child settled in during the first half term.', attribution: 'Parent of a new pupil' },
       ] } },
-      { component: 'wf-media', props: { type: 'video', label: 'A week in Year 7, filmed by pupils', caption: 'Placeholder for a short film made by recent joiners.', aspectClass: 'aspect-video' } },
+      { component: 'wf-media', props: { type: 'video', label: 'A week as a new pupil, filmed by pupils', caption: 'Placeholder for a short film made by recent joiners.', aspectClass: 'aspect-video' } },
       {
         component: 'wf-cards', props: {
           heading: 'Getting ready', cols: 4,
           items: [
             { href: 'uniform.html', heading: 'Uniform', description: 'What to buy and where from.' },
-            { href: 'school-bus-service.html', heading: 'School Bus Service', description: 'Routes, timings and how to book.' },
+            { href: 'getting-to-bancrofts.html', heading: 'Getting to Bancroft’s', description: 'The school bus service, plus TfL and journey planning links.' },
             { href: 'term-dates.html', heading: 'Term Dates', description: 'Term starts, half terms and holidays.' },
             { href: 'weekly-menu.html', heading: 'Weekly Menu', description: 'What’s for lunch.' },
           ],
@@ -918,11 +1142,11 @@ export const pages: Record<string, Page> = {
       },
       {
         component: 'wf-text-media', props: {
-          heading: 'Who looks after new pupils', side: 'right', mediaLabel: 'Tutor welcoming a new Year 7 pupil',
+          heading: 'Who looks after new pupils', side: 'right', mediaLabel: 'Tutor welcoming a new pupil',
           body: ['Every pupil belongs to a tutor group and a house, so there are several adults, and plenty of older pupils, to turn to from the first day.'],
           links: [
-            { label: 'Read about Senior pastoral care', href: 'senior-pastoral-care.html' },
-            { label: 'Learning Support', href: 'senior-learning-support.html' },
+            { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html' },
+            { label: 'Learning Support', href: 'learning-support.html' },
           ],
         },
       },
@@ -930,7 +1154,7 @@ export const pages: Record<string, Page> = {
         { heading: 'Will I know anyone?', body: 'Most new pupils know only a few others when they arrive. The induction day and your tutor group are there so you start September with familiar faces.' },
         { heading: 'What if I get lost?', body: 'Everyone does at first. (Wireframe note: how new pupils are helped around the site in the first weeks, to be supplied.)' },
         { heading: 'How much homework will there be?', body: 'Wireframe note: a short, honest answer from the school, to be supplied.' },
-        { heading: 'Who do I talk to if I am worried?', body: 'Your tutor is the first person to speak to, and there are Heads of Year and school counsellors too.', ctaLabel: 'Read about pastoral care', ctaHref: 'senior-pastoral-care.html' },
+        { heading: 'Who do I talk to if I am worried?', body: 'Your tutor is the first person to speak to, and there are Heads of Year and school counsellors too.', ctaLabel: 'Pastoral Care & Houses', ctaHref: 'pastoral-care-houses.html' },
       ], 'Questions new pupils ask'),
       bookVisitPromo('cta-starting-promo', 'Still deciding? Come and see Bancroft’s for yourself. Open Mornings and personal tours run throughout the year.'),
     ],
@@ -952,9 +1176,13 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text-media', props: { heading: 'Welcome from the Head of Prep', side: 'left', mediaLabel: 'Mr Layburn, Head of Prep', body: ['Mr Layburn, Head of Prep, describes Bancroft’s Prep as a happy school where bright, curious children can reach their full potential.', 'Because Prep pupils have a guaranteed transfer to the Senior School, the curriculum stays rich and varied for all four years, rather than narrowing towards an entrance test.'] } },
       { component: 'wf-text-media', props: { heading: 'Why Bancroft’s Prep', side: 'right', mediaLabel: 'Prep pupils reading together', body: ['What makes the Prep years distinctive.'], ctaLabel: 'Read why families choose us', ctaHref: 'prep-why.html' } },
       { component: 'wf-text-media', props: { heading: 'Prep School Life', side: 'left', mediaLabel: 'Prep pupils in the playground', body: ['What a day at the Prep looks and feels like.'], ctaLabel: 'See a day at the Prep', ctaHref: 'prep-life.html' } },
-      { component: 'wf-text-media', props: { heading: 'Curriculum', side: 'right', mediaLabel: 'Prep pupils in a science lesson', body: ['What Prep pupils learn in the classroom.'], ctaLabel: 'See the curriculum', ctaHref: 'prep-curriculum.html' } },
-      { component: 'wf-text-media', props: { heading: 'Co-Curriculum', side: 'left', mediaLabel: 'Prep pupils at a co-curricular club', body: ['Weekly clubs, from sport and drama to coding and chess.'], ctaLabel: 'Explore the Co-Curriculum', ctaHref: 'prep-co-curriculum.html' } },
-      { component: 'wf-text-media', props: { heading: 'Pastoral Care', side: 'right', mediaLabel: 'Teacher with a small group of pupils', body: ['Settling in and being known as an individual.'], ctaLabel: 'Read about pastoral care', ctaHref: 'prep-pastoral-care.html' } },
+      { component: 'wf-text-media', props: { heading: 'Academic Life', side: 'right', mediaLabel: 'Prep pupils in a science lesson', body: ['What Prep pupils learn in the classroom.'], ctaLabel: 'See Academic Life', ctaHref: 'prep-academic-life.html' } },
+      { component: 'wf-text-media', props: { heading: 'Beyond the Classroom', side: 'left', mediaLabel: 'Prep pupils at a co-curricular club', body: ['Sport, music, drama and clubs, from Forest School to coding and chess.'], ctaLabel: 'Explore Beyond the Classroom', ctaHref: 'prep-beyond-the-classroom.html' } },
+      { component: 'wf-text-media', props: { heading: 'Pastoral Care & Houses', side: 'right', mediaLabel: 'Teacher with a small group of pupils', body: ['Settling in and being known as an individual, from day one.'], ctaLabel: 'Read about pastoral care', ctaHref: 'pastoral-care-houses.html' } },
+      // Learning Support: a highlighted section on every stage landing page (client request), not
+      // just a nav link - wf-promo is the kit's "full-width image with text on top" treatment,
+      // the one block on this page that reads as more than an ordinary text-media row.
+      { component: 'wf-promo', props: { heading: 'Learning Support', body: 'A proactive, tailored approach for pupils with additional needs, starting from the Prep.', ctaLabel: 'Read about Learning Support', ctaHref: 'learning-support.html', ctaId: 'cta-prep-learning-support-promo', mediaLabel: 'Learning support session' } },
       { component: 'wf-text-media', props: { heading: 'Meet the Staff', side: 'left', mediaLabel: 'Prep teaching staff', body: ['The teachers who lead the Prep years.'], ctaLabel: 'Meet the team', ctaHref: 'prep-staff.html' } },
       // "Joining at 7+" - the admissions summary that makes this overview work as the 7+
       // hub the SEO report asks for (process, key dates, fees, assessment). Detail stays on the Journey page.
@@ -991,16 +1219,28 @@ export const pages: Record<string, Page> = {
         },
       },
       { component: 'wf-text', props: { body: ['Wireframe note: assessment and offer dates to be supplied by admissions.'] } },
+      { component: 'wf-quote', props: { items: [
+        { quote: 'Placeholder for a quote from a Prep parent about choosing Bancroft’s.', attribution: 'Year 4 parent' },
+      ] } },
       faqs([
         { heading: 'What ages is the Prep for?', body: 'Ages 7 to 11, from Alphas (Year 3) through to Prep 2 (Year 6).' },
         { heading: 'Where is the Prep?', body: 'On Whitehall Road, a short walk from the Senior School entrance.', ctaLabel: 'Find us', ctaHref: 'contact.html' },
-        { heading: 'What clubs can Prep pupils join?', body: 'Weekly clubs run from sport and drama to coding and chess.', ctaLabel: 'See the Prep Co-Curriculum', ctaHref: 'prep-co-curriculum.html' },
-        { heading: 'How will my child get to school?', body: 'Our school bus service is open to all pupils. Alphas (Year 3) must be accompanied by a sibling in Year 5 or above.', ctaLabel: 'See the School Bus Service', ctaHref: 'school-bus-service.html' },
-        { heading: 'Who looks after my child day to day?', body: 'Every child is known as an individual from day one.', ctaLabel: 'Read about Prep pastoral care', ctaHref: 'prep-pastoral-care.html' },
-        { heading: 'What is the Bancroft’s Family of Schools?', body: 'Bancroft’s Prep is part of the Bancroft’s Family of Schools.', ctaLabel: 'Part of the Bancroft’s Family of Schools', ctaHref: '#' },
+        { heading: 'What clubs can Prep pupils join?', body: 'Sport, music, drama and clubs, from Forest School to coding and chess.', ctaLabel: 'See Beyond the Classroom', ctaHref: 'prep-beyond-the-classroom.html' },
+        { heading: 'How will my child get to school?', body: 'Our school bus service is open to all pupils. Alphas (Year 3) must be accompanied by a sibling in Year 5 or above.', ctaLabel: 'Getting to Bancroft’s', ctaHref: 'getting-to-bancrofts.html' },
+        { heading: 'Who looks after my child day to day?', body: 'Every child is known as an individual from day one.', ctaLabel: 'Read about Pastoral Care & Houses', ctaHref: 'pastoral-care-houses.html' },
+        { heading: 'What is the Bancroft’s Family of Schools?', body: 'Bancroft’s Prep is part of the Bancroft’s Family of Schools.', ctaLabel: 'See Our Family of Schools', ctaHref: 'about-family-of-schools.html' },
         { heading: 'When should we register for 7+?', body: 'Most families register in the autumn term for entry the following September.', ctaLabel: 'Register Online', ctaHref: 'register-7plus.html' },
-        { heading: 'Are bursaries available at 7+?', body: 'Our bursary programme applies at 11+ and 16+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'Are bursaries available at 7+?', body: 'Our bursary programme applies at 11+ and 16+.', ctaLabel: 'See Bursaries', ctaHref: 'bursaries.html' },
       ], 'Prep questions'),
+      // Tag-filtered "Latest news" (client request) - items pre-selected by tag rather than a
+      // live filter control, since this block's own job is already "just the Prep news".
+      { component: 'wf-cards', props: {
+        heading: 'Latest news', cols: 2,
+        items: [
+          { href: 'news-article-b.html', category: 'Prep', heading: 'Bancroft’s Family of Schools welcomes two new Prep partners', description: 'What the new partnership means for families joining at 7+.', imageLabel: 'Prep pupils on a school trip', linkText: 'Read the story' },
+          { category: 'Prep', heading: 'Prep pupils shine in national maths challenge', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Prep pupils in a maths lesson' },
+        ],
+      } },
       {
         component: 'wf-text-media', props: {
           heading: 'Ready to take the next step?', side: 'right', mediaLabel: 'Parent completing a registration form',
@@ -1022,6 +1262,10 @@ export const pages: Record<string, Page> = {
     },
     blocks: [
       { component: 'wf-text', props: { body: ['From their first day, Prep pupils are taught by specialist subject teachers as well as their form teacher, so children encounter real expertise early, in the sciences, languages, music and sport.', 'Being part of the same school as our Senior and Sixth Form pupils means Prep children grow up with older role models close by, and a clear, familiar path ahead of them.'] } },
+      // A Head of Prep welcome (client request) - reusing wf-media's existing video-placeholder
+      // pattern (see the homepage nav promo's "Get to know Alex" card) rather than a new
+      // component or a modal, which the brief offered as options.
+      { component: 'wf-media', props: { type: 'video', label: 'A welcome from the Head of Prep', caption: 'Placeholder for a short welcome film from Mr Layburn, Head of Prep.', aspectClass: 'aspect-video' } },
       { component: 'wf-text', props: { heading: 'Our aims and values', body: ['Happiness comes first at the Prep: “Everyone has the right to be happy” is the first of our school rules, because good things follow from it.', 'We aim to give every child the best possible academic education while making sure they are happy and well-rounded; to offer a wide range of experiences so each child finds where they can excel or simply have fun; to build strong relationships between children, staff and parents; to celebrate a vibrant, diverse community; and to help children recognise their advantages and act with compassion for others.'] } },
       {
         component: 'wf-cards', props: {
@@ -1043,8 +1287,8 @@ export const pages: Record<string, Page> = {
         component: 'wf-cards', props: {
           heading: 'The evidence', cols: 2,
           items: [
-            { href: 'about-rankings-recognition.html', heading: 'Rankings & Recognition', description: 'League tables, inspection reports and awards.' },
-            { href: 'senior-academic-results.html', heading: 'GCSE Results', description: 'Where the Prep years lead: outcomes at the end of Year 11.' },
+            { href: 'about-awards-recognition.html', heading: 'Awards and Recognition', description: 'League tables, inspection reports and awards.' },
+            { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'Where the Prep years lead: outcomes at the end of Year 11.' },
           ],
         },
       },
@@ -1079,13 +1323,13 @@ export const pages: Record<string, Page> = {
         { quote: 'Placeholder for a short quote from a Prep pupil about their favourite part of the school day.', attribution: 'Prep pupil, Year 5' },
         { quote: 'Placeholder for a short quote from a Prep pupil about what they look forward to each week.', attribution: 'Prep pupil, Year 3' },
       ] } },
-      { component: 'wf-text-media', props: { heading: 'Space to play and explore', side: 'left', mediaLabel: 'Prep pupils playing outside', body: ['The Prep has its own contemporary buildings and shares many of the wider school’s facilities, so children use spaces most schools their size could not offer.'], links: [{ label: 'See the Prep Co-Curriculum', href: 'prep-co-curriculum.html' }] } },
+      { component: 'wf-text-media', props: { heading: 'Space to play and explore', side: 'left', mediaLabel: 'Prep pupils playing outside', body: ['The Prep has its own contemporary buildings and shares many of the wider school’s facilities, so children use spaces most schools their size could not offer.'], links: [{ label: 'See Beyond the Classroom', href: 'prep-beyond-the-classroom.html' }] } },
       {
         component: 'wf-cards', props: {
           heading: 'The practical side', cols: 4,
           items: [
             { href: 'weekly-menu.html', heading: 'Weekly Menu', description: 'What’s for lunch this week.' },
-            { href: 'school-bus-service.html', heading: 'School Bus Service', description: 'Routes, timings and how to book.' },
+            { href: 'getting-to-bancrofts.html', heading: 'Getting to Bancroft’s', description: 'Routes, timings and how to book.' },
             { href: 'uniform.html', heading: 'Uniform', description: 'What to buy and where from.' },
             { href: 'term-dates.html', heading: 'Term Dates', description: 'Term starts, half terms and holidays.' },
           ],
@@ -1095,52 +1339,214 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  'prep-curriculum': {
+  'prep-academic-life': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '7+ Prep', heading: 'Curriculum', body: 'A broad, carefully sequenced curriculum from Alpha (Year 3) to Prep 2 (Year 6).',
-        mediaLabel: 'Prep pupils in an art lesson', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Curriculum', href: 'prep-curriculum.html' }),
+        eyebrow: '7+ Prep', heading: 'Academic Life', body: 'A broad, carefully sequenced curriculum from Alpha (Year 3) to Prep 2 (Year 6).',
+        mediaLabel: 'Prep pupils in an art lesson', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Academic Life', href: 'prep-academic-life.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { heading: 'A broad foundation', body: ['We want Prep pupils to be curious, independent thinkers who enjoy rising to a challenge. The curriculum is structured for both breadth and depth, giving children solid academic foundations while helping them grow as individuals.'] } },
       { component: 'wf-text', props: { heading: 'How it’s taught', body: ['Form teachers lead most lessons in the early years, alongside specialist teaching in Languages, Music, Computing, PE, Art and Drama from the start. From Year 5 onwards, nearly every subject is taught by a subject specialist, giving children a taste of the Senior School and supporting their growing independence.'] } },
       { component: 'wf-text', props: { heading: 'Year by year', body: ['Every year, from Alpha (Year 3) to Prep 2 (Year 6), is mapped to a clear, connected path of progress, so each stage builds on the last.'] } },
-      bookVisitPromo('cta-prep-curriculum-promo'),
+      bookVisitPromo('cta-prep-academic-life-promo'),
     ],
   },
 
-  'prep-co-curriculum': {
+  // Hub page (client request): Sport, Music and Drama are each promoted to their own page (see
+  // prep-sport/prep-music/prep-drama below); everything else that was a flat text-media row
+  // here stays a section on the hub itself, same as before.
+  'prep-beyond-the-classroom': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '7+ Prep', heading: 'Co-Curriculum', body: 'Every Prep pupil takes part in weekly clubs, discovering what they love long before they have to choose.',
-        mediaLabel: 'Prep pupils at a co-curricular club', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Co-Curriculum', href: 'prep-co-curriculum.html' }),
+        eyebrow: '7+ Prep', heading: 'Beyond the Classroom', body: 'Every Prep pupil takes part in weekly clubs, discovering what they love long before they have to choose.',
+        mediaLabel: 'Prep pupils at a co-curricular club', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Beyond the Classroom', href: 'prep-beyond-the-classroom.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { body: ['Our school day is built around it: a long lunch hour means every child can eat, play and get to a club, all in the same day, rather than it being squeezed in afterwards. Most clubs run during the school day, as a normal part of school life rather than a separate after-school programme.'] } },
-      { component: 'wf-text-media', props: { heading: 'Sport', side: 'right', mediaLabel: 'Prep pupils playing football', body: ['Football, netball, athletics, gymnastics and swimming, alongside house matches and inter-school fixtures.'] } },
-      { component: 'wf-text-media', props: { heading: 'Arts & Performance', side: 'left', mediaLabel: 'Prep pupils in choir practice', body: ['Choir, orchestra, drama club and art club, building towards termly concerts and productions.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Explore Beyond the Classroom', cols: 3,
+          items: [
+            { href: 'prep-sport.html', heading: 'Sport', description: 'Football, netball, athletics, gymnastics and swimming.', imageLabel: 'Prep pupils playing football', linkText: 'Explore Sport' },
+            { href: 'prep-music.html', heading: 'Music', description: 'Choir, orchestra and termly concerts.', imageLabel: 'Prep pupils in choir practice', linkText: 'Explore Music' },
+            { href: 'prep-drama.html', heading: 'Drama', description: 'Drama club, building towards termly productions.', imageLabel: 'Prep pupils rehearsing a play', linkText: 'Explore Drama' },
+          ],
+        },
+      },
       { component: 'wf-text-media', props: { heading: 'Academic & STEM', side: 'right', mediaLabel: 'Prep pupils in a coding club', body: ['Chess, coding, science club and public speaking, for pupils who want to go further.'] } },
-      { component: 'wf-text-media', props: { heading: 'Outdoor & Adventure', side: 'left', mediaLabel: 'Prep pupils at forest school', body: ['Forest school, gardening club and residential trips that get pupils outside the classroom.'] } },
-      bookVisitPromo('cta-prep-co-curriculum-promo'),
+      { component: 'wf-text-media', props: { heading: 'Forest School', side: 'left', mediaLabel: 'Prep pupils at forest school', body: ['Regular sessions in our own woodland, plus a gardening club, building confidence and practical skills outdoors.'] } },
+      { component: 'wf-text-media', props: { heading: 'Trips & Visits', side: 'right', mediaLabel: 'Prep pupils on a school trip', body: ['Day trips and residentials that get pupils outside the classroom, from local museums to adventurous residential trips in the later Prep years.'] } },
+      bookVisitPromo('cta-prep-beyond-classroom-promo'),
     ],
   },
 
-  'prep-pastoral-care': {
+  'prep-sport': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '7+ Prep', heading: 'Pastoral Care', body: 'Small class sizes and a settled form-teacher model mean every Prep child is genuinely known.',
-        mediaLabel: 'Form teacher greeting pupils in the morning', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Pastoral Care', href: 'prep-pastoral-care.html' }),
+        eyebrow: '7+ Prep', heading: 'Prep Sport', body: 'Every Prep pupil gets a go at every sport, from their first term onwards.',
+        mediaLabel: 'Prep pupils playing football', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Beyond the Classroom', href: 'prep-beyond-the-classroom.html' }, { label: 'Sport', href: 'prep-sport.html' }),
       },
     },
     blocks: [
-      { component: 'wf-text', props: { body: ['A single form teacher sees each Prep class through most of the school day, giving children one consistent, trusted adult to turn to. Our learning support team works closely with form teachers to spot and support any child who needs extra help early.', 'Wraparound care is available before and after the school day, so working families have flexibility without disrupting their child’s routine.'] } },
-      { component: 'wf-text-media', props: { heading: 'Learning Support', side: 'right', mediaLabel: 'Learning support session', body: ['Support for pupils with additional needs continues from the Prep through the Senior School and Sixth Form.'], links: [{ label: 'Read about Learning Support', href: 'senior-learning-support.html' }] } },
-      bookVisitPromo('cta-prep-pastoral-promo'),
+      { component: 'wf-text', props: { body: ['Football, netball, athletics, gymnastics and swimming are all part of the weekly timetable, alongside house matches and fixtures against other schools.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Sports on offer', cols: 3,
+          items: [
+            { heading: 'Football', description: 'Taught from Alpha (Year 3) onwards, with inter-school fixtures.' },
+            { heading: 'Netball', description: 'One of the most popular team sports at the Prep.' },
+            { heading: 'Athletics', description: 'Track and field, building up to house sports day.' },
+            { heading: 'Gymnastics', description: 'Taught in our multi-purpose sports hall.' },
+            { heading: 'Swimming', description: 'Taught in the school’s own 24m indoor pool.' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: a fuller picture of fixtures and house sport to be supplied by the Prep.'] } },
+      bookVisitPromo('cta-prep-sport-promo'),
+    ],
+  },
+
+  'prep-music': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '7+ Prep', heading: 'Prep Music', body: 'Every Prep pupil sings, and many go on to play in an ensemble.',
+        mediaLabel: 'Prep pupils in choir practice', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Beyond the Classroom', href: 'prep-beyond-the-classroom.html' }, { label: 'Music', href: 'prep-music.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Choir is part of school life for every Prep pupil, with an orchestra and smaller ensembles open to those learning an instrument. The year builds towards termly concerts, performed in front of family and friends.'] } },
+      { component: 'wf-text-media', props: { heading: 'Individual music lessons', side: 'right', mediaLabel: 'Prep pupil having a violin lesson', body: ['Individual lessons are available on most orchestral instruments and piano, taught by specialist visiting teachers.'], links: [{ label: 'See Scholarships & Awards', href: 'scholarships-awards.html' }] } },
+      bookVisitPromo('cta-prep-music-promo'),
+    ],
+  },
+
+  'prep-drama': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '7+ Prep', heading: 'Prep Drama', body: 'Confidence on stage, built from Alpha (Year 3) onwards.',
+        mediaLabel: 'Prep pupils rehearsing a play', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Beyond the Classroom', href: 'prep-beyond-the-classroom.html' }, { label: 'Drama', href: 'prep-drama.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Drama club runs weekly for pupils who want to go further than classroom drama lessons, building towards a termly production that every year group gets the chance to be part of.'] } },
+      bookVisitPromo('cta-prep-drama-promo'),
+    ],
+  },
+
+  // Whole-school page (client request), replacing the separate stage-level Pastoral Care pages -
+  // linked from all three stage menus (see primaryNav in config.ts). Includes the House system
+  // and a section per stage, carried over from prep-pastoral-care.html and senior-pastoral-care.html
+  // (both now deleted, content merged in here). Learning for Life is kept as a section here too
+  // (client request), carried over from the now-deleted senior-learning-for-life.html.
+  'pastoral-care-houses': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: 'School Life', heading: 'Pastoral Care & Houses', body: 'A structure built so every pupil, at every stage, is known well by more than one adult.',
+        mediaLabel: 'Tutor group meeting',
+        // Linked from all three stage menus (Prep/Senior/Sixth Form) - that's unchanged by this
+        // breadcrumb, which only decides where the sitemap tool's tree hangs the card. About is
+        // its home there, alongside Results & Destinations and Learning Support, as the tree's
+        // "whole-school master pages" cluster, rather than a parent stage it doesn't belong to.
+        breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Every pupil, from the Prep through to the Sixth Form, belongs to a form or tutor group and a house, giving them overlapping communities and several trusted adults beyond their subject teachers.'] } },
+      { component: 'wf-text', props: { heading: 'The House System', body: ['Every pupil, in every year, belongs to one of the school’s houses, spanning the Prep, Senior School and Sixth Form. Houses compete throughout the year in sport, music and other events, and give pupils a ready-made community outside their own year group.', 'Wireframe note: house names, colours and the points system to be supplied by the school.'] } },
+      { component: 'wf-text-media', props: { heading: 'Pastoral Care at 7+ Prep', side: 'left', mediaLabel: 'Form teacher greeting pupils in the morning', body: ['A single form teacher sees each Prep class through most of the school day, giving children one consistent, trusted adult to turn to. Our learning support team works closely with form teachers to spot and support any child who needs extra help early.', 'Wraparound care is available before and after the school day, so working families have flexibility without disrupting their child’s routine.'] } },
+      { component: 'wf-text', props: { heading: 'Pastoral Care at 11+ Senior', body: ['Every Senior pupil belongs to a tutor group and a house, giving them two overlapping communities and several trusted adults beyond their subject teachers. Heads of Year and school counsellors provide additional support where it’s needed.'] } },
+      // Sixth Form has no existing pastoral content at all to draw from - original wireframe copy.
+      { component: 'wf-text', props: { heading: 'Pastoral Care at 16+ Sixth Form', body: ['Sixth Formers keep their tutor and house, with a dedicated Head of Sixth Form overseeing the year group and its particular pressures - university or career choices, increased independence, and balancing study with leading clubs and societies.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Joining the school?', cols: 2,
+          items: [
+            { href: 'admissions-starting.html', heading: 'Starting at Bancroft’s', description: 'How new pupils are helped to settle, from induction day onwards.', imageLabel: 'New pupils on their first day', linkText: 'See Starting at Bancroft’s' },
+            { href: 'learning-support.html', heading: 'Learning Support', description: 'A proactive, tailored approach for pupils with additional needs.', imageLabel: 'Learning support session', linkText: 'Read about Learning Support' },
+          ],
+        },
+      },
+      {
+        component: 'wf-text-media', props: {
+          heading: 'The Chaplain', side: 'right', mediaLabel: 'Pupils in the Chapel',
+          body: ['The Chaplain has a pastoral role across the whole school, not only in Chapel services - available to any pupil, of any faith or none, who wants someone to talk to.'],
+          links: [{ label: 'Spiritual Life in Our Community', href: 'school-life-community.html' }],
+        },
+      },
+      {
+        component: 'wf-text-media', props: {
+          heading: 'Learning for Life', side: 'left', mediaLabel: 'Pupils in a Learning for Life discussion',
+          body: ['Our timetabled programme for the things that matter beyond exams, covering health and wellbeing, relationships and living in the wider world.', 'Wireframe note: the themes below are placeholders. Final content should come from the existing Learning for Life Programme document, which this page replaces as the version families find in search.'],
+        },
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'What the Learning for Life programme covers', cols: 3,
+          items: [
+            { category: 'Placeholder theme', heading: 'Health and wellbeing', description: 'One or two lines on what pupils cover under this theme.', imageLabel: 'Pupils in a wellbeing session' },
+            { category: 'Placeholder theme', heading: 'Relationships', description: 'One or two lines on what pupils cover under this theme.', imageLabel: 'Pupils in a group discussion' },
+            { category: 'Placeholder theme', heading: 'Living in the wider world', description: 'One or two lines on what pupils cover under this theme.', imageLabel: 'Pupils at a careers talk' },
+          ],
+        },
+      },
+      {
+        component: 'wf-table', props: {
+          heading: 'Learning for Life: year by year',
+          rowHeader: 'Year group',
+          columns: ['Focus'],
+          rows: [
+            { label: 'Years 7 and 8', cells: ['To be supplied'] },
+            { label: 'Year 9', cells: ['To be supplied'] },
+            { label: 'Years 10 and 11', cells: ['To be supplied'] },
+          ],
+        },
+      },
+      bookVisitPromo('cta-pastoral-care-houses-promo'),
+    ],
+  },
+
+  // Whole-school page (client request), moved out of Pastoral Care and promoted from a
+  // Senior-only page - carries over senior-learning-support.html's content, broadened to cover
+  // every stage. See prep.html, senior.html and sixth-form.html for the highlighted landing-page
+  // section pointing here.
+  'learning-support': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: 'School Life', heading: 'Learning Support', body: 'Every learner understood, supported and empowered, from the Prep through to the Sixth Form.',
+        mediaLabel: 'Learning support session',
+        // Same "whole-school master pages live under About" note as Pastoral Care & Houses above.
+        breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Learning Support', href: 'learning-support.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['We believe every child deserves to thrive. Our Learning Support department works closely with pupils, parents and teachers, taking a proactive, tailored approach to supporting pupils with special educational needs and disabilities (SEND), from their very first days in the Prep through to the Sixth Form.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'How support works', cols: 3,
+          items: [
+            { category: 'Placeholder', heading: 'Understanding each learner', description: 'How needs are identified, at entry and during a pupil’s time here.' },
+            { category: 'Placeholder', heading: 'Support in and beyond lessons', description: 'What support looks like day to day, including exam access arrangements.' },
+            { category: 'Placeholder', heading: 'Working with families', description: 'How parents are kept involved and who to contact.' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: the live page says little beyond its introduction, so the three areas above are a suggested structure for the department to fill.'] } },
+      { component: 'wf-text-media', props: { heading: 'Starting early, in the Prep', side: 'right', mediaLabel: 'Form teacher working with a Prep pupil', body: ['In the Prep, the learning support team works alongside form teachers to spot and support any child who needs extra help early, so support is already in place well before Senior entry if a pupil needs it.'], links: [{ label: 'See our SEND Policy', href: 'about-policies-procedures.html' }] } },
+      faqs([
+        { heading: 'How do I tell the school about my child’s needs?', body: 'Wireframe note: to be supplied. Draft answer: tell us when you register, so support can be planned before your child joins.', ctaLabel: 'Contact admissions', ctaHref: 'contact.html' },
+        { heading: 'Does learning support cost extra?', body: 'Wireframe note: to confirm with the Bursar.' },
+      ], 'Learning support questions'),
+      bookVisitPromo('cta-learning-support-promo'),
     ],
   },
 
@@ -1183,15 +1589,17 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { align: 'center', body: ['11+ is Bancroft’s largest entry point. Pupils join a school that combines academic selectivity with a genuinely broad co-curricular life, on grounds that back onto Epping Forest itself.'] } },
       {
         component: 'wf-text-media', props: {
-          heading: 'Why Bancroft’s Senior', side: 'right', mediaLabel: 'Senior pupils outside the main building',
+          heading: 'Why Bancroft’s', side: 'right', mediaLabel: 'Senior pupils outside the main building',
           body: ['What makes the Senior years distinctive.'], ctaLabel: 'Read why families choose us', ctaHref: 'senior-why.html',
         },
       },
-      { component: 'wf-text-media', props: { heading: 'GCSE Results', side: 'left', mediaLabel: 'Pupils on GCSE results day', body: ['GCSE outcomes and how pupils are stretched.'], ctaLabel: 'See our results', ctaHref: 'senior-academic-results.html' } },
-      { component: 'wf-text-media', props: { heading: 'Curriculum', side: 'right', mediaLabel: 'Senior pupils in a science lesson', body: ['Subjects studied from Year 7 to GCSE.'], ctaLabel: 'See the curriculum', ctaHref: 'senior-curriculum.html' } },
-      { component: 'wf-text-media', props: { heading: 'Sport & Arts', side: 'left', mediaLabel: 'Pupils on the sports pitch', body: ['Fixtures and ensembles beyond the classroom.'], ctaLabel: 'Explore life beyond the classroom', ctaHref: 'senior-sport-arts.html' } },
-      { component: 'wf-text-media', props: { heading: 'Co-Curriculum', side: 'right', mediaLabel: 'Pupils at a lunchtime club', body: ['250+ clubs and societies, from debating to Duke of Edinburgh.'], ctaLabel: 'Explore the Co-Curriculum', ctaHref: 'senior-co-curriculum.html' } },
-      { component: 'wf-text-media', props: { heading: 'Pastoral Care', side: 'left', mediaLabel: 'Tutor group meeting', body: ['How every Senior pupil is known, supported and challenged.'], ctaLabel: 'Read about pastoral care', ctaHref: 'senior-pastoral-care.html' } },
+      { component: 'wf-text-media', props: { heading: 'Senior School Life', side: 'left', mediaLabel: 'Senior pupils between lessons', body: ['What a day in the Senior School looks and feels like.'], ctaLabel: 'See Senior School Life', ctaHref: 'senior-life.html' } },
+      { component: 'wf-text-media', props: { heading: 'Academic Life', side: 'right', mediaLabel: 'Senior pupils in a science lesson', body: ['Subjects studied from Year 7 to GCSE.'], ctaLabel: 'See Academic Life', ctaHref: 'senior-academic-life.html' } },
+      { component: 'wf-text-media', props: { heading: 'Beyond the Classroom', side: 'left', mediaLabel: 'Pupils on the sports pitch', body: ['Sport, music, drama and 250+ clubs and societies, from debating to Duke of Edinburgh.'], ctaLabel: 'Explore Beyond the Classroom', ctaHref: 'senior-beyond-the-classroom.html' } },
+      { component: 'wf-text-media', props: { heading: 'Pastoral Care & Houses', side: 'right', mediaLabel: 'Tutor group meeting', body: ['How every Senior pupil is known, supported and challenged.'], ctaLabel: 'Read about pastoral care', ctaHref: 'pastoral-care-houses.html' } },
+      { component: 'wf-promo', props: { heading: 'Results & Destinations', body: 'GCSE outcomes and how pupils are stretched and supported.', ctaLabel: 'See our results', ctaHref: 'results-destinations.html', ctaId: 'cta-senior-results-overview-promo', mediaLabel: 'Pupils on GCSE results day' } },
+      // Learning Support: a highlighted section on every stage landing page (client request).
+      { component: 'wf-promo', props: { heading: 'Learning Support', body: 'A proactive, tailored approach for pupils with additional needs, from Year 7 through to the Sixth Form.', ctaLabel: 'Read about Learning Support', ctaHref: 'learning-support.html', ctaId: 'cta-senior-learning-support-promo', mediaLabel: 'Learning support session' } },
       // "Joining at 11+" - the admissions summary that makes this overview work as the 11+
       // hub the SEO report asks for (process, key dates, fees, assessment). Detail stays on the Journey page.
       {
@@ -1236,16 +1644,26 @@ export const pages: Record<string, Page> = {
           ctaLabel: 'See the 11+ exam and past papers', ctaHref: 'admissions-11plus-past-papers.html',
         },
       },
+      { component: 'wf-quote', props: { items: [
+        { quote: 'Placeholder for a quote from a Senior parent about choosing Bancroft’s.', attribution: 'Year 8 parent' },
+      ] } },
       faqs([
-        { heading: 'What subjects do pupils study?', body: 'Pupils begin with eighteen subjects across Years 7 and 8, before choosing their GCSE options.', ctaLabel: 'See the curriculum', ctaHref: 'senior-curriculum.html' },
-        { heading: 'How do Bancroft’s GCSE results compare?', body: 'Our results are published each year, with a five-year view alongside.', ctaLabel: 'See GCSE Results', ctaHref: 'senior-academic-results.html' },
-        { heading: 'When do clubs take place?', body: 'Most clubs run during the school day. (Wireframe note: to be confirmed with the school.)', ctaLabel: 'See the Senior Co-Curriculum', ctaHref: 'senior-co-curriculum.html' },
-        { heading: 'How are pupils supported?', body: 'Every pupil belongs to a tutor group and a house, with Heads of Year and school counsellors providing additional support.', ctaLabel: 'Read about pastoral care', ctaHref: 'senior-pastoral-care.html' },
-        { heading: 'How will my child get to school?', body: 'Bancroft’s is a short walk from the Central Line and is served by our own school bus service.', ctaLabel: 'See the School Bus Service', ctaHref: 'school-bus-service.html' },
-        { heading: 'How do new pupils settle in?', body: 'An induction day in the summer term, a tutor group and a house mean new pupils start September with familiar faces.', ctaLabel: 'See Starting at Bancroft’s', ctaHref: 'admissions-11plus-starting.html' },
-        { heading: 'Are scholarships and bursaries available?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 11+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'What subjects do pupils study?', body: 'Pupils begin with eighteen subjects across Years 7 and 8, before choosing their GCSE options.', ctaLabel: 'See Academic Life', ctaHref: 'senior-academic-life.html' },
+        { heading: 'How do Bancroft’s GCSE results compare?', body: 'Our results are published each year, with a five-year view alongside.', ctaLabel: 'See Results & Destinations', ctaHref: 'results-destinations.html' },
+        { heading: 'When do clubs take place?', body: 'Most clubs run during the school day. (Wireframe note: to be confirmed with the school.)', ctaLabel: 'See Beyond the Classroom', ctaHref: 'senior-beyond-the-classroom.html' },
+        { heading: 'How are pupils supported?', body: 'Every pupil belongs to a tutor group and a house, with Heads of Year and school counsellors providing additional support.', ctaLabel: 'Read about Pastoral Care & Houses', ctaHref: 'pastoral-care-houses.html' },
+        { heading: 'How will my child get to school?', body: 'Bancroft’s is a short walk from the Central Line and is served by our own school bus service.', ctaLabel: 'Getting to Bancroft’s', ctaHref: 'getting-to-bancrofts.html' },
+        { heading: 'How do new pupils settle in?', body: 'An induction day in the summer term, a tutor group and a house mean new pupils start September with familiar faces.', ctaLabel: 'See Starting at Bancroft’s', ctaHref: 'admissions-starting.html' },
+        { heading: 'Are scholarships and bursaries available?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 11+.', ctaLabel: 'See Scholarships & Awards', ctaHref: 'scholarships-awards.html' },
         { heading: 'When do we need to register for 11+?', body: 'Registration opens in the spring of Year 5 and typically closes in the autumn of Year 6.', ctaLabel: 'Register Online', ctaHref: 'register-11plus.html' },
       ], 'Senior School questions'),
+      { component: 'wf-cards', props: {
+        heading: 'Latest news', cols: 2,
+        items: [
+          { href: 'news-article-a.html', category: 'Senior', heading: 'Bancroft’s pupils celebrate outstanding GCSE results', description: 'Another year of strong outcomes across the Senior School, with many pupils exceeding expectations.', imageLabel: 'Pupils celebrating results day', linkText: 'Read the story' },
+          { href: 'news-article-c.html', category: 'Senior', heading: 'First XV named London Schools champions', description: 'A landmark season for rugby, capping a strong year across our sports programme.', imageLabel: 'First XV rugby team', linkText: 'Read the story' },
+        ],
+      } },
       {
         component: 'wf-text-media', props: {
           heading: 'Ready to take the next step?', side: 'left', mediaLabel: 'Parent completing a registration form',
@@ -1261,8 +1679,8 @@ export const pages: Record<string, Page> = {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '11+ Senior', heading: 'Why Bancroft’s Senior', body: 'Academic rigour that doesn’t come at the cost of a rounded school life.',
-        mediaLabel: 'Senior pupils in the library', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Why Bancroft’s Senior', href: 'senior-why.html' }),
+        eyebrow: '11+ Senior', heading: 'Why Bancroft’s', body: 'Academic rigour that doesn’t come at the cost of a rounded school life.',
+        mediaLabel: 'Senior pupils in the library', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Why Bancroft’s', href: 'senior-why.html' }),
       },
     },
     blocks: [
@@ -1274,8 +1692,8 @@ export const pages: Record<string, Page> = {
         component: 'wf-cards', props: {
           heading: 'The evidence', cols: 2,
           items: [
-            { href: 'senior-academic-results.html', heading: 'GCSE Results', description: 'This year’s outcomes, with a five-year view.' },
-            { href: 'about-rankings-recognition.html', heading: 'Rankings & Recognition', description: 'League tables, inspection reports and awards.' },
+            { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'This year’s outcomes, with a five-year view.' },
+            { href: 'about-awards-recognition.html', heading: 'Awards and Recognition', description: 'League tables, inspection reports and awards.' },
           ],
         },
       },
@@ -1283,15 +1701,67 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  'senior-academic-results': {
+  // New page (client request) - Senior never had a day-in-the-life page of its own, unlike Prep
+  // and Sixth Form, which both already did.
+  'senior-life': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '11+ Senior', heading: 'GCSE Results', body: 'Strong, consistent GCSE outcomes across the full range of subjects, updated every August.',
-        mediaLabel: 'Pupils reviewing GCSE results', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'GCSE Results', href: 'senior-academic-results.html' }),
+        eyebrow: '11+ Senior', heading: 'Senior School Life', body: 'What a day in the Senior School looks and feels like, from the Third Form to GCSE.',
+        mediaLabel: 'Senior pupils between lessons', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Senior School Life', href: 'senior-life.html' }),
       },
     },
     blocks: [
+      { component: 'wf-text', props: { body: ['Senior pupils move between specialist teachers and subjects throughout the day, with a tutor group and house providing a steady point of contact alongside that variety. Lunch is almost an hour and a half, long enough to eat, socialise and still get to a club.'] } },
+      {
+        component: 'wf-timeline', props: {
+          heading: 'A typical day',
+          items: [
+            { heading: 'Tutor time', description: 'A check-in with your tutor group before lessons start.' },
+            { heading: 'Morning lessons', description: 'Taught by subject specialists across a broad timetable.' },
+            { heading: 'Lunch and clubs', description: 'Almost ninety minutes to eat, socialise and get to a club.' },
+            { heading: 'Afternoon', description: 'More lessons, sport or a society meeting.' },
+            { heading: 'Home time', description: 'The school bus, or clubs and fixtures that run on after the bell.' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: timings for each part of the day to be supplied by the Senior School.'] } },
+      { component: 'wf-quote', props: { items: [
+        { quote: 'Placeholder for a short quote from a Senior pupil about their favourite part of the school day.', attribution: 'Senior pupil, Year 9' },
+      ] } },
+      { component: 'wf-text-media', props: { heading: 'Beyond the timetable', side: 'left', mediaLabel: 'Pupils at a lunchtime club', body: ['Most clubs run during the school day rather than as a separate after-school programme, so getting involved doesn’t mean a longer day.'], ctaLabel: 'Explore Beyond the Classroom', ctaHref: 'senior-beyond-the-classroom.html' } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'The practical side', cols: 4,
+          items: [
+            { href: 'weekly-menu.html', heading: 'Weekly Menu', description: 'What’s for lunch this week.' },
+            { href: 'getting-to-bancrofts.html', heading: 'Getting to Bancroft’s', description: 'Routes, timings and how to book.' },
+            { href: 'uniform.html', heading: 'Uniform', description: 'What to buy and where from.' },
+            { href: 'term-dates.html', heading: 'Term Dates', description: 'Term starts, half terms and holidays.' },
+          ],
+        },
+      },
+      bookVisitPromo('cta-senior-life-promo'),
+    ],
+  },
+
+  // Master page (client request), replacing three separate pages: senior-academic-results.html
+  // (GCSE), sixth-form-examination-results.html (A Level) and sixth-form-leavers-destinations.html
+  // (destinations) - all three merged in now rather than left half-stubbed, since the content
+  // already existed and this is a straightforward migration, not new authoring. Listed in the
+  // About menu (hence the breadcrumb/eyebrow); linked prominently from the 11+ Senior and
+  // 16+ Sixth Form menus, both Academic Life pages and the homepage storyboard (pending that
+  // pass - see PROTOTYPE.md).
+  'results-destinations': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: 'About', heading: 'Results & Destinations', body: 'Strong, consistent GCSE and A Level outcomes, and where they take pupils next, updated every August.',
+        mediaLabel: 'Pupils reviewing exam results', breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Results & Destinations', href: 'results-destinations.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { heading: 'GCSE Results', body: ['Strong, consistent GCSE outcomes across the full range of subjects.'] } },
       { component: 'wf-statistics', props: { heading: 'GCSE results at a glance', items: [
         { value: '99%', label: 'Grades 9 to 4' },
         { value: '70%', label: 'Grades 9 to 7' },
@@ -1300,7 +1770,7 @@ export const pages: Record<string, Page> = {
       ] } },
       {
         component: 'wf-table', props: {
-          heading: 'Five-year view',
+          heading: 'GCSE: five-year view',
           rowHeader: 'Year',
           columns: ['Grades 9 to 7', 'Grades 9 to 4'],
           rows: [
@@ -1314,7 +1784,7 @@ export const pages: Record<string, Page> = {
       },
       {
         component: 'wf-cards', props: {
-          heading: 'Subject highlights', cols: 3,
+          heading: 'GCSE subject highlights', cols: 3,
           items: [
             { category: 'Placeholder', heading: 'Maths', description: 'Headline figure and one line of context.' },
             { category: 'Placeholder', heading: 'Sciences', description: 'Headline figure and one line of context.' },
@@ -1322,78 +1792,109 @@ export const pages: Record<string, Page> = {
           ],
         },
       },
+      { component: 'wf-text', props: { heading: 'A Level Results', body: ['Consistently strong A Level outcomes across a genuinely broad subject range.'] } },
+      { component: 'wf-statistics', props: { heading: 'A Level results at a glance', items: [
+        { value: '99%', label: 'Grades A* to C' },
+        { value: '55%', label: 'Grades A* to A' },
+        { value: '25+', label: 'Subjects offered at A Level' },
+        { value: '95%', label: 'Progressed to first-choice university' },
+      ] } },
+      {
+        component: 'wf-table', props: {
+          heading: 'A Level: five-year view',
+          rowHeader: 'Year',
+          columns: ['Grades A* to A', 'Grades A* to C'],
+          rows: [
+            { label: '2026', cells: ['55%', '99%'] },
+            { label: '2025', cells: ['To be supplied', 'To be supplied'] },
+            { label: '2024', cells: ['To be supplied', 'To be supplied'] },
+            { label: '2023', cells: ['To be supplied', 'To be supplied'] },
+            { label: '2022', cells: ['To be supplied', 'To be supplied'] },
+          ],
+        },
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'A Level subject highlights', cols: 3,
+          items: [
+            { category: 'Placeholder', heading: 'Maths and Further Maths', description: 'Headline figure and one line of context.' },
+            { category: 'Placeholder', heading: 'Sciences', description: 'Headline figure and one line of context.' },
+            { category: 'Placeholder', heading: 'Humanities', description: 'Headline figure and one line of context.' },
+          ],
+        },
+      },
       { component: 'wf-quote', props: { items: [
         { quote: 'Placeholder for a short quote from a recent Year 11 pupil about their results and what they are going on to study.', attribution: 'Year 11 pupil, 2026' },
+        { quote: 'Placeholder for a short quote from a recent leaver about their results and where they are going next.', attribution: 'Upper Sixth leaver, 2026' },
       ] } },
-      { component: 'wf-text', props: { heading: 'Beyond the headline figures', body: ['We track value added as closely as raw grades: how far each pupil has progressed against their own starting point, not just against a national average. Our learning support and academic mentoring teams work with pupils individually where extra stretch or support is needed.'] } },
+      { component: 'wf-text', props: { heading: 'Beyond the headline figures', body: ['We track value added as closely as raw grades, at both GCSE and A Level: how far each pupil has progressed against their own starting point, not just against a national average. Subject-by-subject breakdowns are available from our admissions and academic teams on request.'] } },
+      { component: 'wf-text', props: { heading: 'Leavers’ Destinations', body: ['Recent leavers have gone on to a wide range of universities, apprenticeships and careers.'] } },
+      { component: 'wf-statistics', props: { heading: 'Recent leavers, at a glance', items: [
+        { value: '95%', label: 'Progressed to their first-choice university' },
+        { value: '30+', label: 'Universities represented last year' },
+        { value: '10%', label: 'Progressed to Russell Group or equivalent' },
+        { value: '5%', label: 'Chose an apprenticeship or direct career route' },
+      ] } },
+      { component: 'wf-text-media', props: { body: ['Our careers and higher education team supports every pupil individually, from work experience placements in Year 12 to personal statement guidance and interview preparation. We track destinations closely so our advice reflects what genuinely helps.'], side: 'left', mediaLabel: 'Pupil in a careers guidance session', ctaLabel: 'Preparing for Life Beyond Bancroft’s', ctaHref: 'sixth-form-preparing-for-life.html' } },
       {
         component: 'wf-cards', props: {
           heading: 'See also', cols: 3,
           items: [
-            { href: 'sixth-form-examination-results.html', heading: 'A Level Results', description: 'How pupils go on to perform in the Sixth Form.' },
-            { href: 'sixth-form-leavers-destinations.html', heading: 'Leavers’ Destinations', description: 'Where pupils go after Bancroft’s.' },
-            { href: 'about-rankings-recognition.html', heading: 'Rankings & Recognition', description: 'League tables, inspection reports and awards.' },
+            { href: 'about-awards-recognition.html', heading: 'Awards and Recognition', description: 'League tables, inspection reports and awards.' },
+            { href: 'senior-academic-life.html', heading: 'Senior Academic Life', description: 'Subjects studied from Year 7 to GCSE.' },
+            { href: 'sixth-form-academic-life.html', heading: 'Sixth Form Academic Life', description: 'A Level subjects and how choices are guided.' },
           ],
         },
       },
       faqs([
-        { heading: 'How do Bancroft’s GCSE results compare with other schools?', body: 'League table positions and inspection outcomes are kept together on one page.', ctaLabel: 'See Rankings & Recognition', ctaHref: 'about-rankings-recognition.html' },
-        { heading: 'How many GCSEs do pupils take?', body: 'Typically ten: six compulsory subjects and at least one modern language, plus three further options.', ctaLabel: 'See the curriculum', ctaHref: 'senior-curriculum.html' },
+        { heading: 'How do Bancroft’s results compare with other schools?', body: 'League table positions and inspection outcomes are kept together on one page.', ctaLabel: 'See Awards and Recognition', ctaHref: 'about-awards-recognition.html' },
+        { heading: 'How many GCSEs do pupils take?', body: 'Typically ten: six compulsory subjects and at least one modern language, plus three further options.', ctaLabel: 'See Senior Academic Life', ctaHref: 'senior-academic-life.html' },
+        { heading: 'Which A Level subjects are offered?', body: 'More than 25 subjects, spanning the sciences, humanities, languages, arts and social sciences.', ctaLabel: 'See Sixth Form Academic Life', ctaHref: 'sixth-form-academic-life.html' },
         { heading: 'Can I see results by subject?', body: 'Subject-by-subject breakdowns are available from our admissions and academic teams on request.', ctaLabel: 'Contact admissions', ctaHref: 'contact.html' },
-        { heading: 'What happens after GCSEs?', body: 'Most pupils stay on into our Sixth Form.', ctaLabel: 'See Staying On', ctaHref: 'sixth-form-staying-on.html' },
-      ], 'GCSE results questions'),
-      bookVisitPromo('cta-senior-results-promo'),
+        { heading: 'What happens after GCSEs?', body: 'Progression into the Sixth Form is automatic for pupils meeting the normal academic requirements.', ctaLabel: 'See Joining at 16+', ctaHref: 'admissions-16plus-journey.html' },
+      ], 'Results and destinations questions'),
+      bookVisitPromo('cta-results-destinations-promo'),
     ],
   },
 
-  'senior-curriculum': {
+  'senior-academic-life': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '11+ Senior', heading: 'Curriculum', body: 'A broad Third Form and Removes, followed by a well-supported route through GCSE options.',
-        mediaLabel: 'Senior pupils in a humanities lesson', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Curriculum', href: 'senior-curriculum.html' }),
+        eyebrow: '11+ Senior', heading: 'Academic Life', body: 'A broad Third Form and Removes, followed by a well-supported route through GCSE options.',
+        mediaLabel: 'Senior pupils in a humanities lesson', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Academic Life', href: 'senior-academic-life.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { heading: 'Third Form and Removes (Years 7-8)', body: ['Pupils begin with eighteen subjects across two years, mostly in mixed-ability groups, with only Maths taught in sets. Science is taught as one combined course, covering Physics, Chemistry and Biology together, alongside the connections between them.', 'Two languages are chosen from French, German and Spanish, continuing through the Removes. Music, Drama, Art, Design Technology and Computer Science are compulsory for everyone, with Computer Science moving into Python programming by the Removes.'] } },
-      { component: 'wf-text-media', props: { heading: 'GCSE options', side: 'right', mediaLabel: 'Pupils in a GCSE options meeting', body: ['At GCSE, six subjects are compulsory: Maths, English Language, English Literature, Biology, Chemistry and Physics, alongside at least one modern language. Pupils then choose three more from fifteen further options, guided by subject teachers, tutors and our careers team.'] } },
+      { component: 'wf-text-media', props: { heading: 'GCSE options', side: 'right', mediaLabel: 'Pupils in a GCSE options meeting', body: ['At GCSE, six subjects are compulsory: Maths, English Language, English Literature, Biology, Chemistry and Physics, alongside at least one modern language. Pupils then choose three more from fifteen further options, guided by subject teachers, tutors and our careers team.', 'Wireframe note: client idea for the real build - each subject’s full detail (content, assessment, trips) opens in a modal rather than its own page, provided the content is still crawlable by search engines (e.g. rendered in the page’s HTML, just visually hidden until opened). Not built here.'] } },
       { component: 'wf-text', props: { heading: 'Accelerated Maths', body: ['Pupils in the top Maths sets can sit their GCSE at the end of Year 10, then continue with an enriched course towards the Additional Maths qualification (FSMQ) in Year 11.'] } },
       {
         component: 'wf-cards', props: {
           heading: 'Related pages', cols: 3,
           items: [
-            { href: 'senior-trips-visits.html', heading: 'Trips & Visits', description: 'History, geography and language trips that extend what is taught in lessons.' },
-            { href: 'senior-learning-for-life.html', heading: 'Learning for Life', description: 'The timetabled programme that sits alongside academic subjects.' },
-            { href: 'senior-academic-results.html', heading: 'GCSE Results', description: 'See how this curriculum translates into outcomes.' },
+            { href: 'senior-beyond-the-classroom.html#trips-visits', heading: 'Trips & Visits', description: 'History, geography and language trips that extend what is taught in lessons.' },
+            { href: 'pastoral-care-houses.html', heading: 'Learning for Life', description: 'The timetabled programme that sits alongside academic subjects.' },
+            { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'See how this curriculum translates into outcomes.' },
           ],
         },
       },
-      bookVisitPromo('cta-senior-curriculum-promo'),
+      bookVisitPromo('cta-senior-academic-life-promo'),
     ],
   },
 
-  'senior-sport-arts': {
+  // Hub page (client request), replacing both Sport & Arts and Co-Curriculum. Sport, Music and
+  // Drama are each promoted to their own page (Music/Drama renamed from senior-arts-music/drama;
+  // Sport keeps its existing page, rewritten - see senior-sport.html). CCF, Duke of Edinburgh's
+  // Award, Sea Scouts and Trips & Visits become concise sections here instead of their own pages
+  // (client request) - each kept to its own heading so they stay scannable despite losing their
+  // old page-length depth. Visual Arts is deleted outright (client request), not migrated.
+  'senior-beyond-the-classroom': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '11+ Senior', heading: 'Sport & Arts', body: 'A far broader programme than our reputation suggests, across sport and the arts.',
-        mediaLabel: 'Pupils training on the sports pitch', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text-media', props: { heading: 'Sport', side: 'right', mediaLabel: 'Pupils training on the sports pitch', ctaLabel: 'Explore our sports programme', ctaHref: 'senior-sport.html', body: ['Pupils compete across nine sports, from house fixtures through to regional and national competition. Our First XV were recently named London Schools champions, and strong individual performers compete well beyond school level.'] } },
-      { component: 'wf-text-media', props: { heading: 'The Arts', side: 'left', mediaLabel: 'Pupils in a drama rehearsal', ctaLabel: 'Explore the arts', ctaHref: 'senior-arts.html', body: ['Visual Arts, Drama and Music all have a genuine presence at Bancroft’s, from termly exhibitions and productions to choirs, orchestras and bands that perform well beyond the school gates.'] } },
-      { component: 'wf-text-media', props: { heading: 'Looking for the Co-Curriculum?', side: 'right', mediaLabel: 'Pupils at a lunchtime club', ctaLabel: 'Explore the Co-Curriculum', ctaHref: 'senior-co-curriculum.html', body: ['Beyond sport and the arts, 250+ clubs and societies run throughout the year, from the Combined Cadet Force and Duke of Edinburgh’s Award to debating and robotics.'] } },
-      bookVisitPromo('cta-senior-sport-promo'),
-    ],
-  },
-
-  'senior-co-curriculum': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: '11+ Senior', heading: 'Co-Curriculum', body: 'An impressive array of clubs and societies run throughout the year, and the number keeps growing.',
-        mediaLabel: 'Pupils at a lunchtime club', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Co-Curriculum', href: 'senior-co-curriculum.html' }),
+        eyebrow: '11+ Senior', heading: 'Beyond the Classroom', body: 'An impressive array of clubs, sport and the arts run throughout the year, and the number keeps growing.',
+        mediaLabel: 'Pupils at a lunchtime club', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Beyond the Classroom', href: 'senior-beyond-the-classroom.html' }),
       },
     },
     blocks: [
@@ -1401,114 +1902,57 @@ export const pages: Record<string, Page> = {
         { value: '250+', label: 'Clubs and societies held throughout the year' },
       ] } },
       { component: 'wf-text', props: { body: ['Our school day is designed around it: lunch is almost an hour and a half, so eating, socialising and getting to a club can all happen without anything being squeezed in after hours. Most clubs run during the school day rather than as a separate paid programme.'] } },
-      { component: 'wf-text-media', props: { heading: 'Arts & Performance', side: 'left', mediaLabel: 'Pupils in a school orchestra', ctaLabel: 'Explore the arts', ctaHref: 'senior-arts.html', body: ['Choirs, orchestras, bands and drama productions, performing well beyond the school gates.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Explore Beyond the Classroom', cols: 3,
+          items: [
+            { href: 'senior-sport.html', heading: 'Sport', description: 'Nine sports, from house fixtures to national competition.', imageLabel: 'Pupils training on the sports pitch', linkText: 'Explore Sport' },
+            { href: 'senior-music.html', heading: 'Music', description: 'Orchestras, choirs and bands, with an annual concert at Drapers’ Hall.', imageLabel: 'School orchestra in rehearsal', linkText: 'Explore Music' },
+            { href: 'senior-drama.html', heading: 'Drama', description: 'Two major productions a year, plus House Drama and LAMDA.', imageLabel: 'Pupils in a drama rehearsal', linkText: 'Explore Drama' },
+          ],
+        },
+      },
       { component: 'wf-text-media', props: { heading: 'Academic & STEM', side: 'right', mediaLabel: 'Pupils in a debating society', body: ['Debating, Model United Nations, robotics and subject societies for pupils who want to go deeper.'] } },
-      { component: 'wf-text-media', props: { heading: 'Outdoor & Adventure', side: 'left', mediaLabel: 'Pupils on a Duke of Edinburgh expedition', links: [{ label: 'CCF', href: 'senior-co-curriculum-ccf.html' }, { label: 'Duke of Edinburgh’s Award', href: 'senior-co-curriculum-dofe.html' }, { label: 'Sea Scouts', href: 'senior-co-curriculum-sea-scouts.html' }, { label: 'Trips & Visits', href: 'senior-trips-visits.html' }], body: ['The Combined Cadet Force, Duke of Edinburgh’s Award, Sea Scouts and a full programme of trips and expeditions.'] } },
-      { component: 'wf-text-media', props: { heading: 'Community & Volunteering', side: 'right', mediaLabel: 'Pupils volunteering in the local community', body: ['Peer mentoring, charity fundraising and partnerships with local schools and community groups.'] } },
-      { component: 'wf-text-media', props: { heading: 'Looking for Sport?', side: 'left', mediaLabel: 'Pupils training on the sports pitch', body: ['Sport has its own dedicated home, covering all nine sports, from house fixtures to national competition.'], ctaLabel: 'Explore our sports programme', ctaHref: 'senior-sport.html' } },
-      bookVisitPromo('cta-senior-co-curriculum-promo'),
+      { component: 'wf-text', props: { heading: 'CCF', body: ['The Combined Cadet Force gives pupils from Year 9 upwards the chance to take part in adventurous activity and personal development, with an Army Section and an RAF Flight. The contingent meets weekly, with activities from shooting and first aid to fieldcraft and an annual camp.'] } },
+      { component: 'wf-text', props: { heading: 'Duke of Edinburgh’s Award', body: ['Bancroft’s has run the Duke of Edinburgh’s Award since 1976, as one of the largest Directly Licensed Centres in London. Every pupil from Year 9 upwards can take part, at Bronze, Silver and Gold, with the school running its own expeditions through to Gold assessments in Snowdonia.'] } },
+      { component: 'wf-text', props: { heading: 'Sea Scouts', body: ['The school’s own Scout group is open to boys and girls from Prep 2 (Year 5) to Year 9, with sailing, kayaking and rowing at Fairlop Waters alongside the usual range of Scouting activities and an annual summer camp.'] } },
+      {
+        component: 'wf-text', anchorId: 'trips-visits', props: { heading: 'Trips & Visits', body: ['A wide range of trips runs every year: History’s Rochester Castle and First World War battlefield visits, Geography field trips as far as Iceland and Ecuador, language immersion trips, ski trips, and volunteering projects in Costa Rica and Peru.'] },
+      },
+      { component: 'wf-text-media', props: { heading: 'Community & Volunteering', side: 'left', mediaLabel: 'Pupils volunteering in the local community', body: ['Peer mentoring, charity fundraising and partnerships with local schools and community groups.'] } },
+      bookVisitPromo('cta-senior-beyond-classroom-promo'),
     ],
   },
 
-  'senior-pastoral-care': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: '11+ Senior', heading: 'Pastoral Care', body: 'A structure built so every pupil is known well by more than one adult.',
-        mediaLabel: 'Tutor group meeting', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Pastoral Care', href: 'senior-pastoral-care.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { body: ['Every pupil belongs to a tutor group and a house, giving them two overlapping communities and several trusted adults beyond their subject teachers. Our Heads of Year and school counsellors provide additional support where it’s needed, and our Learning for Life and Spiritual Life programmes give pastoral care a place on the timetable, not just in the background.'] } },
-      {
-        component: 'wf-cards', props: {
-          heading: 'Support and wellbeing', cols: 4,
-          items: [
-            { href: 'senior-learning-for-life.html', heading: 'Learning for Life', description: 'Our timetabled programme for the things that matter beyond exams.', imageLabel: 'Pupils in a Learning for Life session', linkText: 'Read about Learning for Life' },
-            { href: 'senior-learning-support.html', heading: 'Learning Support', description: 'A proactive, tailored approach for pupils with additional needs.', imageLabel: 'Learning support session', linkText: 'Read about Learning Support' },
-            { href: 'senior-spiritual-life.html', heading: 'Spiritual Life', description: 'A diverse, multi-faith community, with the Chapel at its heart.', imageLabel: 'Pupils in the Chapel', linkText: 'Read about Spiritual Life' },
-            { href: 'admissions-11plus-starting.html', heading: 'Joining in Year 7?', description: 'How new pupils are helped to settle, from induction day onwards.', imageLabel: 'New Year 7 pupils on their first day', linkText: 'See Starting at Bancroft’s' },
-          ],
-        },
-      },
-      bookVisitPromo('cta-senior-pastoral-promo'),
-    ],
-  },
-
-  // Off primary nav (same pattern as Sport) — reached from Senior Pastoral Care and Senior Curriculum.
-  'senior-learning-for-life': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: '11+ Senior', heading: 'Learning for Life', body: 'Our timetabled programme for the things that matter beyond exams.',
-        mediaLabel: 'Pupils in a Learning for Life discussion',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Pastoral Care', href: 'senior-pastoral-care.html' }, { label: 'Learning for Life', href: 'senior-learning-for-life.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { body: ['Learning for Life gives pastoral care a place on the timetable, not just in the background. It sits alongside our Spiritual Life programme and the support pupils get from their tutor group and house.', 'Wireframe note: the themes below are placeholders. Final content should come from the existing Learning for Life Programme document, which this page replaces as the version families find in search. Also to confirm: whether the programme is Senior-only or runs in the Prep too.'] } },
-      {
-        component: 'wf-cards', props: {
-          heading: 'What the programme covers', cols: 3,
-          items: [
-            { category: 'Placeholder theme', heading: 'Health and wellbeing', description: 'One or two lines on what pupils cover under this theme.', imageLabel: 'Pupils in a wellbeing session' },
-            { category: 'Placeholder theme', heading: 'Relationships', description: 'One or two lines on what pupils cover under this theme.', imageLabel: 'Pupils in a group discussion' },
-            { category: 'Placeholder theme', heading: 'Living in the wider world', description: 'One or two lines on what pupils cover under this theme.', imageLabel: 'Pupils at a careers talk' },
-          ],
-        },
-      },
-      {
-        component: 'wf-table', props: {
-          heading: 'Year by year',
-          rowHeader: 'Year group',
-          columns: ['Focus'],
-          rows: [
-            { label: 'Years 7 and 8', cells: ['To be supplied'] },
-            { label: 'Year 9', cells: ['To be supplied'] },
-            { label: 'Years 10 and 11', cells: ['To be supplied'] },
-          ],
-        },
-      },
-      {
-        component: 'wf-text-media', props: {
-          heading: 'Part of how pupils are looked after', side: 'right', mediaLabel: 'Tutor group meeting',
-          body: ['Learning for Life is one strand of pastoral care at Bancroft’s, alongside tutor groups, houses, Heads of Year and school counsellors.'],
-          links: [
-            { label: 'Read about Senior pastoral care', href: 'senior-pastoral-care.html' },
-            { label: 'Download the full programme (PDF)', href: '#' },
-          ],
-        },
-      },
-      bookVisitPromo('cta-learning-for-life-promo'),
-    ],
-  },
 
   // --- Sport (off primary nav — reached via Sport & Arts, the homepage, and News) ---
 
+  // Each sport is now a section here rather than its own page (client request); the nine
+  // individual sport pages are deleted, their standout facts folded into these descriptions.
   'senior-sport': {
     hero: {
       component: 'wf-standard-hero',
       props: {
         eyebrow: 'Sport', heading: 'Sport at Bancroft’s', body: 'Nine sports, dozens of teams, and a programme built for every level, from house fixtures to national competition.',
         mediaLabel: 'Pupils training on the sports pitch',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }),
+        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Beyond the Classroom', href: 'senior-beyond-the-classroom.html' }, { label: 'Sport', href: 'senior-sport.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { heading: 'Facilities', body: ['Bancroft’s grounds include a multi-purpose sports hall, a 24m indoor swimming pool and 17 acres of playing fields. Our West Grove playing fields add tennis and netball courts, cricket, football and rugby pitches, cricket nets and a CrossFit gym, giving every sport a proper home.'] } },
       {
         component: 'wf-cards', props: {
-          heading: 'Explore our sports', cols: 3,
+          heading: 'Our sports', cols: 3,
           items: [
-            { href: 'senior-sport-football.html', heading: 'Football', description: 'One of the school’s most popular and fastest-growing sports.', imageLabel: 'Football training session', linkText: 'Explore Football' },
-            { href: 'senior-sport-rugby.html', heading: 'Rugby', description: 'Reigning London Schools champions.', imageLabel: 'Rugby training session', linkText: 'Explore Rugby' },
-            { href: 'senior-sport-hockey.html', heading: 'Hockey', description: 'Competitive fixtures across every year group.', imageLabel: 'Hockey training session', linkText: 'Explore Hockey' },
-            { href: 'senior-sport-netball.html', heading: 'Netball', description: 'One of the school’s most popular team sports.', imageLabel: 'Netball training session', linkText: 'Explore Netball' },
-            { href: 'senior-sport-cricket.html', heading: 'Cricket', description: 'A full summer term fixture list, boys and girls.', imageLabel: 'Cricket practice session', linkText: 'Explore Cricket' },
-            { href: 'senior-sport-athletics.html', heading: 'Athletics', description: 'Track and field, from house sports to county level.', imageLabel: 'Athletics training session', linkText: 'Explore Athletics' },
-            { href: 'senior-sport-swimming.html', heading: 'Swimming', description: 'Training in our own 24m indoor pool.', imageLabel: 'Swimming training session', linkText: 'Explore Swimming' },
-            { href: 'senior-sport-tennis.html', heading: 'Tennis', description: 'Individual and team competition on our own courts.', imageLabel: 'Tennis training session', linkText: 'Explore Tennis' },
-            { href: 'senior-sport-badminton.html', heading: 'Badminton', description: 'A growing squad, open to complete beginners.', imageLabel: 'Badminton training session', linkText: 'Explore Badminton' },
+            { heading: 'Football', description: 'One of the school’s most popular and fastest-growing sports - our First XI recently became the first Bancroft’s team to reach a national cup final.', imageLabel: 'Football training session' },
+            { heading: 'Rugby', description: 'Reigning London Schools champions, built on squad depth rather than a handful of standout players.', imageLabel: 'Rugby training session' },
+            { heading: 'Hockey', description: 'Competitive fixtures across every year group, with our First XI reaching a national final this season.', imageLabel: 'Hockey training session' },
+            { heading: 'Netball', description: 'One of the school’s most popular team sports, with a First VII that reached a national final this season.', imageLabel: 'Netball training session' },
+            { heading: 'Cricket', description: 'A full summer term fixture list, boys and girls, from Colts through to First XI level.', imageLabel: 'Cricket practice session' },
+            { heading: 'Athletics', description: 'Track and field, from house sports to county level - our team reached a national final this season.', imageLabel: 'Athletics training session' },
+            { heading: 'Swimming', description: 'Training in our own 24m indoor pool, with a termly house swimming gala for every pupil.', imageLabel: 'Swimming training session' },
+            { heading: 'Tennis', description: 'Individual and team competition on our own courts, from weekly coaching to inter-school fixtures.', imageLabel: 'Tennis training session' },
+            { heading: 'Badminton', description: 'A growing squad, open to complete beginners, competing in the National Schools’ Championships.', imageLabel: 'Badminton training session' },
           ],
         },
       },
@@ -1516,461 +1960,56 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  'senior-sport-football': {
+
+  // Promoted to a direct child of the Beyond the Classroom hub (client request), renamed from
+  // senior-arts-music.html - content carried over as-is. Defined here, before Drama, purely so
+  // the sitemap tree's child order (Sport, Music, Drama) matches Prep and Sixth Form - these
+  // pages are off the menu, so the tree falls back to config.ts's own definition order.
+  'senior-music': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'Sport', heading: 'Football', body: 'One of the school’s most popular and fastest-growing sports.',
-        mediaLabel: 'Football training session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Football', href: 'senior-sport-football.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Football', body: ['Football is led by a UEFA-qualified coach, with the programme prioritising skill, awareness and teamwork. Our First XI recently became the first Bancroft’s team to reach a national cup final, and girls’ football has grown to match the same access, coaching and support as the boys’ game.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'West Grove football pitches', body: ['Two full grass pitches at West Grove, plus regular access to a 4G artificial pitch, give the programme a proper home across every year group, from Prep right through to the Senior School.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-rugby.html', label: 'Rugby' },
-        { href: 'senior-sport-hockey.html', label: 'Hockey' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-football-promo'),
-    ],
-  },
-
-  'senior-sport-rugby': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Sport', heading: 'Rugby', body: 'Reigning London Schools champions, built on squad depth rather than a handful of standout players.',
-        mediaLabel: 'Rugby training session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Rugby', href: 'senior-sport-rugby.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Rugby', body: ['Our First XV were recently named London Schools champions, the culmination of an unbeaten season built on strong squad depth. The squad trains three times a week throughout the season alongside a full fixture list against other London schools, and several players have gone on to regional representative squads.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'left', mediaLabel: 'West Grove rugby pitches', body: ['Rugby is played on our West Grove pitches, with access to the CrossFit gym and weights area for strength and conditioning alongside on-field coaching.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-football.html', label: 'Football' },
-        { href: 'senior-sport-hockey.html', label: 'Hockey' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-rugby-promo'),
-    ],
-  },
-
-  'senior-sport-hockey': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Sport', heading: 'Hockey', body: 'Competitive fixtures across every year group, on our own West Grove pitches.',
-        mediaLabel: 'Hockey training session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Hockey', href: 'senior-sport-hockey.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Hockey', body: ['Hockey squads train weekly and compete in a full fixture list against local schools, with our First XI reaching a national final this season. The programme welcomes players of every experience level, from complete beginners to county-standard performers.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'West Grove hockey pitches', body: ['Matches and training take place on our West Grove playing fields, with strength and conditioning support available through the on-site CrossFit gym.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-netball.html', label: 'Netball' },
-        { href: 'senior-sport-athletics.html', label: 'Athletics' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-hockey-promo'),
-    ],
-  },
-
-  'senior-sport-netball': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Sport', heading: 'Netball', body: 'One of the school’s most popular team sports, from house fixtures to national competition.',
-        mediaLabel: 'Netball training session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Netball', href: 'senior-sport-netball.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Netball', body: ['Netball is one of the most popular sports in the school, with teams at every age group and a First VII that reached a national final this season. Weekly training focuses on movement, shooting accuracy and match-play tactics.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'left', mediaLabel: 'West Grove netball courts', body: ['Dedicated netball courts at West Grove give every squad a proper home for training and fixtures throughout the season.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-hockey.html', label: 'Hockey' },
-        { href: 'senior-sport-tennis.html', label: 'Tennis' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-netball-promo'),
-    ],
-  },
-
-  'senior-sport-cricket': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Sport', heading: 'Cricket', body: 'A full summer term fixture list for boys and girls, on our own pitches and nets.',
-        mediaLabel: 'Cricket practice session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Cricket', href: 'senior-sport-cricket.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Cricket', body: ['Cricket runs a full summer term fixture list for both boys’ and girls’ teams, from Colts through to First XI level, alongside indoor nets practice earlier in the year to keep technique sharp.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'West Grove cricket nets', body: ['West Grove’s brand-new cricket nets and dedicated pitches give the programme excellent facilities for both training and matches.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-athletics.html', label: 'Athletics' },
-        { href: 'senior-sport-tennis.html', label: 'Tennis' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-cricket-promo'),
-    ],
-  },
-
-  'senior-sport-athletics': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Sport', heading: 'Athletics', body: 'Track and field for every pupil, from house sports day to county-level competition.',
-        mediaLabel: 'Athletics training session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Athletics', href: 'senior-sport-athletics.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Athletics', body: ['Athletics is part of the curriculum for every pupil, with a dedicated squad training beyond that for pupils who want to compete further. Our team reached a national final this season, and several athletes regularly represent their county.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'left', mediaLabel: 'School playing fields', body: ['Track and field training makes use of our 17 acres of playing fields, with strength and conditioning support available through the CrossFit gym.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-cricket.html', label: 'Cricket' },
-        { href: 'senior-sport-swimming.html', label: 'Swimming' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-athletics-promo'),
-    ],
-  },
-
-  'senior-sport-swimming': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Sport', heading: 'Swimming', body: 'Training in our own 24m indoor pool, from beginners to competitive swimmers.',
-        mediaLabel: 'Swimming training session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Swimming', href: 'senior-sport-swimming.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Swimming', body: ['Swimming takes place in our own 24m indoor pool, used for curriculum lessons, squad training and low-impact fitness work for pupils across other sports. A termly house swimming gala gives every pupil a chance to compete.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'Indoor swimming pool', body: ['Having our own pool on site means training isn’t limited by weather or off-site travel, and it doubles as a recovery and conditioning space for other sports.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-athletics.html', label: 'Athletics' },
-        { href: 'senior-sport-tennis.html', label: 'Tennis' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-swimming-promo'),
-    ],
-  },
-
-  'senior-sport-tennis': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Sport', heading: 'Tennis', body: 'Individual and team competition on our own courts throughout the summer term.',
-        mediaLabel: 'Tennis training session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Tennis', href: 'senior-sport-tennis.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Tennis', body: ['Tennis combines individual coaching with team competition, giving pupils of every level a route into the sport, from weekly club sessions through to inter-school fixtures in the summer term.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'left', mediaLabel: 'West Grove tennis courts', body: ['Dedicated tennis courts at West Grove give the programme its own home for coaching and matches throughout the season.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-netball.html', label: 'Netball' },
-        { href: 'senior-sport-cricket.html', label: 'Cricket' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-tennis-promo'),
-    ],
-  },
-
-  'senior-sport-badminton': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Sport', heading: 'Badminton', body: 'A growing squad open to players of every ability, including complete beginners.',
-        mediaLabel: 'Badminton training session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'Sport', href: 'senior-sport.html' }, { label: 'Badminton', href: 'senior-sport-badminton.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Head of Badminton', body: ['Badminton has grown steadily, with every year group represented in fixtures against local schools and in the National Schools’ Championships. The squad trains weekly, working on movement, shot selection and match tactics, and the badminton club welcomes complete beginners alongside more experienced players.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'Sports hall badminton courts', body: ['Training and matches take place in our multi-purpose sports hall, with courts available for club sessions as well as squad training.'] } },
-      { component: 'wf-button-row', props: { heading: 'More sports', items: [
-        { href: 'senior-sport-tennis.html', label: 'Tennis' },
-        { href: 'senior-sport-swimming.html', label: 'Swimming' },
-        { href: 'senior-sport.html', label: 'See all our sports' },
-      ] } },
-      bookVisitPromo('cta-sport-badminton-promo'),
-    ],
-  },
-
-  // Off primary nav - reached from Senior Pastoral Care (SEO review, 2026-10-14).
-  'senior-spiritual-life': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: '11+ Senior', heading: 'Spiritual Life', body: 'A diverse, multi-faith community built on mutual respect.',
-        mediaLabel: 'Pupils in the Chapel',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Pastoral Care', href: 'senior-pastoral-care.html' }, { label: 'Spiritual Life', href: 'senior-spiritual-life.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { body: ['One of Bancroft’s greatest strengths is a diverse, multi-faith community, where every pupil is encouraged to explore their own spiritual life and to learn about the beliefs and values of others.'] } },
-      { component: 'wf-text-media', props: { heading: 'The Chapel', side: 'right', mediaLabel: 'The school Chapel', body: ['The Chapel is central to an ethos of mutual respect and acceptance. Its services are inclusive, focusing on shared values and common concerns, and give pupils space to reflect on questions of meaning and purpose.'] } },
-      { component: 'wf-text', props: { heading: 'Faith groups', body: ['Pupils of particular faiths can also meet together, through regular Communion services, the Christian Union, and the Jewish, Muslim and Hindu Societies, as well as weekly Muslim assemblies.'] } },
-      bookVisitPromo('cta-spiritual-life-promo'),
-    ],
-  },
-
-  // Off primary nav - reached from Senior Pastoral Care, Prep Pastoral Care and Starting at Bancroft's.
-  'senior-learning-support': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: '11+ Senior', heading: 'Learning Support', body: 'Every learner understood, supported and empowered.',
-        mediaLabel: 'Learning support session',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Pastoral Care', href: 'senior-pastoral-care.html' }, { label: 'Learning Support', href: 'senior-learning-support.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { body: ['We believe every child deserves to thrive. Our Learning Support department works closely with pupils, parents and teachers, taking a proactive, tailored approach to supporting pupils with special educational needs and disabilities (SEND), from Year 7 through to the Sixth Form.'] } },
-      {
-        component: 'wf-cards', props: {
-          heading: 'How support works', cols: 3,
-          items: [
-            { category: 'Placeholder', heading: 'Understanding each learner', description: 'How needs are identified, at entry and during a pupil’s time here.' },
-            { category: 'Placeholder', heading: 'Support in and beyond lessons', description: 'What support looks like day to day, including exam access arrangements.' },
-            { category: 'Placeholder', heading: 'Working with families', description: 'How parents are kept involved and who to contact.' },
-          ],
-        },
-      },
-      { component: 'wf-text', props: { body: ['Wireframe note: the live page says little beyond its introduction, so the three areas above are a suggested structure for the department to fill.'] } },
-      {
-        component: 'wf-text-media', props: {
-          heading: 'From the Prep onwards', side: 'right', mediaLabel: 'Form teacher working with a Prep pupil',
-          body: ['In the Prep, the learning support team works alongside form teachers to spot and support any child who needs extra help early.'],
-          links: [
-            { label: 'Read about Prep pastoral care', href: 'prep-pastoral-care.html' },
-            { label: 'See our SEND Policy', href: 'about-policies-procedures.html' },
-          ],
-        },
-      },
-      faqs([
-        { heading: 'How do I tell the school about my child’s needs?', body: 'Wireframe note: to be supplied. Draft answer: tell us when you register, so support can be planned before your child joins.', ctaLabel: 'Contact admissions', ctaHref: 'contact.html' },
-        { heading: 'Does learning support cost extra?', body: 'Wireframe note: to confirm with the Bursar.' },
-      ], 'Learning support questions'),
-      bookVisitPromo('cta-learning-support-promo'),
-    ],
-  },
-
-  // Off primary nav - reached from Senior Co-Curriculum and Senior Curriculum.
-  'senior-trips-visits': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: '11+ Senior', heading: 'Trips & Visits', body: 'From Rochester Castle to Iceland, trips that take learning well beyond the classroom.',
-        mediaLabel: 'Pupils on a geography field trip',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Co-Curriculum', href: 'senior-co-curriculum.html' }, { label: 'Trips & Visits', href: 'senior-trips-visits.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { body: ['A wide range of trips runs every year, designed to deepen pupils’ understanding of their subjects and to spark a love of learning and exploring.'] } },
-      {
-        component: 'wf-cards', props: {
-          heading: 'Where trips take us', cols: 4,
-          items: [
-            { heading: 'History', description: 'Rochester Castle and Canterbury Cathedral for younger pupils, and the First World War battlefields of northern France.', imageLabel: 'Pupils at a historic site' },
-            { heading: 'Geography', description: 'North Wales, the volcanoes of Sicily, and further afield to Barcelona, Ecuador and Iceland.', imageLabel: 'Pupils on a geography field trip' },
-            { heading: 'Languages', description: 'Immersion trips to French, German and Spanish-speaking countries, built around speaking the language.', imageLabel: 'Pupils on a language exchange' },
-            { heading: 'Skiing', description: 'Junior and Senior ski trips, for beginners and experienced skiers alike.', imageLabel: 'Pupils on a ski trip' },
-            { heading: 'Volunteering', description: 'Projects in Costa Rica and Peru, building classrooms and improving community facilities.', imageLabel: 'Pupils on a volunteering project' },
-            { heading: 'Sport and culture', description: 'International sports tours, and our drama company at the Edinburgh Fringe.', imageLabel: 'A school team on tour' },
-            { href: 'senior-co-curriculum-ccf.html', heading: 'Adventurous training', description: 'CCF and Sea Scout training in the Lake District and at summer camps.', imageLabel: 'Pupils on an expedition', linkText: 'Explore the CCF' },
-            { heading: 'London', description: 'Regular visits to museums, galleries and theatres on our doorstep.', imageLabel: 'Pupils outside a London museum' },
-          ],
-        },
-      },
-      { component: 'wf-quote', props: { items: [
-        { quote: 'Placeholder for a short quote from a pupil about a trip that stayed with them.', attribution: 'Senior pupil' },
-      ] } },
-      { component: 'wf-text', props: { body: ['Wireframe note: which trips are included in fees and which are charged separately is still to confirm (see Fees).'] } },
-      {
-        component: 'wf-cards', props: {
-          heading: 'Related pages', cols: 3,
-          items: [
-            { href: 'senior-co-curriculum.html', heading: 'Co-Curriculum', description: '250+ clubs and societies, including CCF, Duke of Edinburgh and Sea Scouts.' },
-            { href: 'senior-sport.html', heading: 'Sport', description: 'Nine sports, with tours at home and abroad.' },
-            { href: 'senior-arts.html', heading: 'The Arts', description: 'Visual Arts, Drama and Music.' },
-          ],
-        },
-      },
-      bookVisitPromo('cta-trips-promo'),
-    ],
-  },
-
-  // --- Outdoor activities (off primary nav, under Senior Co-Curriculum) -------------------------
-  // CCF, DofE and Sea Scouts had no home in the new sitemap (SEO review, 2026-10-14). "ccf" is the
-  // site's largest non-brand search term in the audit, so each keeps a full page.
-
-  'senior-co-curriculum-ccf': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Co-Curriculum', heading: 'CCF', body: 'One of our most popular co-curricular activities, from Year 9 upwards.',
-        mediaLabel: 'Cadets on a field exercise',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Co-Curriculum', href: 'senior-co-curriculum.html' }, { label: 'CCF', href: 'senior-co-curriculum-ccf.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'The Combined Cadet Force', body: ['The CCF is a national organisation, sponsored by the Ministry of Defence, that gives pupils from Year 9 upwards the chance to take part in adventurous activity and personal development. Training builds responsibility, self-reliance, perseverance and a sense of service, along with the confidence to lead.', 'Bancroft’s has an Army Section and an RAF Flight. Cadets join for at least a year and are expected to attend one annual camp.'] } },
-      { component: 'wf-text-media', props: { heading: 'Weekly training', side: 'right', mediaLabel: 'Cadets on the shooting range', body: ['The contingent meets every Tuesday after school, with training led by Sixth Formers alongside staff and visiting military training teams. The programme includes shooting on the range, first aid, command tasks, drill and fieldcraft.'] } },
-      { component: 'wf-text', props: { heading: 'Leading others', body: ['Sixth Form cadets can qualify to teach younger cadets, and all cadets are encouraged to take up external leadership and adventurous training courses open to them through the Services.'] } },
-      { component: 'wf-button-row', props: { heading: 'More outdoor activities', items: [
-        { href: 'senior-co-curriculum-dofe.html', label: 'Duke of Edinburgh’s Award' },
-        { href: 'senior-co-curriculum-sea-scouts.html', label: 'Sea Scouts' },
-        { href: 'senior-co-curriculum.html', label: 'See the Co-Curriculum' },
-      ] } },
-      bookVisitPromo('cta-ccf-promo'),
-    ],
-  },
-
-  'senior-co-curriculum-dofe': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Co-Curriculum', heading: 'Duke of Edinburgh’s Award', body: 'Bronze, Silver and Gold, run by the school from Year 9 upwards.',
-        mediaLabel: 'Pupils on a Duke of Edinburgh expedition',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Co-Curriculum', href: 'senior-co-curriculum.html' }, { label: 'Duke of Edinburgh’s Award', href: 'senior-co-curriculum-dofe.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'The DofE at Bancroft’s', body: ['Bancroft’s has offered the Duke of Edinburgh’s Award since 1976 and is its own Directly Licensed Centre, one of the largest in the London region. Every pupil from Year 9 upwards can take part, at Bronze, Silver and Gold.', 'On average more than 200 pupils are involved each year, with a pass rate well over 80 percent across the three levels.'] } },
-      { component: 'wf-text-media', props: { heading: 'Expeditions', side: 'right', mediaLabel: 'Pupils hiking in Snowdonia', body: ['The school runs every part of the expedition section, from introductory training in Epping Forest to Gold assessments in Snowdonia, led by staff with considerable mountain experience and national qualifications.'] } },
-      { component: 'wf-text', props: { heading: 'Skills, physical and volunteering', body: ['These sections can be completed through the co-curriculum at lunchtimes, after school and at weekends, and pupils are encouraged to look beyond school too, especially for volunteering.'] } },
-      { component: 'wf-button-row', props: { heading: 'More outdoor activities', items: [
-        { href: 'senior-co-curriculum-ccf.html', label: 'CCF' },
-        { href: 'senior-co-curriculum-sea-scouts.html', label: 'Sea Scouts' },
-        { href: 'senior-co-curriculum.html', label: 'See the Co-Curriculum' },
-      ] } },
-      bookVisitPromo('cta-dofe-promo'),
-    ],
-  },
-
-  'senior-co-curriculum-sea-scouts': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'Co-Curriculum', heading: 'Sea Scouts', body: 'Scouting on and off the water, from Year 5 to Year 9.',
-        mediaLabel: 'Sea Scouts kayaking',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Co-Curriculum', href: 'senior-co-curriculum.html' }, { label: 'Sea Scouts', href: 'senior-co-curriculum-sea-scouts.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Bancroft’s Sea Scouts', body: ['The school’s own Scout group is open to boys and girls from Prep 2 (Year 5) to Year 9. Sea Scouts do everything Scouts do, plus a wide range of water-based activities.', 'Wireframe note: Sea Scouts spans the Prep and Senior School, so it may also need a link from the Prep Co-Curriculum.'] } },
-      { component: 'wf-text-media', props: { heading: 'On the water', side: 'right', mediaLabel: 'Sea Scouts sailing at Fairlop Waters', body: ['In the summer term, Scouts learn sailing, kayaking and rowing at Fairlop Waters. In winter, activities move to the school gym and pool, with trips to nearby Gilwell Park.'] } },
-      { component: 'wf-text', props: { heading: 'Camps', body: ['The highlight of the year is a week-long summer camp, with other camps through the year for water and land activities, from hiking to fire lighting and cooking.'] } },
-      { component: 'wf-button-row', props: { heading: 'More outdoor activities', items: [
-        { href: 'senior-co-curriculum-ccf.html', label: 'CCF' },
-        { href: 'senior-co-curriculum-dofe.html', label: 'Duke of Edinburgh’s Award' },
-        { href: 'senior-co-curriculum.html', label: 'See the Co-Curriculum' },
-      ] } },
-      bookVisitPromo('cta-sea-scouts-promo'),
-    ],
-  },
-
-  // --- The Arts (off primary nav — mirrors Sport: a listing page plus one page per discipline,
-  // reached via Sport & Arts, Senior Co-Curriculum and Scholarships & Bursaries) ------------------------
-
-  'senior-arts': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'The Arts', heading: 'The Arts at Bancroft’s', body: 'Visual Arts, Drama and Music, open to every pupil and taken as far as each one wants to go.',
-        mediaLabel: 'Pupils rehearsing on stage',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'The Arts', href: 'senior-arts.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'Spaces to create', body: ['The arts at Bancroft’s cater for a wide range of interests and abilities, on the belief that anyone can flourish creatively. Each discipline has a proper home: three art studios in the purpose-built Lyons Centre, two performance spaces in the Great Hall and the Performing Arts Centre, and the Stave for music, with rehearsal, practice and recording rooms.'] } },
-      {
-        component: 'wf-cards', props: {
-          heading: 'Explore the arts', cols: 3,
-          items: [
-            { href: 'senior-arts-visual-arts.html', heading: 'Visual Arts', description: 'Drawing, painting, printmaking, 3D and textiles in the Lyons Centre studios.', imageLabel: 'Pupils working in an art studio', linkText: 'Explore Visual Arts' },
-            { href: 'senior-arts-drama.html', heading: 'Drama', description: 'Two major productions a year, plus House Drama and LAMDA.', imageLabel: 'Pupils in a drama rehearsal', linkText: 'Explore Drama' },
-            { href: 'senior-arts-music.html', heading: 'Music', description: 'Orchestras, choirs and bands, with an annual concert at Drapers’ Hall.', imageLabel: 'School orchestra in rehearsal', linkText: 'Explore Music' },
-          ],
-        },
-      },
-      bookVisitPromo('cta-arts-promo'),
-    ],
-  },
-
-  'senior-arts-visual-arts': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'The Arts', heading: 'Visual Arts', body: 'Art that is meaningful, enjoyable and open to everyone.',
-        mediaLabel: 'Pupils working in an art studio',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'The Arts', href: 'senior-arts.html' }, { label: 'Visual Arts', href: 'senior-arts-visual-arts.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'The Art department', body: ['Art is taught by three specialist teachers, supported by a skilled technician, each an expert in their own field and able to teach across every discipline. Practical demonstration sits at the centre of lessons, so new skills and techniques are introduced in a way that builds confidence.', 'In Years 7 to 9, pupils work across drawing, painting, printmaking and 3D relief, before choosing whether to continue to GCSE and A Level.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'Art studio in the Lyons Centre', body: ['The purpose-built Lyons Centre houses three main art studios, with the space and natural light for drawing, painting, printing, 3D design and textiles. Equipment ranges from a printing press to a kiln.'] } },
-      { component: 'wf-text', props: { heading: 'Beyond the studio', body: ['Pupils’ work is displayed throughout the school, and the year ends with a Showcase Exhibition for GCSE and A Level artists. Gallery visits, guest speakers and trips abroad add to what happens in lessons, and Sixth Formers are encouraged to enter the ARTiculation prize.', 'Leavers regularly go on to art foundation courses, architecture and design at leading institutions.'] } },
-      { component: 'wf-button-row', props: { heading: 'More in the arts', items: [
-        { href: 'senior-arts-drama.html', label: 'Drama' },
-        { href: 'senior-arts-music.html', label: 'Music' },
-        { href: 'senior-arts.html', label: 'See all the arts' },
-      ] } },
-      bookVisitPromo('cta-arts-visual-arts-promo'),
-    ],
-  },
-
-  'senior-arts-drama': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'The Arts', heading: 'Drama', body: 'Dynamic, inclusive and central to school life.',
-        mediaLabel: 'Pupils in a drama rehearsal',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'The Arts', href: 'senior-arts.html' }, { label: 'Drama', href: 'senior-arts-drama.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { heading: 'The Drama department', body: ['Every pupil studies Drama in Years 7 and 8, exploring genre, improvisation, physical theatre and characterisation. From Year 9 it becomes a creative option, leading on to GCSE and A Level for those who want to take it further.', 'There is as much to do off stage as on it: pupils can learn sound and lighting design, stage management and set building alongside our Theatre Technician.'] } },
-      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'The Performing Arts Centre', body: ['Two performance spaces, the traditional Great Hall and the flexible Performing Arts Centre, are both equipped with modern sound and lighting systems.'] } },
-      { component: 'wf-text', props: { heading: 'On stage', body: ['Two ambitious productions run every year, a senior show and a junior show, alongside a House Drama competition involving pupils from every year group and the Inter-House Performing Arts Competition.', 'Pupils can take LAMDA examinations up to Grade 8, and Bancroft’s companies have regularly performed at the Edinburgh Fringe. Theatre trips and workshops with visiting actors and directors run throughout the year.'] } },
-      { component: 'wf-button-row', props: { heading: 'More in the arts', items: [
-        { href: 'senior-arts-visual-arts.html', label: 'Visual Arts' },
-        { href: 'senior-arts-music.html', label: 'Music' },
-        { href: 'senior-arts.html', label: 'See all the arts' },
-      ] } },
-      bookVisitPromo('cta-arts-drama-promo'),
-    ],
-  },
-
-  'senior-arts-music': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: 'The Arts', heading: 'Music', body: 'An integral part of life at Bancroft’s, from the classroom to Drapers’ Hall.',
+        eyebrow: '11+ Senior', heading: 'Music', body: 'An integral part of life at Bancroft’s, from the classroom to Drapers’ Hall.',
         mediaLabel: 'School orchestra in rehearsal',
-        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Sport & Arts', href: 'senior-sport-arts.html' }, { label: 'The Arts', href: 'senior-arts.html' }, { label: 'Music', href: 'senior-arts-music.html' }),
+        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Beyond the Classroom', href: 'senior-beyond-the-classroom.html' }, { label: 'Music', href: 'senior-music.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { heading: 'The Music department', body: ['In their first two years, all pupils have a broad musical education covering composing, performing and listening, from classical works to contemporary styles. Older pupils can continue to GCSE and A Level.', 'Individual instrumental and vocal lessons are taught each week by around 30 visiting teachers, and pupils have regular masterclasses with professional musicians.'] } },
       { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'Rehearsal space in the Stave', body: ['The department is based in the Stave, with a large rehearsal space, teaching and practice rooms, and a technology suite for recording and composition.'] } },
       { component: 'wf-text', props: { heading: 'Ensembles and concerts', body: ['More than fifteen orchestras, choirs, bands and ensembles rehearse each week, from Sinfonia and the Concert Band to the Big Band, Soul Band and chamber groups. Many pupils also form bands of their own.', 'Every group performs at least once a year, in school and at venues across London. The highlight is the annual concert at Drapers’ Hall in the City of London.'] } },
-      { component: 'wf-text-media', props: { heading: 'Music Awards at 11+', side: 'left', mediaLabel: 'Pupil playing violin', body: ['Music Award holders receive individual tuition and a programme of masterclasses covering performance, composition, music technology and conducting.'], links: [{ label: 'See Scholarships & Bursaries', href: 'scholarships-bursaries.html' }] } },
-      { component: 'wf-button-row', props: { heading: 'More in the arts', items: [
-        { href: 'senior-arts-visual-arts.html', label: 'Visual Arts' },
-        { href: 'senior-arts-drama.html', label: 'Drama' },
-        { href: 'senior-arts.html', label: 'See all the arts' },
+      { component: 'wf-text-media', props: { heading: 'Music Awards at 11+', side: 'left', mediaLabel: 'Pupil playing violin', body: ['Music Award holders receive individual tuition and a programme of masterclasses covering performance, composition, music technology and conducting.'], links: [{ label: 'See Scholarships & Awards', href: 'scholarships-awards.html' }] } },
+      { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
+        { href: 'senior-drama.html', label: 'Drama' },
+        { href: 'senior-sport.html', label: 'Sport' },
+        { href: 'senior-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
       ] } },
-      bookVisitPromo('cta-arts-music-promo'),
+      bookVisitPromo('cta-music-promo'),
+    ],
+  },
+
+  // Promoted to a direct child of the Beyond the Classroom hub (client request), renamed from
+  // senior-arts-drama.html - content carried over as-is; only the "More in the arts" row changes,
+  // since Visual Arts (and the "arts" grouping itself) no longer exist.
+  'senior-drama': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '11+ Senior', heading: 'Drama', body: 'Dynamic, inclusive and central to school life.',
+        mediaLabel: 'Pupils in a drama rehearsal',
+        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Beyond the Classroom', href: 'senior-beyond-the-classroom.html' }, { label: 'Drama', href: 'senior-drama.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { heading: 'The Drama department', body: ['Every pupil studies Drama in Years 7 and 8, exploring genre, improvisation, physical theatre and characterisation. From Year 9 it becomes a creative option, leading on to GCSE and A Level for those who want to take it further.', 'There is as much to do off stage as on it: pupils can learn sound and lighting design, stage management and set building alongside our Theatre Technician.'] } },
+      { component: 'wf-text-media', props: { heading: 'Facilities', side: 'right', mediaLabel: 'The Performing Arts Centre', body: ['Two performance spaces, the traditional Great Hall and the flexible Performing Arts Centre, are both equipped with modern sound and lighting systems.'] } },
+      { component: 'wf-text', props: { heading: 'On stage', body: ['Two ambitious productions run every year, a senior show and a junior show, alongside a House Drama competition involving pupils from every year group and the Inter-House Performing Arts Competition.', 'Pupils can take LAMDA examinations up to Grade 8, and Bancroft’s companies have regularly performed at the Edinburgh Fringe. Theatre trips and workshops with visiting actors and directors run throughout the year.'] } },
+      { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
+        { href: 'senior-music.html', label: 'Music' },
+        { href: 'senior-sport.html', label: 'Sport' },
+        { href: 'senior-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
+      ] } },
+      bookVisitPromo('cta-drama-promo'),
     ],
   },
 
@@ -1989,10 +2028,13 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { align: 'center', body: ['Sixth Form at Bancroft’s is where pupils take real ownership of their education, in a school that still knows them individually. Some join us for the first time at 16; most have grown up here since 7 or 11.'] } },
       { component: 'wf-text-media', props: { heading: 'Why Bancroft’s Sixth Form', side: 'left', mediaLabel: 'Sixth Form pupils outside the main building', body: ['What makes the Sixth Form distinctive.'], ctaLabel: 'Read why pupils choose us', ctaHref: 'sixth-form-why.html' } },
       { component: 'wf-text-media', props: { heading: 'Sixth Form Life', side: 'right', mediaLabel: 'Sixth Form pupils in the common room', body: ['For pupils: what your days will actually be like.'], ctaLabel: 'See what Sixth Form life is like', ctaHref: 'sixth-form-life.html' } },
-      { component: 'wf-text-media', props: { heading: 'Curriculum & Subjects', side: 'left', mediaLabel: 'Sixth Form pupils in a seminar', body: ['A Level subjects and how choices are guided.'], ctaLabel: 'See the subjects on offer', ctaHref: 'sixth-form-curriculum-subjects.html' } },
-      { component: 'wf-text-media', props: { heading: 'Co-Curriculum', side: 'right', mediaLabel: 'Sixth Former leading a club', body: ['Where Sixth Formers lead clubs and societies, not just attend them.'], ctaLabel: 'Explore the Co-Curriculum', ctaHref: 'sixth-form-co-curriculum.html' } },
-      { component: 'wf-text-media', props: { heading: 'Leavers’ Destinations', side: 'left', mediaLabel: 'Graduating Sixth Form pupils', body: ['Where recent leavers have gone on to.'], ctaLabel: 'See where leavers go next', ctaHref: 'sixth-form-leavers-destinations.html' } },
-      { component: 'wf-text-media', props: { heading: 'A Level Results', side: 'right', mediaLabel: 'Pupils on A Level results day', body: ['A Level outcomes and value added.'], ctaLabel: 'See our results', ctaHref: 'sixth-form-examination-results.html' } },
+      { component: 'wf-text-media', props: { heading: 'Academic Life', side: 'left', mediaLabel: 'Sixth Form pupils in a seminar', body: ['A Level subjects and how choices are guided.'], ctaLabel: 'See the subjects on offer', ctaHref: 'sixth-form-academic-life.html' } },
+      { component: 'wf-text-media', props: { heading: 'Beyond the Classroom', side: 'right', mediaLabel: 'Sixth Former leading a club', body: ['Sport, music, drama and where Sixth Formers lead clubs and societies, not just attend them.'], ctaLabel: 'Explore Beyond the Classroom', ctaHref: 'sixth-form-beyond-the-classroom.html' } },
+      { component: 'wf-text-media', props: { heading: 'Pastoral Care & Houses', side: 'left', mediaLabel: 'Tutor group meeting', body: ['How every Sixth Former is known, supported and challenged.'], ctaLabel: 'Read about pastoral care', ctaHref: 'pastoral-care-houses.html' } },
+      { component: 'wf-promo', props: { heading: 'Results & Destinations', body: 'A Level outcomes, value added, and where recent leavers have gone on to.', ctaLabel: 'See our results', ctaHref: 'results-destinations.html', ctaId: 'cta-sixthform-results-overview-promo', mediaLabel: 'Pupils on A Level results day' } },
+      // Learning Support: a highlighted section on every stage landing page (client request).
+      { component: 'wf-promo', props: { heading: 'Learning Support', body: 'A proactive, tailored approach for pupils with additional needs, continuing right through to the Sixth Form.', ctaLabel: 'Read about Learning Support', ctaHref: 'learning-support.html', ctaId: 'cta-sixthform-learning-support-promo', mediaLabel: 'Learning support session' } },
+      { component: 'wf-text-media', props: { heading: 'Preparing for Life Beyond Bancroft’s', side: 'right', mediaLabel: 'Pupil in a careers guidance session', body: ['Careers guidance, futures and alumni stories.'], ctaLabel: 'See what comes next', ctaHref: 'sixth-form-preparing-for-life.html' } },
       // "Joining at 16+" - the admissions summary that makes this overview work as the 16+
       // hub the SEO report asks for (process, key dates, fees, assessment). Detail stays on the Journey page.
       {
@@ -2030,15 +2072,25 @@ export const pages: Record<string, Page> = {
         },
       },
       { component: 'wf-text', props: { body: ['Wireframe note: that Sixth Form fees match the Senior School fee, and the registration and interview dates, are to be confirmed with admissions.'] } },
+      { component: 'wf-quote', props: { items: [
+        { quote: 'Placeholder for a quote from a Sixth Form parent about choosing Bancroft’s.', attribution: 'Sixth Form parent' },
+      ] } },
       faqs([
-        { heading: 'How many A Levels do pupils take?', body: 'Pupils typically choose three or four A Level subjects.', ctaLabel: 'See the subjects on offer', ctaHref: 'sixth-form-curriculum-subjects.html' },
-        { heading: 'What are the A Level results like?', body: 'Our results are published each year, with a five-year view alongside.', ctaLabel: 'See A Level Results', ctaHref: 'sixth-form-examination-results.html' },
-        { heading: 'Where do leavers go next?', body: 'Recent leavers have gone on to a wide range of universities, apprenticeships and careers.', ctaLabel: 'See Leavers’ Destinations', ctaHref: 'sixth-form-leavers-destinations.html' },
-        { heading: 'Can I join from another school?', body: 'Yes. Some pupils join us for the first time at 16.', ctaLabel: 'See Your 16+ Journey', ctaHref: 'admissions-16plus-journey.html' },
+        { heading: 'How many A Levels do pupils take?', body: 'Pupils typically choose three or four A Level subjects.', ctaLabel: 'See Academic Life', ctaHref: 'sixth-form-academic-life.html' },
+        { heading: 'What are the A Level results like?', body: 'Our results are published each year, with a five-year view alongside.', ctaLabel: 'See Results & Destinations', ctaHref: 'results-destinations.html' },
+        { heading: 'Where do leavers go next?', body: 'Recent leavers have gone on to a wide range of universities, apprenticeships and careers.', ctaLabel: 'See Results & Destinations', ctaHref: 'results-destinations.html' },
+        { heading: 'Can I join from another school?', body: 'Yes. Some pupils join us for the first time at 16.', ctaLabel: 'See Joining at 16+', ctaHref: 'admissions-16plus-journey.html' },
         { heading: 'How is Sixth Form different from Year 11?', body: 'More independence, more responsibility and a more grown-up school day.', ctaLabel: 'See Sixth Form Life', ctaHref: 'sixth-form-life.html' },
-        { heading: 'What GCSE grades do I need?', body: 'Offers are conditional on GCSE results in August. (Wireframe note: entry requirements by subject to be supplied.)', ctaLabel: 'See Your 16+ Journey', ctaHref: 'admissions-16plus-journey.html' },
-        { heading: 'Are scholarships and bursaries available at 16+?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 16+.', ctaLabel: 'See Scholarships & Bursaries', ctaHref: 'scholarships-bursaries.html' },
+        { heading: 'What GCSE grades do I need?', body: 'Offers are conditional on GCSE results in August. (Wireframe note: entry requirements by subject to be supplied.)', ctaLabel: 'See Joining at 16+', ctaHref: 'admissions-16plus-journey.html' },
+        { heading: 'Are scholarships and bursaries available at 16+?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 16+.', ctaLabel: 'See Scholarships & Awards', ctaHref: 'scholarships-awards.html' },
       ], 'Sixth Form questions'),
+      { component: 'wf-cards', props: {
+        heading: 'Latest news', cols: 2,
+        items: [
+          { category: 'Sixth Form', heading: 'Sixth Form pupils receive strong university offers', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Sixth Form pupils celebrating' },
+          { category: 'Sixth Form', heading: 'Bancroft’s ranked among London’s top performing schools', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Pupils in a Senior School lesson' },
+        ],
+      } },
       {
         component: 'wf-text-media', props: {
           heading: 'Ready to take the next step?', side: 'left', mediaLabel: 'Sixth Form pupil at their desk',
@@ -2047,11 +2099,13 @@ export const pages: Record<string, Page> = {
           secondaryLabel: 'Book a Visit', secondaryHref: 'book-a-visit.html',
         },
       },
+      // Replaces the old link out to a standalone "Staying On" page (now deleted, client
+      // request) - that content lives as a section on Joining at 16+ instead.
       {
         component: 'wf-text-media', props: {
-          heading: 'Already at Bancroft’s?', body: ['How current Year 11 pupils move into Sixth Form.'],
+          heading: 'Already at Bancroft’s?', body: ['How current Year 11 pupils move up into Sixth Form.'],
           side: 'right', mediaLabel: 'Year 11 pupil moving into Sixth Form',
-          ctaLabel: 'Staying On', ctaHref: 'sixth-form-staying-on.html', ctaId: 'cta-sixthform-staying-on',
+          ctaLabel: 'See Joining at 16+', ctaHref: 'admissions-16plus-journey.html', ctaId: 'cta-sixthform-moving-up',
         },
       },
     ],
@@ -2072,11 +2126,10 @@ export const pages: Record<string, Page> = {
       ] } },
       {
         component: 'wf-cards', props: {
-          heading: 'The evidence', cols: 3,
+          heading: 'The evidence', cols: 2,
           items: [
-            { href: 'sixth-form-examination-results.html', heading: 'A Level Results', description: 'This year’s outcomes, with a five-year view.' },
-            { href: 'sixth-form-leavers-destinations.html', heading: 'Leavers’ Destinations', description: 'Where pupils go after Bancroft’s.' },
-            { href: 'about-rankings-recognition.html', heading: 'Rankings & Recognition', description: 'League tables, inspection reports and awards.' },
+            { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'This year’s A Level outcomes, and where pupils go after Bancroft’s.' },
+            { href: 'about-awards-recognition.html', heading: 'Awards and Recognition', description: 'League tables, inspection reports and awards.' },
           ],
         },
       },
@@ -2111,14 +2164,14 @@ export const pages: Record<string, Page> = {
       { component: 'wf-quote', props: { items: [
         { quote: 'Sixth Form felt like a genuine step up. I had more freedom, but the support was still there whenever I needed it.', attribution: 'Former pupil, now at university' },
       ] } },
-      { component: 'wf-text-media', props: { heading: 'Co-Curriculum', side: 'left', mediaLabel: 'Sixth Form pupil leading a club', body: ['You won’t just take part in clubs and societies. Many Sixth Formers go on to run them, mentor younger pupils or become prefects.'], ctaLabel: 'See how Sixth Formers lead', ctaHref: 'sixth-form-co-curriculum.html' } },
+      { component: 'wf-text-media', props: { heading: 'Beyond the Classroom', side: 'left', mediaLabel: 'Sixth Form pupil leading a club', body: ['You won’t just take part in clubs and societies. Many Sixth Formers go on to run them, mentor younger pupils or become prefects.'], ctaLabel: 'See how Sixth Formers lead', ctaHref: 'sixth-form-beyond-the-classroom.html' } },
       {
         component: 'wf-cards', props: {
           heading: 'Thinking about joining?', cols: 3,
           items: [
-            { href: 'sixth-form-curriculum-subjects.html', heading: 'Curriculum & Subjects', description: 'The A Levels you can choose from.' },
-            { href: 'sixth-form-leavers-destinations.html', heading: 'Leavers’ Destinations', description: 'Where it could take you.' },
-            { href: 'admissions-16plus-journey.html', heading: 'Your 16+ Journey', description: 'How to apply.' },
+            { href: 'sixth-form-academic-life.html', heading: 'Academic Life', description: 'The A Levels you can choose from.' },
+            { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'Where it could take you.' },
+            { href: 'admissions-16plus-journey.html', heading: 'Joining at 16+', description: 'How to apply.' },
           ],
         },
       },
@@ -2126,137 +2179,153 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  'sixth-form-co-curriculum': {
+  // Hub page, new for this stage (client request) - Sixth Form never had Sport, Music or Drama
+  // pages of its own before; each is new content here, written around the same "Sixth Formers
+  // lead, not just attend" theme the rest of this page already had.
+  'sixth-form-beyond-the-classroom': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '16+ Sixth Form', heading: 'Co-Curriculum', body: 'Sixth Formers don’t just take part in clubs, many go on to lead them.',
-        mediaLabel: 'Sixth Form pupil leading a club', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Co-Curriculum', href: 'sixth-form-co-curriculum.html' }),
+        eyebrow: '16+ Sixth Form', heading: 'Beyond the Classroom', body: 'Sixth Formers don’t just take part in clubs, many go on to lead them.',
+        mediaLabel: 'Sixth Form pupil leading a club', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Beyond the Classroom', href: 'sixth-form-beyond-the-classroom.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { body: ['Sixth Formers stay involved in the clubs and societies that run right across the school, but with a difference: many take on running them, mentoring younger pupils and building real leadership experience alongside their A Levels.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Explore Beyond the Classroom', cols: 3,
+          items: [
+            { href: 'sixth-form-sport.html', heading: 'Sport', description: 'Captaincy, coaching younger pupils and nine sports to stay involved in.', imageLabel: 'Sixth Form pupils training on the sports pitch', linkText: 'Explore Sport' },
+            { href: 'sixth-form-music.html', heading: 'Music', description: 'Leading ensembles, Music Scholars and the senior end of every concert.', imageLabel: 'Sixth Form pupil leading an ensemble', linkText: 'Explore Music' },
+            { href: 'sixth-form-drama.html', heading: 'Drama', description: 'Leading roles, and student-directed work alongside the main productions.', imageLabel: 'Sixth Former directing a rehearsal', linkText: 'Explore Drama' },
+          ],
+        },
+      },
       { component: 'wf-text-media', props: { heading: 'Leadership & Mentoring', side: 'right', mediaLabel: 'Sixth Former mentoring a younger pupil', body: ['Running junior clubs, prefect roles and mentoring pupils lower down the school.'] } },
-      { component: 'wf-text-media', props: { heading: 'Arts & Performance', side: 'left', mediaLabel: 'Sixth Former leading a rehearsal', body: ['Leading roles in productions, senior ensembles and student-run societies.'] } },
-      { component: 'wf-text-media', props: { heading: 'Academic Societies', side: 'right', mediaLabel: 'Sixth Formers in a debating society', body: ['Subject societies, Model United Nations and debating, often student-led.'] } },
-      { component: 'wf-text-media', props: { heading: 'Outdoor & Adventure', side: 'left', mediaLabel: 'Sixth Former leading a Duke of Edinburgh expedition', body: ['Gold Duke of Edinburgh’s Award, senior CCF roles and expedition leadership.'] } },
-      bookVisitPromo('cta-sixthform-clubs-promo'),
+      { component: 'wf-text-media', props: { heading: 'Academic Societies', side: 'left', mediaLabel: 'Sixth Formers in a debating society', body: ['Subject societies, Model United Nations and debating, often student-led.'] } },
+      { component: 'wf-text-media', props: { heading: 'Outdoor & Adventure', side: 'right', mediaLabel: 'Sixth Former leading a Duke of Edinburgh expedition', body: ['Gold Duke of Edinburgh’s Award, senior CCF roles and expedition leadership.'] } },
+      bookVisitPromo('cta-sixthform-beyond-classroom-promo'),
     ],
   },
 
-  'sixth-form-curriculum-subjects': {
+  'sixth-form-sport': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '16+ Sixth Form', heading: 'Curriculum & Subjects', body: 'A wide choice of A Level subjects, with guidance to help pupils choose well.',
-        mediaLabel: 'Sixth Form pupils in a subject seminar', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Curriculum & Subjects', href: 'sixth-form-curriculum-subjects.html' }),
+        eyebrow: '16+ Sixth Form', heading: 'Sixth Form Sport', body: 'Nine sports to stay involved in, with real leadership opportunities for Sixth Formers.',
+        mediaLabel: 'Sixth Form pupils training on the sports pitch', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Beyond the Classroom', href: 'sixth-form-beyond-the-classroom.html' }, { label: 'Sport', href: 'sixth-form-sport.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Sixth Formers continue across all nine sports, with First team places, captaincy and coaching younger year groups all open to them. Many combine playing with helping run training for junior squads.'] } },
+      { component: 'wf-text-media', props: { heading: 'Captaincy and coaching', side: 'right', mediaLabel: 'Sixth Form pupil coaching younger pupils', body: ['Sixth Form captains lead warm-ups, help plan training and represent their squad at fixtures, working alongside coaching staff rather than just following them.'] } },
+      { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
+        { href: 'sixth-form-music.html', label: 'Music' },
+        { href: 'sixth-form-drama.html', label: 'Drama' },
+        { href: 'sixth-form-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
+      ] } },
+      bookVisitPromo('cta-sixthform-sport-promo'),
+    ],
+  },
+
+  'sixth-form-music': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '16+ Sixth Form', heading: 'Sixth Form Music', body: 'The senior end of every ensemble, and a natural home for Music Scholars.',
+        mediaLabel: 'Sixth Form pupil leading an ensemble', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Beyond the Classroom', href: 'sixth-form-beyond-the-classroom.html' }, { label: 'Music', href: 'sixth-form-music.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Sixth Form musicians lead sections in the school’s orchestras, choirs and bands, often alongside continuing Music or Music Technology at A Level. Music Scholars take on extra responsibility, from mentoring younger players to helping direct smaller ensembles.'] } },
+      { component: 'wf-text-media', props: { heading: 'Music Scholars', side: 'left', mediaLabel: 'Pupil playing violin', body: ['Music Scholars continue the individual tuition and masterclasses that came with their award at 11+ or 16+, alongside extra leadership responsibility within the department.'], links: [{ label: 'See Scholarships & Awards', href: 'scholarships-awards.html' }] } },
+      { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
+        { href: 'sixth-form-sport.html', label: 'Sport' },
+        { href: 'sixth-form-drama.html', label: 'Drama' },
+        { href: 'sixth-form-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
+      ] } },
+      bookVisitPromo('cta-sixthform-music-promo'),
+    ],
+  },
+
+  'sixth-form-drama': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '16+ Sixth Form', heading: 'Sixth Form Drama', body: 'Leading roles in the main productions, and student-directed work of their own.',
+        mediaLabel: 'Sixth Former directing a rehearsal', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Beyond the Classroom', href: 'sixth-form-beyond-the-classroom.html' }, { label: 'Drama', href: 'sixth-form-drama.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Sixth Formers take the leading roles in the senior production, and many go further, writing, directing or stage-managing a student-led piece of their own alongside the main calendar of shows.'] } },
+      { component: 'wf-text-media', props: { heading: 'Off stage too', side: 'right', mediaLabel: 'Sixth Former at the sound desk', body: ['Sound, lighting and stage management all have senior pupils in charge on the night, working alongside the Theatre Technician rather than just assisting.'] } },
+      { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
+        { href: 'sixth-form-sport.html', label: 'Sport' },
+        { href: 'sixth-form-music.html', label: 'Music' },
+        { href: 'sixth-form-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
+      ] } },
+      bookVisitPromo('cta-sixthform-drama-promo'),
+    ],
+  },
+
+  'sixth-form-academic-life': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '16+ Sixth Form', heading: 'Academic Life', body: 'A wide choice of A Level subjects, with guidance to help pupils choose well.',
+        mediaLabel: 'Sixth Form pupils in a subject seminar', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Academic Life', href: 'sixth-form-academic-life.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { heading: 'A Level subjects', body: ['Pupils typically choose three or four A Level subjects from a wide range spanning the sciences, humanities, languages, arts and social sciences. Our careers and higher education team works with every pupil individually, so subject choices connect clearly to what comes next.'] } },
       { component: 'wf-cards', props: { heading: 'Related pages', cols: 2, items: [
-        { href: 'sixth-form-leavers-destinations.html', heading: 'Leavers’ Destinations', description: 'See where subject choices have led recent leavers.' },
-        { href: 'sixth-form-examination-results.html', heading: 'A Level Results', description: 'A Level outcomes by subject.' },
+        { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'A Level outcomes by subject, and where they’ve led recent leavers.' },
+        { href: 'sixth-form-preparing-for-life.html', heading: 'Preparing for Life Beyond Bancroft’s', description: 'Careers guidance, futures and alumni stories.' },
       ] } },
-      bookVisitPromo('cta-sixthform-curriculum-promo'),
+      bookVisitPromo('cta-sixthform-academic-life-promo'),
     ],
   },
 
-  'sixth-form-leavers-destinations': {
+  // New page (client request), covering careers and futures, with a section for alumni stories.
+  // Results & Destinations already covers the numbers (outcomes, universities); this page is
+  // about the support pupils get getting there, and what it looks like further out.
+  'sixth-form-preparing-for-life': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: '16+ Sixth Form', heading: 'Leavers’ Destinations', body: 'Recent leavers have gone on to a wide range of universities, apprenticeships and careers.',
-        mediaLabel: 'Sixth Form pupils celebrating on results day', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Leavers’ Destinations', href: 'sixth-form-leavers-destinations.html' }),
+        eyebrow: '16+ Sixth Form', heading: 'Preparing for Life Beyond Bancroft’s', body: 'Careers guidance, university applications and the wider skills pupils leave with.',
+        mediaLabel: 'Pupil in a careers guidance session', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Preparing for Life Beyond Bancroft’s', href: 'sixth-form-preparing-for-life.html' }),
       },
     },
     blocks: [
-      { component: 'wf-statistics', props: { heading: 'Recent leavers, at a glance', items: [
-        { value: '95%', label: 'Progressed to their first-choice university' },
-        { value: '30+', label: 'Universities represented last year' },
-        { value: '10%', label: 'Progressed to Russell Group or equivalent' },
-        { value: '5%', label: 'Chose an apprenticeship or direct career route' },
-      ] } },
-      { component: 'wf-text', props: { heading: 'Beyond Bancroft’s', body: ['Our careers and higher education team supports every pupil individually, from work experience placements in Year 12 to personal statement guidance and interview preparation. We track destinations closely so our advice reflects what genuinely helps.'] } },
-      bookVisitPromo('cta-leavers-destinations-promo'),
-    ],
-  },
-
-  'sixth-form-staying-on': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: '16+ Sixth Form', heading: 'Staying On', body: 'How current Year 11 pupils move smoothly into the Sixth Form.',
-        ctaLabel: 'See Sixth Form Curriculum & Subjects', ctaHref: 'sixth-form-curriculum-subjects.html', ctaId: 'cta-staying-on-hero',
-        mediaLabel: 'Year 11 pupil meeting their tutor', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Staying On', href: 'sixth-form-staying-on.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-text', props: { body: ['Current pupils confirm their Sixth Form subject choices in the spring of Year 11, guided by subject teachers, their tutor and our careers team. Staying on is expected to be straightforward for the great majority of pupils, formalised once GCSE results confirm each subject’s entry requirements are met.'] } },
-      { component: 'wf-promo', props: { heading: 'Confirm your Sixth Form place', body: 'Speak to your Head of Year about confirming your subject choices, or register your interest online.', ctaLabel: 'Register Online', ctaHref: 'register-16plus.html', ctaId: 'cta-staying-on-promo', mediaLabel: 'Pupil confirming Sixth Form subject choices' } },
-    ],
-  },
-
-  'sixth-form-examination-results': {
-    hero: {
-      component: 'wf-standard-hero',
-      props: {
-        eyebrow: '16+ Sixth Form', heading: 'A Level Results', body: 'Consistently strong A Level outcomes across a genuinely broad subject range, updated every August.',
-        mediaLabel: 'Sixth Form pupils on A Level results day', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'A Level Results', href: 'sixth-form-examination-results.html' }),
-      },
-    },
-    blocks: [
-      { component: 'wf-statistics', props: { heading: 'A Level results at a glance', items: [
-        { value: '99%', label: 'Grades A* to C' },
-        { value: '55%', label: 'Grades A* to A' },
-        { value: '25+', label: 'Subjects offered at A Level' },
-        { value: '95%', label: 'Progressed to first-choice university' },
-      ] } },
+      { component: 'wf-text', props: { body: ['Our careers and higher education team supports every pupil individually, from the first careers conversations in the Lower Sixth through to results day and beyond.'] } },
       {
-        component: 'wf-table', props: {
-          heading: 'Five-year view',
-          rowHeader: 'Year',
-          columns: ['Grades A* to A', 'Grades A* to C'],
-          rows: [
-            { label: '2026', cells: ['55%', '99%'] },
-            { label: '2025', cells: ['To be supplied', 'To be supplied'] },
-            { label: '2024', cells: ['To be supplied', 'To be supplied'] },
-            { label: '2023', cells: ['To be supplied', 'To be supplied'] },
-            { label: '2022', cells: ['To be supplied', 'To be supplied'] },
-          ],
-        },
-      },
-      {
-        component: 'wf-cards', props: {
-          heading: 'Subject highlights', cols: 3,
+        component: 'wf-timeline', props: {
+          heading: 'From Lower Sixth to results day',
           items: [
-            { category: 'Placeholder', heading: 'Maths and Further Maths', description: 'Headline figure and one line of context.' },
-            { category: 'Placeholder', heading: 'Sciences', description: 'Headline figure and one line of context.' },
-            { category: 'Placeholder', heading: 'Humanities', description: 'Headline figure and one line of context.' },
+            { heading: 'Careers guidance begins', description: 'One-to-one conversations and aptitude tools help narrow down direction, well before applications open.' },
+            { heading: 'Work experience', description: 'Placements in Year 12 give pupils a real sense of a career before committing to it.' },
+            { heading: 'Applications', description: 'Personal statement guidance, interview preparation and support with UCAS, apprenticeship or other applications.' },
+            { heading: 'Results and beyond', description: 'Support continues through results day and into the first term of whatever comes next.' },
           ],
         },
       },
+      { component: 'wf-text', props: { heading: 'Alumni stories', body: ['Wireframe note: placeholder for a short series of alumni profiles - where they went, what they studied, and what they are doing now. To be supplied by the school, alongside the Old Bancroftians association.'] } },
       { component: 'wf-quote', props: { items: [
-        { quote: 'Placeholder for a short quote from a recent leaver about their results and where they are going next.', attribution: 'Upper Sixth leaver, 2026' },
+        { quote: 'Placeholder for a quote from a Bancroft’s alumnus about where Sixth Form took them.', attribution: 'Old Bancroftian' },
+        { quote: 'Placeholder for a quote from a recent leaver about the careers support they received.', attribution: 'Upper Sixth leaver, 2026' },
       ] } },
-      { component: 'wf-text', props: { heading: 'Beyond the headline figures', body: ['We report value added alongside raw grades, since it reflects individual progress rather than just intake. Subject-by-subject breakdowns are available from our admissions and academic teams on request.'] } },
       {
         component: 'wf-cards', props: {
-          heading: 'See also', cols: 3,
+          heading: 'Related pages', cols: 2,
           items: [
-            { href: 'sixth-form-leavers-destinations.html', heading: 'Leavers’ Destinations', description: 'Where these results have taken recent leavers.' },
-            { href: 'senior-academic-results.html', heading: 'GCSE Results', description: 'Outcomes at the end of Year 11.' },
-            { href: 'about-rankings-recognition.html', heading: 'Rankings & Recognition', description: 'League tables, inspection reports and awards.' },
+            { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'This year’s outcomes, and where recent leavers have gone on to.' },
+            { href: 'old-bancroftians.html', heading: 'Old Bancroftians', description: 'Staying connected to the school after you leave.' },
           ],
         },
       },
-      faqs([
-        { heading: 'How do Bancroft’s A Level results compare with other schools?', body: 'League table positions and inspection outcomes are kept together on one page.', ctaLabel: 'See Rankings & Recognition', ctaHref: 'about-rankings-recognition.html' },
-        { heading: 'Where do leavers go after A Levels?', body: 'Recent leavers have gone on to a wide range of universities, apprenticeships and careers.', ctaLabel: 'See Leavers’ Destinations', ctaHref: 'sixth-form-leavers-destinations.html' },
-        { heading: 'Which A Level subjects are offered?', body: 'More than 25 subjects, spanning the sciences, humanities, languages, arts and social sciences.', ctaLabel: 'See Curriculum & Subjects', ctaHref: 'sixth-form-curriculum-subjects.html' },
-        { heading: 'Can I see results by subject?', body: 'Subject-by-subject breakdowns are available from our admissions and academic teams on request.', ctaLabel: 'Contact admissions', ctaHref: 'contact.html' },
-      ], 'A Level results questions'),
-      bookVisitPromo('cta-sixthform-results-promo'),
+      bookVisitPromo('cta-sixthform-preparing-for-life-promo'),
     ],
   },
 
@@ -2278,53 +2347,89 @@ export const pages: Record<string, Page> = {
           items: [
             { href: 'school-life-community.html', heading: 'Our Community', description: 'Parents, alumni and the wider Bancroft’s network.', imageLabel: 'Parents at a community event', linkText: 'Meet our community' },
             { href: 'term-dates.html', id: 'cta-schoollife-card-term-dates', heading: 'Term Dates', description: 'Term starts, half terms and holidays for the year.', imageLabel: 'Term dates on a school noticeboard', linkText: 'See the Term Dates' },
-            { href: 'calendar.html', id: 'cta-schoollife-card-calendar', heading: 'Events Calendar', description: 'Events, Open Mornings and fixtures, month by month.', imageLabel: 'School calendar on a noticeboard', linkText: 'View the Events Calendar' },
             { href: 'weekly-menu.html', heading: 'Weekly Menu', description: 'What’s on the menu in the dining hall this week.', imageLabel: 'Pupils in the dining hall', linkText: 'See this week’s menu' },
-            { href: 'school-bus-service.html', heading: 'School Bus Service', description: 'Routes, timings and how to book a seat.', imageLabel: 'School bus outside the main building', linkText: 'Find your route' },
+            { href: 'getting-to-bancrofts.html', heading: 'Getting to Bancroft’s', description: 'Routes, timings and how to book a seat.', imageLabel: 'School bus outside the main building', linkText: 'Find your route' },
             { href: 'uniform.html', heading: 'Uniform', description: 'What to buy, where from, and second-hand options.', imageLabel: 'Pupils in school uniform', linkText: 'See the Uniform guide' },
           ],
         },
       },
       {
         component: 'wf-promo', props: {
-          heading: 'Already a Bancroft’s parent?', body: 'Sign in to the Parent Portal for absence reporting, school reports and everything else specific to your child.',
-          ctaLabel: 'Go to the Parent Portal', ctaHref: '#', ctaId: 'cta-schoollife-promo', mediaLabel: 'Parent signed in to the Parent Portal',
+          heading: 'Already a Bancroft’s parent?', body: 'Quick links for absence reporting, school reports and everything else specific to your child.',
+          ctaLabel: 'Go to Parents', ctaHref: 'parents.html', ctaId: 'cta-schoollife-promo', mediaLabel: 'Parent signed in to the Parent Portal',
         },
       },
     ],
   },
 
+  // Restructured from a flat link grid into one section per community (client request): Parents'
+  // Association (full content, merged in from the now-deleted parent-association.html), Foundation
+  // and Old Bancroftians (each a short section plus a link out to its own new page), Spiritual
+  // Life including the chaplain (merged in from the now-deleted senior-spiritual-life.html, moved
+  // here from Senior per that pass's note), and Charitable Giving & Service (new).
   'school-life-community': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'School Life', heading: 'Our Community', body: 'Parents, alumni and supporters who keep the Bancroft’s community close.',
+        eyebrow: 'School Life', heading: 'Our Community', body: 'Parents, alumni, faith and service — the wider Bancroft’s community beyond the classroom.',
         mediaLabel: 'Parents’ Association event', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Our Community', href: 'school-life-community.html' }),
       },
     },
     blocks: [
       { component: 'wf-text', props: { body: [
-        'Bancroft’s School provides a broad and welcoming community for all. This has been strengthened over the years by our foundation, parents’ association, alumni activities, creative arts and more. Once a Bancroftian, always a Bancroftian.',
-        'To see what our individual communities stand for, please see the below links:',
+        'Bancroft’s School provides a broad and welcoming community for all. This has been strengthened over the years by our foundation, parents’ association, alumni activities, faith life and more. Once a Bancroftian, always a Bancroftian.',
+      ] } },
+      { component: 'wf-text', props: { heading: 'Parents’ Association', body: [
+        'The Parents’ Association brings the Bancroft’s community together through social events and fundraising throughout the school year - fireworks, themed balls, camping trips, fayres and parent-staff matches among them, alongside activities that connect families across year groups.',
+        'Every event helps fund things that directly benefit pupils, and volunteering is a great way to get to know other Bancroft’s parents.',
       ] } },
       {
-        component: 'wf-cards', props: {
-          cols: 4,
-          items: [
-            { heading: 'Bancroft’s Foundation', href: '#', imageLabel: 'Bancroft’s Foundation' },
-            { heading: 'The Drapers’ Company', href: '#', imageLabel: 'The Drapers’ Company' },
-            { heading: 'Parents’ Association', href: 'parent-association.html', imageLabel: 'Parents’ Association event' },
-            { heading: 'Old Bancroftians', href: '#', imageLabel: 'Old Bancroftians reunion' },
-            { heading: 'The Arts Society', href: '#', imageLabel: 'The Arts Society' },
-            { heading: 'The Evening Chorus Choir', href: '#', imageLabel: 'The Evening Chorus Choir' },
-            { heading: 'The Crofton Singers', href: '#', imageLabel: 'The Crofton Singers' },
+        component: 'wf-table', props: {
+          heading: 'Parents’ Association committee', rowHeader: 'Role',
+          columns: ['Name'],
+          rows: [
+            { label: 'Chair', cells: ['Dr Sumeeta Dhir'] },
+            { label: 'Vice Chair', cells: ['Mrs Bahia Daifi'] },
+            { label: 'Secretary', cells: ['Dr Belinda John-Baptiste'] },
+            { label: 'Treasurer', cells: ['Mrs Samia Dar'] },
+            { label: 'Vice Treasurers', cells: ['Mrs Maria Poullos and Mrs Tamsin James'] },
           ],
         },
       },
       {
-        component: 'wf-promo', props: {
-          heading: 'See what’s coming up', body: 'Reunions, fundraisers and Parents’ Association gatherings all appear on our Calendar, alongside term dates and Open Mornings.',
-          ctaLabel: 'View the Events Calendar', ctaHref: 'calendar.html', ctaId: 'cta-community-promo', mediaLabel: 'Parents at a community event',
+        component: 'wf-text-media', props: {
+          heading: 'Get involved', side: 'right', mediaLabel: 'Parents volunteering at a PA event',
+          body: ['Volunteering at PA events is a great way to get involved in the wider Bancroft’s community. For upcoming events or to find out more, get in touch with the PA directly.'],
+          ctaLabel: 'Contact the PA', ctaHref: 'mailto:bancrofts.pa@gmail.com', ctaId: 'cta-community-pa-contact',
+        },
+      },
+      {
+        component: 'wf-text-media', props: {
+          heading: 'Foundation', side: 'left', mediaLabel: 'Bancroft’s Foundation',
+          body: ['The Bancroft’s Foundation supports the school’s charitable purpose, including bursary funding that makes a Bancroft’s education possible for families who would otherwise be unable to consider it.'],
+          ctaLabel: 'About the Foundation', ctaHref: 'foundation.html',
+        },
+      },
+      {
+        component: 'wf-text-media', props: {
+          heading: 'Old Bancroftians', side: 'right', mediaLabel: 'Old Bancroftians reunion',
+          body: ['Our alumni association keeps former pupils connected to the school and to each other, through reunions, networking and support for current pupils thinking about life after Bancroft’s.'],
+          ctaLabel: 'About Old Bancroftians', ctaHref: 'old-bancroftians.html',
+        },
+      },
+      { component: 'wf-text', props: { heading: 'Spiritual Life', body: ['One of Bancroft’s greatest strengths is a diverse, multi-faith community, where every pupil is encouraged to explore their own spiritual life and to learn about the beliefs and values of others.'] } },
+      { component: 'wf-text-media', props: { heading: 'The Chapel and the Chaplain', side: 'left', mediaLabel: 'The school Chapel', body: ['The Chapel is central to an ethos of mutual respect and acceptance. Its services are inclusive, focusing on shared values and common concerns, and give pupils space to reflect on questions of meaning and purpose. The Chaplain’s role goes beyond the Chapel itself - available to any pupil, of any faith or none, who wants someone to talk to.'] } },
+      { component: 'wf-text', props: { heading: 'Faith groups', body: ['Pupils of particular faiths can also meet together, through regular Communion services, the Christian Union, and the Jewish, Muslim and Hindu Societies, as well as weekly Muslim assemblies.'] } },
+      { component: 'wf-text', props: { heading: 'Charitable Giving & Service', body: ['Charity and service run through school life, from form-group fundraising and an annual Charities Week to longer partnerships with local causes. Pupils take the lead in choosing and running much of it, alongside volunteering opportunities that also count towards the Duke of Edinburgh’s Award.', 'Wireframe note: this year’s nominated charities and the Charities Week programme to be supplied by the school.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Also part of our community', cols: 3,
+          items: [
+            { heading: 'The Drapers’ Company', href: '#', imageLabel: 'The Drapers’ Company' },
+            { heading: 'The Arts Society', href: '#', imageLabel: 'The Arts Society' },
+            { heading: 'The Evening Chorus Choir', href: '#', imageLabel: 'The Evening Chorus Choir' },
+            { heading: 'The Crofton Singers', href: '#', imageLabel: 'The Crofton Singers' },
+          ],
         },
       },
     ],
@@ -2377,13 +2482,13 @@ export const pages: Record<string, Page> = {
           ],
         },
       },
-      { component: 'wf-text', props: { body: ['Wireframe note: the Autumn Term dates match the placeholder dates in the Events Calendar. The real page lists the full year, and next year’s dates as soon as they are published.'] } },
+      { component: 'wf-text', props: { body: ['Wireframe note: the real page lists the full year, and next year’s dates as soon as they are published.'] } },
       {
         component: 'wf-cards', props: {
           heading: 'Also useful', cols: 3,
           items: [
-            { href: 'calendar.html', heading: 'Events Calendar', description: 'Events, Open Mornings and fixtures, month by month.' },
             { href: 'weekly-menu.html', heading: 'Weekly Menu', description: 'What’s for lunch this week.' },
+            { href: 'getting-to-bancrofts.html', heading: 'Getting to Bancroft’s', description: 'Routes, timings and how to book a seat.' },
             { href: '#footer-subscribe', heading: 'Sign up for our newsletter', description: 'Get news and updates by email.', linkText: 'Sign up' },
           ],
         },
@@ -2391,55 +2496,6 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  calendar: {
-    hero: {
-      component: 'wf-page-header',
-      props: {
-        heading: 'Events Calendar', subtitle: 'Events, Open Mornings and fixtures, month by month, so nothing gets missed.',
-        breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Events Calendar', href: 'calendar.html' }),
-      },
-    },
-    blocks: [
-      {
-        component: 'wf-calendar', props: {
-          filters: ['All', 'Term Dates', 'School Events', '7+ Prep', '11+ Senior', '16+ Sixth Form', 'Sport', 'Community'],
-          initialMonth: '2026-09',
-          events: [
-            { date: '2026-09-01', label: 'INSET Day (pupils not in school)', category: 'Term Dates' },
-            { date: '2026-09-02', label: 'Autumn Term begins', category: 'Term Dates' },
-            { date: '2026-09-17', label: '11+ Open Morning', category: '11+ Senior' },
-            { date: '2026-09-24', label: '7+ Open Morning', category: '7+ Prep' },
-            { date: '2026-10-08', label: 'Sixth Form Open Evening', category: '16+ Sixth Form' },
-            { date: '2026-10-10', label: 'First XV vs Chigwell', category: 'Sport' },
-            { date: '2026-10-17', endDate: '2026-10-25', label: 'Half Term Holiday', category: 'Term Dates' },
-            { date: '2026-11-06', label: 'Senior School Parents’ Evening', category: '11+ Senior' },
-            { date: '2026-11-13', label: 'Old Bancroftians reunion', category: 'Community' },
-            { date: '2026-11-20', label: 'Winter Concert', category: 'School Events' },
-            { date: '2026-11-21', label: 'Netball First VII county final', category: 'Sport' },
-            { date: '2026-12-04', label: 'Carol Service', category: 'School Events' },
-            { date: '2026-12-11', label: 'Autumn Term ends', category: 'Term Dates' },
-            { date: '2026-12-12', endDate: '2027-01-03', label: 'Christmas Holidays', category: 'Term Dates' },
-          ],
-        },
-      },
-      {
-        component: 'wf-cards', props: {
-          heading: 'Keep up to date', cols: 3,
-          items: [
-            { href: 'term-dates.html', id: 'cta-calendar-term-dates', heading: 'Term Dates', description: 'Term starts, half terms and holidays, at a glance.', linkText: 'See the Term Dates' },
-            { href: 'news.html', id: 'cta-calendar-onward-news', heading: 'Latest news', description: 'Stories from across Bancroft’s.', linkText: 'Read the news' },
-            { href: '#footer-subscribe', id: 'cta-calendar-onward-newsletter', heading: 'Sign up for our newsletter', description: 'Get news and updates by email.', linkText: 'Sign up' },
-          ],
-        },
-      },
-      {
-        component: 'wf-promo', props: {
-          heading: 'Already a Bancroft’s parent?', body: 'Sign in to the Parent Portal for absence reporting, school reports and everything else specific to your child.',
-          ctaLabel: 'Go to the Parent Portal', ctaHref: '#', ctaId: 'cta-calendar-promo', mediaLabel: 'Parent signed in to the Parent Portal',
-        },
-      },
-    ],
-  },
 
   'weekly-menu': {
     hero: {
@@ -2476,23 +2532,25 @@ export const pages: Record<string, Page> = {
       },
       {
         component: 'wf-promo', props: {
-          heading: 'Keep track of everything else', body: 'Term dates, events and Open Mornings for the year ahead are all on our Calendar.',
-          ctaLabel: 'View the Events Calendar', ctaHref: 'calendar.html', ctaId: 'cta-menu-promo', mediaLabel: 'Parent checking the school calendar',
+          heading: 'Keep track of everything else', body: 'Term starts, half terms and holidays for the year ahead are all on our Term Dates page.',
+          ctaLabel: 'See Term Dates', ctaHref: 'term-dates.html', ctaId: 'cta-menu-promo', mediaLabel: 'Parent checking the school calendar',
         },
       },
     ],
   },
 
-  'school-bus-service': {
+  // Renamed from "School Bus Service" (client request) - the school bus is now one section
+  // alongside new TfL and journey-planner links, since not every family uses the bus.
+  'getting-to-bancrofts': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'School Life', heading: 'School Bus Service', body: 'Getting to Bancroft’s has never been easier, thanks to our school bus service.',
-        mediaLabel: 'School bus at a pick-up point', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'School Bus Service', href: 'school-bus-service.html' }),
+        eyebrow: 'School Life', heading: 'Getting to Bancroft’s', body: 'By school bus, by public transport, or under your own steam.',
+        mediaLabel: 'School bus at a pick-up point', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Getting to Bancroft’s', href: 'getting-to-bancrofts.html' }),
       },
     },
     blocks: [
-      { component: 'wf-text', props: { body: [
+      { component: 'wf-text', props: { heading: 'School Bus Service', body: [
         'We’re delighted to work with Zeelo on our home-to-school travel service, offering a range of ticket options - an Annual Pass, an Annual One-Way Pass, Termly Passes and a 30 Ride Bundle - for convenient, flexible travel throughout the academic year.',
         'The service is available to all pupils; Alphas (Year 3) must be accompanied by a sibling in P1 (Year 5) or above.',
       ] } },
@@ -2503,12 +2561,24 @@ export const pages: Record<string, Page> = {
       ] } },
       {
         component: 'wf-text-media', props: {
-          heading: 'Find out more', side: 'right', mediaLabel: 'Parent booking the school bus service online',
+          heading: 'Find out more about the bus', side: 'right', mediaLabel: 'Parent booking the school bus service online',
           body: ['Bookings and payments for the school bus service are managed through our transport partner, Zeelo, where you can view full routes, timetables and ticket pricing. Our Terms and Conditions and Information Booklet cover everything else you need to know before signing up.'],
           links: [
             { label: 'View routes, timetables and pricing (Zeelo)', href: '#' },
             { label: 'Terms and Conditions', href: '#' },
             { label: 'Information Booklet', href: '#' },
+          ],
+        },
+      },
+      // New section (client request): the school is a short walk from the Central Line, so public
+      // transport is a real option alongside the bus, not just a fallback.
+      {
+        component: 'wf-text-media', props: {
+          heading: 'By public transport', side: 'left', mediaLabel: 'Pupils walking from the Central Line',
+          body: ['Bancroft’s is a short walk from Woodford station on the Central Line, with further links across North East London and Essex. For a route from your own address, plan your journey with TfL or National Rail.'],
+          links: [
+            { label: 'TfL Journey Planner', href: '#' },
+            { label: 'National Rail Journey Planner', href: '#' },
           ],
         },
       },
@@ -2553,52 +2623,60 @@ export const pages: Record<string, Page> = {
       ] } },
       {
         component: 'wf-promo', props: {
-          heading: 'Already a Bancroft’s parent?', body: 'Sign in to the Parent Portal for absence reporting, school reports and everything else specific to your child.',
-          ctaLabel: 'Go to the Parent Portal', ctaHref: '#', ctaId: 'cta-uniform-promo', mediaLabel: 'Parent signed in to the Parent Portal',
+          heading: 'Already a Bancroft’s parent?', body: 'Quick links for absence reporting, school reports and everything else specific to your child.',
+          ctaLabel: 'Go to Parents', ctaHref: 'parents.html', ctaId: 'cta-uniform-promo', mediaLabel: 'Parent signed in to the Parent Portal',
         },
       },
     ],
   },
 
-  'parent-association': {
+  // New child page of Our Community (client request) - a short section there links through to
+  // this fuller page, rather than Our Community carrying the Foundation's full detail itself.
+  foundation: {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'School Life', heading: 'Parents’ Association', body: 'Our mission is to enhance the experience of every pupil at Bancroft’s.',
-        mediaLabel: 'Parents’ Association event', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Parent Association', href: 'parent-association.html' }),
+        eyebrow: 'School Life', heading: 'Foundation', body: 'Supporting Bancroft’s charitable purpose, including the bursaries that make a Bancroft’s education possible regardless of financial circumstance.',
+        mediaLabel: 'Bancroft’s Foundation', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Our Community', href: 'school-life-community.html' }, { label: 'Foundation', href: 'foundation.html' }),
       },
     },
     blocks: [
-      { component: 'wf-text', props: { body: [
-        'The Parents’ Association brings the Bancroft’s community together through social events and fundraising throughout the school year - fireworks, themed balls, camping trips, fayres and parent-staff matches among them, alongside activities that connect families across year groups.',
-        'Every event helps fund things that directly benefit pupils, and volunteering is a great way to get to know other Bancroft’s parents.',
-      ] } },
+      { component: 'wf-text', props: { body: ['The Bancroft’s Foundation exists to support the school’s charitable purpose: widening access to a Bancroft’s education, and maintaining the buildings and grounds that every pupil benefits from.', 'Wireframe note: the Foundation’s governance, how it relates to the school and the Drapers’ Company, and its current fundraising priorities are to be supplied.'] } },
+      { component: 'wf-text-media', props: { heading: 'Bursaries', side: 'right', mediaLabel: 'Family meeting with the bursaries team', body: ['Foundation funding underpins the school’s means-tested bursary programme, covering up to 100 percent of fees for families who would otherwise be unable to consider Bancroft’s.'], ctaLabel: 'See Bursaries', ctaHref: 'bursaries.html' } },
       {
-        component: 'wf-table', props: {
-          heading: 'Committee', rowHeader: 'Role',
-          columns: ['Name'],
-          rows: [
-            { label: 'Chair', cells: ['Dr Sumeeta Dhir'] },
-            { label: 'Vice Chair', cells: ['Mrs Bahia Daifi'] },
-            { label: 'Secretary', cells: ['Dr Belinda John-Baptiste'] },
-            { label: 'Treasurer', cells: ['Mrs Samia Dar'] },
-            { label: 'Vice Treasurers', cells: ['Mrs Maria Poullos and Mrs Tamsin James'] },
+        component: 'wf-cards', props: {
+          heading: 'Supporting the Foundation', cols: 2,
+          items: [
+            { heading: 'Donate', description: 'Wireframe note: giving options and a donation form or link to be supplied.' },
+            { heading: 'Leave a legacy', description: 'Wireframe note: legacy giving information to be supplied.' },
           ],
         },
       },
+    ],
+  },
+
+  // New child page of Our Community (client request), replacing the old external "#" link.
+  'old-bancroftians': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: 'School Life', heading: 'Old Bancroftians', body: 'Once a Bancroftian, always a Bancroftian - staying connected to the school and to each other after you leave.',
+        mediaLabel: 'Old Bancroftians reunion', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Our Community', href: 'school-life-community.html' }, { label: 'Old Bancroftians', href: 'old-bancroftians.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['The Old Bancroftians association keeps former pupils connected to the school and to each other, long after they leave - through reunions, networking events and support for current pupils thinking about life after Bancroft’s.', 'Wireframe note: membership, how to register as an Old Bancroftian, and the events calendar to be supplied.'] } },
       {
-        component: 'wf-text-media', props: {
-          heading: 'Get involved', side: 'right', mediaLabel: 'Parents volunteering at a PA event',
-          body: ['Volunteering at PA events is a great way to get involved in the wider Bancroft’s community. For upcoming events or to find out more, get in touch with the PA directly.'],
-          ctaLabel: 'Contact the PA', ctaHref: 'mailto:bancrofts.pa@gmail.com', ctaId: 'cta-parent-association-contact',
+        component: 'wf-cards', props: {
+          heading: 'Staying connected', cols: 3,
+          items: [
+            { heading: 'Reunions', description: 'Year-group and decade reunions held through the year.' },
+            { heading: 'Networking', description: 'Connecting Old Bancroftians across industries and generations.' },
+            { heading: 'Supporting current pupils', description: 'Careers talks, mentoring and work experience offers from alumni.' },
+          ],
         },
       },
-      {
-        component: 'wf-promo', props: {
-          heading: 'See what’s coming up', body: 'Reunions, fundraisers and Parents’ Association gatherings all appear on our Calendar, alongside term dates and Open Mornings.',
-          ctaLabel: 'View the Events Calendar', ctaHref: 'calendar.html', ctaId: 'cta-parent-association-promo', mediaLabel: 'Parents at a community event',
-        },
-      },
+      { component: 'wf-text-media', props: { heading: 'Alumni stories', side: 'left', mediaLabel: 'Old Bancroftian at a reunion event', body: ['Hear from Old Bancroftians about where Bancroft’s took them.'], ctaLabel: 'See Preparing for Life Beyond Bancroft’s', ctaHref: 'sixth-form-preparing-for-life.html' } },
     ],
   },
 
@@ -2613,20 +2691,24 @@ export const pages: Record<string, Page> = {
       },
     },
     blocks: [
+      // Tags (client request) - replacing the old content-type filter (Academic/Community/Sport)
+      // with an audience one (Prep/Senior/Sixth Form/Alumni), since that's what the stage landing
+      // pages' own "Latest news" blocks below actually need to filter by. wf-cards only supports
+      // one category per card, so this is a straight swap, not an addition - noted in PROTOTYPE.md.
       { component: 'wf-cards', props: {
         cols: 3, perPage: 6,
-        filters: ['All', 'Academic', 'Community', 'Sport'],
+        filters: ['All', 'Prep', 'Senior', 'Sixth Form', 'Alumni'],
         items: [
-          { href: 'news-article-a.html', category: 'Academic', heading: 'Bancroft’s pupils celebrate outstanding GCSE results', description: 'Another year of strong outcomes across the Senior School, with many pupils exceeding expectations.', imageLabel: 'Pupils celebrating results day', linkText: 'Read the story' },
-          { href: 'news-article-b.html', category: 'Community', heading: 'Bancroft’s Family of Schools welcomes two new Prep partners', description: 'What the new partnership means for families joining at 7+.', imageLabel: 'Prep pupils on a school trip', linkText: 'Read the story' },
-          { href: 'news-article-c.html', category: 'Sport', heading: 'First XV named London Schools champions', description: 'A landmark season for rugby, capping a strong year across our sports programme.', imageLabel: 'First XV rugby team', linkText: 'Read the story' },
-          { category: 'Academic', heading: 'Sixth Form pupils receive strong university offers', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Sixth Form pupils celebrating' },
-          { category: 'Sport', heading: 'Netball First VII reach county final', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Netball match in progress' },
-          { category: 'Community', heading: 'Old Bancroftians mark 50 years since leaving', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Old Bancroftians reunion event' },
-          { category: 'Academic', heading: 'Prep pupils shine in national maths challenge', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Prep pupils in a maths lesson' },
-          { category: 'Community', heading: 'Bancroft’s Family of Schools hosts joint open morning', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Families on an open morning tour' },
-          { category: 'Sport', heading: 'Swimming squad breaks three school records', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Swimmers at the school gala' },
-          { category: 'Academic', heading: 'Bancroft’s ranked among London’s top performing schools', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Pupils in a Senior School lesson' },
+          { href: 'news-article-a.html', category: 'Senior', heading: 'Bancroft’s pupils celebrate outstanding GCSE results', description: 'Another year of strong outcomes across the Senior School, with many pupils exceeding expectations.', imageLabel: 'Pupils celebrating results day', linkText: 'Read the story' },
+          { href: 'news-article-b.html', category: 'Prep', heading: 'Bancroft’s Family of Schools welcomes two new Prep partners', description: 'What the new partnership means for families joining at 7+.', imageLabel: 'Prep pupils on a school trip', linkText: 'Read the story' },
+          { href: 'news-article-c.html', category: 'Senior', heading: 'First XV named London Schools champions', description: 'A landmark season for rugby, capping a strong year across our sports programme.', imageLabel: 'First XV rugby team', linkText: 'Read the story' },
+          { category: 'Sixth Form', heading: 'Sixth Form pupils receive strong university offers', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Sixth Form pupils celebrating' },
+          { category: 'Senior', heading: 'Netball First VII reach county final', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Netball match in progress' },
+          { category: 'Alumni', heading: 'Old Bancroftians mark 50 years since leaving', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Old Bancroftians reunion event' },
+          { category: 'Prep', heading: 'Prep pupils shine in national maths challenge', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Prep pupils in a maths lesson' },
+          { category: 'Prep', heading: 'Bancroft’s Family of Schools hosts joint open morning', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Families on an open morning tour' },
+          { category: 'Senior', heading: 'Swimming squad breaks three school records', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Swimmers at the school gala' },
+          { category: 'Sixth Form', heading: 'Bancroft’s ranked among London’s top performing schools', description: 'Placeholder card - no destination page built in this pass.', imageLabel: 'Pupils in a Senior School lesson' },
         ],
       } },
       bookVisitPromo('cta-news-promo'),
@@ -2637,7 +2719,7 @@ export const pages: Record<string, Page> = {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'Academic', heading: 'Bancroft’s pupils celebrate outstanding GCSE results', body: 'Another year of strong outcomes across the Senior School, with many pupils exceeding expectations.',
+        eyebrow: 'Senior', heading: 'Bancroft’s pupils celebrate outstanding GCSE results', body: 'Another year of strong outcomes across the Senior School, with many pupils exceeding expectations.',
         mediaLabel: 'Pupils celebrating results day', breadcrumb: bc({ label: 'News', href: 'news.html' }, { label: 'Bancroft’s pupils celebrate outstanding GCSE results', href: 'news-article-a.html' }),
       },
     },
@@ -2647,8 +2729,8 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { centered: true, body: ['Our Head of Senior School praised the cohort’s resilience, noting that results this strong reflect not just ability but the support pupils give one another. Several pupils achieved a clean sweep of grade 9s across the sciences, languages and humanities.', 'The cohort now moves into Sixth Form or on to further study elsewhere, with our careers team continuing to support leavers through the transition.'] } },
       { component: 'wf-share', props: { centered: true } },
       { component: 'wf-cards', props: { heading: 'Related', cols: 3, items: [
-        { href: 'senior-academic-results.html', id: 'cta-article-a-gcse-results', category: '11+ Senior', heading: 'GCSE Results', description: 'See our full GCSE results in context.', imageLabel: 'GCSE results summary', linkText: 'See our results' },
-        { href: 'sixth-form-leavers-destinations.html', id: 'cta-article-a-destinations', category: '16+ Sixth Form', heading: 'Leavers’ Destinations', description: 'Where these pupils go on to after Sixth Form.', imageLabel: 'Sixth Form leavers', linkText: 'See where leavers go' },
+        { href: 'results-destinations.html', id: 'cta-article-a-gcse-results', category: '11+ Senior', heading: 'Results & Destinations', description: 'See our full GCSE results, and where leavers go on to, in context.', imageLabel: 'GCSE results summary', linkText: 'See our results' },
+        { href: 'senior-academic-life.html', id: 'cta-article-a-destinations', category: '11+ Senior', heading: 'Senior Academic Life', description: 'See how this curriculum translates into outcomes.', imageLabel: 'Senior pupils in a science lesson', linkText: 'See Academic Life' },
         { href: 'news-article-c.html', category: 'Sport', heading: 'First XV named London Schools champions', description: 'A landmark season for rugby, capping a strong year across our sports programme.', imageLabel: 'First XV rugby team', linkText: 'Read the story' },
       ] } },
       bookVisitPromo('cta-article-a-promo'),
@@ -2659,7 +2741,7 @@ export const pages: Record<string, Page> = {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'Community', heading: 'Bancroft’s Family of Schools welcomes two new Prep partners', body: 'What the new partnership means for families joining at 7+.',
+        eyebrow: 'Prep', heading: 'Bancroft’s Family of Schools welcomes two new Prep partners', body: 'What the new partnership means for families joining at 7+.',
         mediaLabel: 'Prep pupils on a school trip', breadcrumb: bc({ label: 'News', href: 'news.html' }, { label: 'Bancroft’s Family of Schools welcomes two new Prep partners', href: 'news-article-b.html' }),
       },
     },
@@ -2680,7 +2762,7 @@ export const pages: Record<string, Page> = {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'Sport', heading: 'First XV named London Schools champions', body: 'A landmark season for rugby, capping a strong year across our sports programme.',
+        eyebrow: 'Senior', heading: 'First XV named London Schools champions', body: 'A landmark season for rugby, capping a strong year across our sports programme.',
         mediaLabel: 'First XV rugby team celebrating', breadcrumb: bc({ label: 'News', href: 'news.html' }, { label: 'First XV named London Schools champions', href: 'news-article-c.html' }),
       },
     },
@@ -2690,8 +2772,8 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { centered: true, body: ['The squad, drawn from across Years 10 and 11, trained three times a week throughout the season alongside a full fixture list against other London schools. Several players have been selected for regional representative squads.', 'The result caps a strong year across Bancroft’s sport more broadly, with school teams also reaching finals in netball, hockey and athletics.'] } },
       { component: 'wf-share', props: { centered: true } },
       { component: 'wf-cards', props: { heading: 'Related articles', cols: 2, items: [
-        { href: 'senior-sport-rugby.html', heading: 'Rugby', description: 'Meet the programme behind this season’s success.', imageLabel: 'Rugby training session', linkText: 'Explore Rugby at Bancroft’s' },
-        { href: 'senior-sport.html', heading: 'Sport at Bancroft’s', description: 'Nine sports, dozens of teams, and a programme for every level.', imageLabel: 'Pupils on the sports pitch', linkText: 'Explore our sports programme' },
+        { href: 'senior-sport.html', heading: 'Sport at Bancroft’s', description: 'Meet the programme behind this season’s success, and our other eight sports.', imageLabel: 'Rugby training session', linkText: 'Explore our sports programme' },
+        { href: 'senior-beyond-the-classroom.html', heading: 'Beyond the Classroom', description: 'Sport, music, drama and 250+ clubs and societies.', imageLabel: 'Pupils at a lunchtime club', linkText: 'Explore Beyond the Classroom' },
       ] } },
       bookVisitPromo('cta-article-c-promo'),
     ],
@@ -2711,9 +2793,11 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { align: 'center', body: ['Bancroft’s has educated pupils on the edge of Epping Forest for generations, supported throughout by the Drapers’ Company. We were rated excellent across every area of our 2025 ISI Inspection. This is where to find out more about our values, our history and how the school is led.'] } },
       { component: 'wf-text-media', props: { heading: 'Welcome from the Head', side: 'right', mediaLabel: 'The Head of Bancroft’s', body: ['An introduction to Bancroft’s from the Head.'], ctaLabel: 'Read the welcome', ctaHref: 'about-welcome.html' } },
       { component: 'wf-text-media', props: { heading: 'What We Stand For', side: 'left', mediaLabel: 'Pupils in assembly', body: ['Our values, and what they mean day to day.'], ctaLabel: 'Read our values', ctaHref: 'about-what-we-stand-for.html' } },
-      { component: 'wf-text-media', props: { heading: 'Rankings & Recognition', side: 'right', mediaLabel: 'Awards displayed in the school foyer', body: ['League tables, inspection reports and awards, in one place.'], ctaLabel: 'See our rankings and recognition', ctaHref: 'about-rankings-recognition.html' } },
-      { component: 'wf-text-media', props: { heading: 'Our History & Archives', side: 'left', mediaLabel: 'Historic photograph of the school', body: ['Bancroft’s story, from foundation to today.'], ctaLabel: 'Explore our history', ctaHref: 'about-history-archives.html' } },
-      { component: 'wf-text-media', props: { heading: 'Governance & Leadership', side: 'right', mediaLabel: 'Board of Governors', body: ['Our Board of Governors and Senior Leadership Team.'], ctaLabel: 'Meet our Governors and leaders', ctaHref: 'about-governance-leadership.html' } },
+      { component: 'wf-text-media', props: { heading: 'Awards and Recognition', side: 'right', mediaLabel: 'Awards displayed in the school foyer', body: ['League tables, inspection reports and awards, in one place.'], ctaLabel: 'See our awards and recognition', ctaHref: 'about-awards-recognition.html' } },
+      { component: 'wf-text-media', props: { heading: 'Our History', side: 'left', mediaLabel: 'Historic photograph of the school', body: ['Bancroft’s story, from foundation to today.'], ctaLabel: 'Explore our history', ctaHref: 'about-history.html' } },
+      { component: 'wf-text-media', props: { heading: 'Leadership & Governance', side: 'right', mediaLabel: 'Board of Governors', body: ['Our Board of Governors and Senior Leadership Team.'], ctaLabel: 'Meet our Governors and leaders', ctaHref: 'about-leadership-governance.html' } },
+      { component: 'wf-text-media', props: { heading: 'Our Family of Schools', side: 'left', mediaLabel: 'Pupils from Bancroft’s and its partner Prep schools', body: ['Bancroft’s and its two partner Prep schools, under one foundation.'], ctaLabel: 'Meet our Family of Schools', ctaHref: 'about-family-of-schools.html' } },
+      { component: 'wf-text-media', props: { heading: 'Results & Destinations', side: 'right', mediaLabel: 'Pupils reviewing exam results', body: ['GCSE and A Level outcomes, and where leavers go on to.'], ctaLabel: 'See our results', ctaHref: 'results-destinations.html' } },
       bookVisitPromo('cta-about-promo'),
     ],
   },
@@ -2752,12 +2836,12 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  'about-history-archives': {
+  'about-history': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'About', heading: 'Our History & Archives', body: 'Bancroft’s story, supported throughout by the Drapers’ Company.',
-        mediaLabel: 'Historic photograph of Bancroft’s pupils', breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Our History & Archives', href: 'about-history-archives.html' }),
+        eyebrow: 'About', heading: 'Our History', body: 'Bancroft’s story, supported throughout by the Drapers’ Company.',
+        mediaLabel: 'Historic photograph of Bancroft’s pupils', breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Our History', href: 'about-history.html' }),
       },
     },
     blocks: [
@@ -2766,12 +2850,12 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  'about-governance-leadership': {
+  'about-leadership-governance': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'About', heading: 'Governance & Leadership', body: 'How Bancroft’s is governed, and the senior team who lead it day to day.',
-        mediaLabel: 'Board of Governors meeting', breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Governance & Leadership', href: 'about-governance-leadership.html' }),
+        eyebrow: 'About', heading: 'Leadership & Governance', body: 'How Bancroft’s is governed, and the senior team who lead it day to day.',
+        mediaLabel: 'Board of Governors meeting', breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Leadership & Governance', href: 'about-leadership-governance.html' }),
       },
     },
     blocks: [
@@ -2810,13 +2894,13 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  'about-rankings-recognition': {
+  'about-awards-recognition': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'About', heading: 'Rankings & Recognition', body: 'League tables, inspection reports and awards, in one place and updated every year.',
+        eyebrow: 'About', heading: 'Awards and Recognition', body: 'League tables, inspection reports and awards, in one place and updated every year.',
         mediaLabel: 'Awards displayed in the school foyer',
-        breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Rankings & Recognition', href: 'about-rankings-recognition.html' }),
+        breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Awards and Recognition', href: 'about-awards-recognition.html' }),
       },
     },
     blocks: [
@@ -2866,13 +2950,38 @@ export const pages: Record<string, Page> = {
         component: 'wf-cards', props: {
           heading: 'The results behind the rankings', cols: 3,
           items: [
-            { href: 'senior-academic-results.html', heading: 'GCSE Results', description: 'This year’s outcomes, with a five-year view.' },
-            { href: 'sixth-form-examination-results.html', heading: 'A Level Results', description: 'This year’s outcomes, with a five-year view.' },
-            { href: 'sixth-form-leavers-destinations.html', heading: 'Leavers’ Destinations', description: 'Where pupils go after Bancroft’s.' },
+            { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'GCSE and A Level outcomes, with a five-year view, and where leavers go on to.' },
           ],
         },
       },
-      bookVisitPromo('cta-rankings-promo'),
+      bookVisitPromo('cta-awards-recognition-promo'),
+    ],
+  },
+
+  // New visible menu page (client request) - an internal master page with a section per partner
+  // school, rather than the footer's old bare "Family of Schools" link with nowhere real to land.
+  'about-family-of-schools': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: 'About', heading: 'Our Family of Schools', body: 'Bancroft’s and its two partner Prep schools, under one foundation.',
+        mediaLabel: 'Pupils from Bancroft’s and its partner Prep schools', breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Our Family of Schools', href: 'about-family-of-schools.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['The Bancroft’s Family of Schools is a partnership between Bancroft’s and two local preparatory schools. Each partner school keeps its own name, site and identity, while gaining closer links into Bancroft’s at Senior level - joint events, shared expertise from Bancroft’s specialist teaching staff, and a clearer route into the Senior School at 11+.', 'Bancroft’s own Prep, on the main school site, continues to operate exactly as before, offering a third route into the Senior School at 7+.'] } },
+      { component: 'wf-text-media', props: { heading: 'Partner school one', side: 'left', mediaLabel: 'Partner Prep school building', body: ['Wireframe note: name, location and a short description of the first partner school to be supplied, linking out to its own website.'], ctaLabel: 'Visit their website', ctaHref: '#' } },
+      { component: 'wf-text-media', props: { heading: 'Partner school two', side: 'right', mediaLabel: 'Partner Prep school building', body: ['Wireframe note: name, location and a short description of the second partner school to be supplied, linking out to its own website.'], ctaLabel: 'Visit their website', ctaHref: '#' } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'Also part of the Family', cols: 2,
+          items: [
+            { href: 'prep.html', heading: '7+ Prep', description: 'Bancroft’s own Prep, on the main school site.', imageLabel: 'Prep pupils in the playground', linkText: 'Explore 7+ Prep' },
+            { href: 'news-article-b.html', heading: 'Bancroft’s Family of Schools welcomes two new Prep partners', description: 'What the partnership means for families joining at 7+.', imageLabel: 'Prep pupils on a school trip', linkText: 'Read the story' },
+          ],
+        },
+      },
+      bookVisitPromo('cta-family-of-schools-promo'),
     ],
   },
 
@@ -2885,6 +2994,8 @@ export const pages: Record<string, Page> = {
       },
     },
     blocks: [
+      // Client request: a line noting that ISI reports live here too, alongside the policies.
+      { component: 'wf-text', props: { body: ['Our ISI Inspection reports also live on this page, alongside our key policies.'] } },
       {
         component: 'wf-accordion', props: {
           heading: 'Key policies',
@@ -2895,6 +3006,7 @@ export const pages: Record<string, Page> = {
             { heading: 'Anti-Bullying Policy', body: 'How we prevent, identify and respond to bullying, both in school and online.', ctaLabel: 'Read the full policy (PDF)', ctaHref: '#' },
             { heading: 'SEND Policy', body: 'Support for pupils with additional needs, including how needs are identified and the support available.', ctaLabel: 'Read the full policy (PDF)', ctaHref: '#' },
             { heading: 'Complaints Policy', body: 'How to raise a concern and the stages involved in reaching a resolution.', ctaLabel: 'Read the full policy (PDF)', ctaHref: '#' },
+            { heading: 'ISI Inspection Reports', body: 'Our most recent ISI Inspection reports, kept here alongside our policies.', ctaLabel: 'Read the full report (PDF)', ctaHref: '#' },
           ],
         },
       },
@@ -2911,7 +3023,7 @@ export const pages: Record<string, Page> = {
       },
     },
     blocks: [
-      { component: 'wf-text', props: { heading: 'Working at Bancroft’s', body: ['We look for staff who share our belief that academic ambition and genuine care for pupils aren’t in tension. In return, we invest heavily in professional development and offer a genuinely collegiate working environment.'] } },
+      { component: 'wf-text', props: { heading: 'Working at Bancroft’s', body: ['We look for staff who share our belief that academic ambition and genuine care for pupils aren’t in tension. In return, we invest heavily in professional development and offer a genuinely collegiate working environment.', 'Wireframe note: client idea for the real build - these listings come from MyNewTerm, as a link or embed (to be scoped with the dev team), rather than being maintained as page content here.'] } },
       {
         component: 'wf-cards', props: {
           heading: 'Current vacancies', cols: 3,
@@ -2938,14 +3050,120 @@ export const pages: Record<string, Page> = {
       { component: 'wf-accordion', props: { heading: 'Common questions', items: [
         { heading: 'What ages does Bancroft’s teach?', body: 'Bancroft’s is a through-school for ages 7 to 18, with entry points at 7+, 11+ and 16+, plus occasional places in other year groups when they arise.' },
         { heading: 'Is Bancroft’s co-educational?', body: 'Yes, Bancroft’s has been fully co-educational throughout the school for many years.' },
-        { heading: 'How do I get to Bancroft’s?', body: 'The school is a short walk from the Central Line and is served by our own school bus service across North East London and Essex. See School Bus Service for routes.' },
-        { heading: 'Is financial support available?', body: 'Yes. We offer academic and music scholarships, and means-tested bursaries covering up to 100 percent of fees. See Scholarships & Bursaries for details.' },
+        { heading: 'How do I get to Bancroft’s?', body: 'The school is a short walk from the Central Line and is served by our own school bus service across North East London and Essex, alongside TfL and journey planning options.', ctaLabel: 'Getting to Bancroft’s', ctaHref: 'getting-to-bancrofts.html' },
+        { heading: 'Is financial support available?', body: 'Yes. We offer academic and music scholarships, and means-tested bursaries covering up to 100 percent of fees.', ctaLabel: 'See Scholarships & Awards', ctaHref: 'scholarships-awards.html' },
         { heading: 'Should we choose a grammar school or an independent school?', body: 'Both routes are selective and academically strong, so the decision usually comes down to fit, cost and what happens beyond the classroom. Bancroft’s is co-educational, takes pupils from 7 to 18 and offers bursaries of up to 100 percent of fees. (Wireframe note: wording to be agreed with the admissions team.)' },
-        { heading: 'Can my child apply to Bancroft’s and a grammar school?', body: 'Yes. Many families do both, and the two processes run alongside each other in Year 6.', ctaLabel: 'See Your 11+ Journey', ctaHref: 'admissions-11plus-journey.html' },
-        { heading: 'Is the Bancroft’s 11+ the same as the grammar school test?', body: 'No. Bancroft’s sets its own English and Maths papers and interviews every candidate.', ctaLabel: 'See the 11+ exam and past papers', ctaHref: 'admissions-11plus-past-papers.html' },
-        { heading: 'What is the Bancroft’s Family of Schools?', body: 'A partnership between Bancroft’s and two local preparatory schools, each of which keeps its own name, site and identity while gaining closer links into Bancroft’s at 11+.' },
+        { heading: 'Can my child apply to Bancroft’s and a grammar school?', body: 'Yes. Many families do both, and the two processes run alongside each other in Year 6.', ctaLabel: 'See Joining at 11+', ctaHref: 'admissions-11plus-journey.html' },
+        { heading: 'Is the Bancroft’s 11+ the same as the grammar school test?', body: 'No. Bancroft’s sets its own English and Maths papers and interviews every candidate.', ctaLabel: 'See 11+ Assessments & Past Papers', ctaHref: 'admissions-11plus-past-papers.html' },
+        { heading: 'What is the Bancroft’s Family of Schools?', body: 'A partnership between Bancroft’s and two local preparatory schools, each of which keeps its own name, site and identity while gaining closer links into Bancroft’s at 11+.', ctaLabel: 'See Our Family of Schools', ctaHref: 'about-family-of-schools.html' },
       ] } },
       bookVisitPromo('cta-faqs-promo'),
+    ],
+  },
+
+  // --- Parents / Pupils / Staff (quick links) ---------------------------------
+  // Replace the old Parent/Pupil/Staff Portal external links (client request) - each is now a
+  // real internal page of clear quick links to the underlying systems, reached from the header's
+  // quick links (see headerUtilityLinks in config.ts), not in the main menu. The systems listed
+  // are carried over from what each portal used to expand to.
+
+  parents: {
+    hero: {
+      component: 'wf-page-header',
+      props: {
+        heading: 'Parents', subtitle: 'Quick links to the systems you’ll use most as a Bancroft’s parent.',
+        breadcrumb: bc({ label: 'Parents', href: 'parents.html' }),
+      },
+    },
+    blocks: [
+      {
+        component: 'wf-cards', props: {
+          heading: 'Quick links', cols: 4,
+          items: [
+            { href: '#', heading: 'iSAMS Parent Portal', description: 'Reports, attendance and your child’s record.' },
+            { href: '#', heading: 'Parents’ Evening System', description: 'Book appointments for parents’ evenings.' },
+            { href: '#', heading: 'SOCS (Trips & Consent)', description: 'Give consent and pay for school trips.' },
+            { href: '#', heading: 'Online Payments', description: 'Pay for lunches, trips and other school costs.' },
+          ],
+        },
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'You may also want', cols: 3,
+          items: [
+            { href: 'term-dates.html', heading: 'Term Dates', description: 'Term starts, half terms and holidays.' },
+            { href: 'weekly-menu.html', heading: 'Weekly Menu', description: 'What’s for lunch this week.' },
+            { href: 'contact.html', heading: 'Contact', description: 'Get in touch with the right team.' },
+          ],
+        },
+      },
+    ],
+  },
+
+  pupils: {
+    hero: {
+      component: 'wf-page-header',
+      props: {
+        heading: 'Pupils', subtitle: 'Quick links to the systems you’ll use most as a Bancroft’s pupil.',
+        breadcrumb: bc({ label: 'Pupils', href: 'pupils.html' }),
+      },
+    },
+    blocks: [
+      {
+        component: 'wf-cards', props: {
+          heading: 'Quick links', cols: 4,
+          items: [
+            { href: '#', heading: 'Pupil Portal (iSAMS)', description: 'Your timetable, homework and reports.' },
+            { href: '#', heading: 'Prep VLE', description: 'The Prep’s virtual learning environment.' },
+            { href: '#', heading: 'Senior VLE', description: 'The Senior School’s virtual learning environment.' },
+            { href: '#', heading: 'Office 365 & Teams', description: 'Email, documents and online lessons.' },
+            { href: '#', heading: 'Planet eStream', description: 'The school’s video and media library.' },
+          ],
+        },
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'You may also want', cols: 3,
+          items: [
+            { href: 'weekly-menu.html', heading: 'Weekly Menu', description: 'What’s for lunch this week.' },
+            { href: 'uniform.html', heading: 'Uniform', description: 'What to buy and where from.' },
+            { href: 'term-dates.html', heading: 'Term Dates', description: 'Term starts, half terms and holidays.' },
+          ],
+        },
+      },
+    ],
+  },
+
+  staff: {
+    hero: {
+      component: 'wf-page-header',
+      props: {
+        heading: 'Staff', subtitle: 'Quick links to the systems you’ll use most as a member of staff.',
+        breadcrumb: bc({ label: 'Staff', href: 'staff.html' }),
+      },
+    },
+    blocks: [
+      {
+        component: 'wf-cards', props: {
+          heading: 'Quick links', cols: 4,
+          items: [
+            { href: '#', heading: 'Staff Remote Access', description: 'Access school systems from off site.' },
+            { href: '#', heading: 'Office 365', description: 'Email, documents and Teams.' },
+            { href: '#', heading: 'iSAMS', description: 'The school’s management information system.' },
+            { href: '#', heading: 'CPOMS', description: 'Safeguarding and welfare recording.' },
+            { href: '#', heading: 'VLEs', description: 'The Prep and Senior virtual learning environments.' },
+          ],
+        },
+      },
+      {
+        component: 'wf-cards', props: {
+          heading: 'You may also want', cols: 2,
+          items: [
+            { href: 'about-vacancies.html', heading: 'Vacancies', description: 'Current roles at Bancroft’s.' },
+            { href: 'about-policies-procedures.html', heading: 'Policies and Procedures', description: 'Key school policies, including safeguarding.' },
+          ],
+        },
+      },
     ],
   },
 
@@ -3026,94 +3244,101 @@ export interface CorePage { label: string; href: string; type: CorePageType; inf
 export const corePages: CorePage[] = [
   { label: 'Homepage', href: 'index.html', type: 'Homepage' },
 
+  // --- Admissions ---------------------------------------------------------
   { label: 'Admissions', href: 'admissions.html', type: 'Landing' },
-  { label: 'Your 7+ Journey', href: 'admissions-7plus-journey.html', type: 'Content' },
-  { label: 'Your 11+ Journey', href: 'admissions-11plus-journey.html', type: 'Content' },
-  { label: 'Starting at Bancroft’s (11+)', href: 'admissions-11plus-starting.html', type: 'Content' },
-  { label: '11+ Exam & Past Papers', href: 'admissions-11plus-past-papers.html', type: 'Content' },
-  { label: 'Your 16+ Journey', href: 'admissions-16plus-journey.html', type: 'Content' },
-  { label: 'Fees', href: 'fees.html', type: 'Content' },
-  { label: 'Scholarships & Bursaries', href: 'scholarships-bursaries.html', type: 'Content' },
-  { label: 'Frequently Asked Questions', href: 'admissions-faqs.html', type: 'Content' },
-
-  { label: '7+ Prep', href: 'prep.html', type: 'Landing' },
-  { label: 'Why Bancroft’s Prep', href: 'prep-why.html', type: 'Content' },
-  { label: 'Prep School Life', href: 'prep-life.html', type: 'Content' },
-  { label: 'Prep: Curriculum', href: 'prep-curriculum.html', type: 'Content' },
-  { label: 'Prep: Co-Curriculum', href: 'prep-co-curriculum.html', type: 'Content' },
-  { label: 'Prep: Pastoral Care', href: 'prep-pastoral-care.html', type: 'Content' },
-  { label: 'Prep: Meet the Staff', href: 'prep-staff.html', type: 'Content' },
-
-  { label: '11+ Senior', href: 'senior.html', type: 'Landing' },
-  { label: 'Why Bancroft’s Senior', href: 'senior-why.html', type: 'Content' },
-  { label: 'Senior: GCSE Results', href: 'senior-academic-results.html', type: 'Content' },
-  { label: 'Senior: Curriculum', href: 'senior-curriculum.html', type: 'Content' },
-  { label: 'Senior: Sport & Arts', href: 'senior-sport-arts.html', type: 'Landing' },
-  { label: 'Senior: Co-Curriculum', href: 'senior-co-curriculum.html', type: 'Content' },
-  { label: 'Senior: Pastoral Care', href: 'senior-pastoral-care.html', type: 'Content' },
-  { label: 'Senior: Learning for Life', href: 'senior-learning-for-life.html', type: 'Content' },
-  { label: 'Senior: Learning Support', href: 'senior-learning-support.html', type: 'Content' },
-  { label: 'Senior: Trips & Visits', href: 'senior-trips-visits.html', type: 'Content' },
-  { label: 'Senior: Spiritual Life', href: 'senior-spiritual-life.html', type: 'Content' },
-  { label: 'Co-Curriculum: CCF', href: 'senior-co-curriculum-ccf.html', type: 'Content' },
-  { label: 'Co-Curriculum: Duke of Edinburgh’s Award', href: 'senior-co-curriculum-dofe.html', type: 'Content' },
-  { label: 'Co-Curriculum: Sea Scouts', href: 'senior-co-curriculum-sea-scouts.html', type: 'Content' },
-  { label: 'Sport (listing)', href: 'senior-sport.html', type: 'Listing' },
-  { label: 'Sport: Football', href: 'senior-sport-football.html', type: 'Content' },
-  { label: 'Sport: Rugby', href: 'senior-sport-rugby.html', type: 'Content' },
-  { label: 'Sport: Hockey', href: 'senior-sport-hockey.html', type: 'Content' },
-  { label: 'Sport: Netball', href: 'senior-sport-netball.html', type: 'Content' },
-  { label: 'Sport: Cricket', href: 'senior-sport-cricket.html', type: 'Content' },
-  { label: 'Sport: Athletics', href: 'senior-sport-athletics.html', type: 'Content' },
-  { label: 'Sport: Swimming', href: 'senior-sport-swimming.html', type: 'Content' },
-  { label: 'Sport: Tennis', href: 'senior-sport-tennis.html', type: 'Content' },
-  { label: 'Sport: Badminton', href: 'senior-sport-badminton.html', type: 'Content' },
-  { label: 'The Arts (listing)', href: 'senior-arts.html', type: 'Listing' },
-  { label: 'The Arts: Visual Arts', href: 'senior-arts-visual-arts.html', type: 'Content' },
-  { label: 'The Arts: Drama', href: 'senior-arts-drama.html', type: 'Content' },
-  { label: 'The Arts: Music', href: 'senior-arts-music.html', type: 'Content' },
-
-  { label: '16+ Sixth Form', href: 'sixth-form.html', type: 'Landing' },
-  { label: 'Why Bancroft’s Sixth Form', href: 'sixth-form-why.html', type: 'Content' },
-  { label: 'Sixth Form Life', href: 'sixth-form-life.html', type: 'Content' },
-  { label: 'Sixth Form: Co-Curriculum', href: 'sixth-form-co-curriculum.html', type: 'Content' },
-  { label: 'Sixth Form: Curriculum & Subjects', href: 'sixth-form-curriculum-subjects.html', type: 'Content' },
-  { label: 'Sixth Form: Leavers’ Destinations', href: 'sixth-form-leavers-destinations.html', type: 'Content' },
-  { label: 'Sixth Form: Staying On', href: 'sixth-form-staying-on.html', type: 'Content' },
-  { label: 'Sixth Form: A Level Results', href: 'sixth-form-examination-results.html', type: 'Content' },
-
-  { label: 'School Life', href: 'school-life.html', type: 'Landing' },
-  { label: 'Our Community', href: 'school-life-community.html', type: 'Content' },
-  { label: 'Term Dates', href: 'term-dates.html', type: 'Content' },
-  { label: 'Events Calendar', href: 'calendar.html', type: 'Content' },
-  { label: 'Weekly Menu', href: 'weekly-menu.html', type: 'Content' },
-  { label: 'School Bus Service', href: 'school-bus-service.html', type: 'Content' },
-  { label: 'Uniform', href: 'uniform.html', type: 'Content' },
-  { label: 'Parent Association', href: 'parent-association.html', type: 'Content' },
-
-  { label: 'About', href: 'about.html', type: 'Landing' },
-  { label: 'Welcome from the Head', href: 'about-welcome.html', type: 'Content' },
-  { label: 'What We Stand For', href: 'about-what-we-stand-for.html', type: 'Content' },
-  { label: 'Rankings & Recognition', href: 'about-rankings-recognition.html', type: 'Content' },
-  { label: 'Our History & Archives', href: 'about-history-archives.html', type: 'Content' },
-  { label: 'Governance & Leadership', href: 'about-governance-leadership.html', type: 'Content' },
-  { label: 'Policies and Procedures', href: 'about-policies-procedures.html', type: 'Content' },
-  { label: 'Vacancies', href: 'about-vacancies.html', type: 'Content' },
-
-  { label: 'Privacy Policy', href: 'privacy-policy.html', type: 'Content' },
-
-  { label: 'News (listing)', href: 'news.html', type: 'Listing' },
-  { label: 'News article', href: 'news-article-a.html', type: 'Article' },
-  { label: 'News article', href: 'news-article-b.html', type: 'Article' },
-  { label: 'News article', href: 'news-article-c.html', type: 'Article' },
-
-  { label: 'Book a Visit', href: 'book-a-visit.html', type: 'Content' },
+  { label: 'Joining at 7+', href: 'admissions-7plus-journey.html', type: 'Content' },
+  { label: 'Joining at 11+', href: 'admissions-11plus-journey.html', type: 'Content' },
+  { label: '11+ Assessments & Past Papers', href: 'admissions-11plus-past-papers.html', type: 'Content' },
+  { label: 'Joining at 16+', href: 'admissions-16plus-journey.html', type: 'Content' },
+  { label: 'Starting at Bancroft’s', href: 'admissions-starting.html', type: 'Content' },
+  { label: 'Visit Us', href: 'book-a-visit.html', type: 'Content' },
+  { label: '7+ Open Morning', href: 'visit-7plus-open-morning.html', type: 'Content' },
+  { label: '11+ Open Morning', href: 'visit-11plus-open-morning.html', type: 'Content' },
+  { label: 'Sixth Form Open Evening', href: 'visit-sixth-form-open-evening.html', type: 'Content' },
   { label: 'Occasional Places', href: 'admissions-occasional-places.html', type: 'Content' },
   { label: 'Register Online', href: 'register.html', type: 'Content' },
   { label: '7+ Registration', href: 'register-7plus.html', type: 'Content' },
   { label: '11+ Registration', href: 'register-11plus.html', type: 'Content' },
   { label: '16+ Registration', href: 'register-16plus.html', type: 'Content' },
-  { label: 'Acceptance Deposit', href: 'acceptance-deposit.html', type: 'Content' },
+  { label: 'Acceptance Deposit: Fee', href: 'acceptance-deposit-fee.html', type: 'Content' },
+  { label: 'Acceptance Deposit: Staff', href: 'acceptance-deposit-staff.html', type: 'Content' },
+  { label: 'Acceptance Deposit: Bursary', href: 'acceptance-deposit-bursary.html', type: 'Content' },
+  { label: 'Fees', href: 'fees.html', type: 'Content' },
+  { label: 'Scholarships & Awards', href: 'scholarships-awards.html', type: 'Content' },
+  { label: 'Bursaries', href: 'bursaries.html', type: 'Content' },
+  { label: 'Frequently Asked Questions', href: 'admissions-faqs.html', type: 'Content' },
+
+  // --- 7+ Prep --------------------------------------------------------------
+  { label: '7+ Prep', href: 'prep.html', type: 'Landing' },
+  { label: 'Why Bancroft’s Prep', href: 'prep-why.html', type: 'Content' },
+  { label: 'Prep School Life', href: 'prep-life.html', type: 'Content' },
+  { label: 'Prep: Academic Life', href: 'prep-academic-life.html', type: 'Content' },
+  { label: 'Prep: Beyond the Classroom', href: 'prep-beyond-the-classroom.html', type: 'Landing' },
+  { label: 'Prep: Sport', href: 'prep-sport.html', type: 'Content' },
+  { label: 'Prep: Music', href: 'prep-music.html', type: 'Content' },
+  { label: 'Prep: Drama', href: 'prep-drama.html', type: 'Content' },
+  { label: 'Prep: Meet the Staff', href: 'prep-staff.html', type: 'Content' },
+
+  // --- 11+ Senior -----------------------------------------------------------
+  { label: '11+ Senior', href: 'senior.html', type: 'Landing' },
+  { label: 'Why Bancroft’s', href: 'senior-why.html', type: 'Content' },
+  { label: 'Senior School Life', href: 'senior-life.html', type: 'Content' },
+  { label: 'Senior: Academic Life', href: 'senior-academic-life.html', type: 'Content' },
+  { label: 'Senior: Beyond the Classroom', href: 'senior-beyond-the-classroom.html', type: 'Landing' },
+  { label: 'Senior: Sport', href: 'senior-sport.html', type: 'Content' },
+  { label: 'Senior: Music', href: 'senior-music.html', type: 'Content' },
+  { label: 'Senior: Drama', href: 'senior-drama.html', type: 'Content' },
+
+  // --- 16+ Sixth Form ---------------------------------------------------------
+  { label: '16+ Sixth Form', href: 'sixth-form.html', type: 'Landing' },
+  { label: 'Why Bancroft’s Sixth Form', href: 'sixth-form-why.html', type: 'Content' },
+  { label: 'Sixth Form Life', href: 'sixth-form-life.html', type: 'Content' },
+  { label: 'Sixth Form: Academic Life', href: 'sixth-form-academic-life.html', type: 'Content' },
+  { label: 'Sixth Form: Beyond the Classroom', href: 'sixth-form-beyond-the-classroom.html', type: 'Landing' },
+  { label: 'Sixth Form: Sport', href: 'sixth-form-sport.html', type: 'Content' },
+  { label: 'Sixth Form: Music', href: 'sixth-form-music.html', type: 'Content' },
+  { label: 'Sixth Form: Drama', href: 'sixth-form-drama.html', type: 'Content' },
+  { label: 'Preparing for Life Beyond Bancroft’s', href: 'sixth-form-preparing-for-life.html', type: 'Content' },
+
+  // --- Shared whole-school pages, linked from all three stage menus -----------
+  { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html', type: 'Content' },
+  { label: 'Learning Support', href: 'learning-support.html', type: 'Content' },
+  { label: 'Results & Destinations', href: 'results-destinations.html', type: 'Content' },
+
+  // --- School Life ------------------------------------------------------------
+  { label: 'School Life', href: 'school-life.html', type: 'Landing' },
+  { label: 'Our Community', href: 'school-life-community.html', type: 'Content' },
+  { label: 'Foundation', href: 'foundation.html', type: 'Content' },
+  { label: 'Old Bancroftians', href: 'old-bancroftians.html', type: 'Content' },
+  { label: 'Term Dates', href: 'term-dates.html', type: 'Content' },
+  { label: 'Weekly Menu', href: 'weekly-menu.html', type: 'Content' },
+  { label: 'Getting to Bancroft’s', href: 'getting-to-bancrofts.html', type: 'Content' },
+  { label: 'Uniform', href: 'uniform.html', type: 'Content' },
+
+  // --- About --------------------------------------------------------------
+  { label: 'About', href: 'about.html', type: 'Landing' },
+  { label: 'Welcome from the Head', href: 'about-welcome.html', type: 'Content' },
+  { label: 'What We Stand For', href: 'about-what-we-stand-for.html', type: 'Content' },
+  { label: 'Awards and Recognition', href: 'about-awards-recognition.html', type: 'Content' },
+  { label: 'Our History', href: 'about-history.html', type: 'Content' },
+  { label: 'Leadership & Governance', href: 'about-leadership-governance.html', type: 'Content' },
+  { label: 'Our Family of Schools', href: 'about-family-of-schools.html', type: 'Content' },
+  { label: 'Policies and Procedures', href: 'about-policies-procedures.html', type: 'Content' },
+  { label: 'Vacancies', href: 'about-vacancies.html', type: 'Content' },
+
+  { label: 'Privacy Policy', href: 'privacy-policy.html', type: 'Content' },
+
+  // --- News ---------------------------------------------------------------
+  { label: 'News (listing)', href: 'news.html', type: 'Listing' },
+  { label: 'News article', href: 'news-article-a.html', type: 'Article' },
+  { label: 'News article', href: 'news-article-b.html', type: 'Article' },
+  { label: 'News article', href: 'news-article-c.html', type: 'Article' },
+
+  // --- Quick links (header utility row; each a page of clear quick links) ----
+  { label: 'Parents', href: 'parents.html', type: 'Content' },
+  { label: 'Pupils', href: 'pupils.html', type: 'Content' },
+  { label: 'Staff', href: 'staff.html', type: 'Content' },
+
   { label: 'Contact', href: 'contact.html', type: 'Content', inferred: true },
 ]
 
@@ -3123,78 +3348,84 @@ export interface Flow { name: string; description: string; steps: WalkStep[] }
 export const flows: Flow[] = [
   {
     name: '11+ parent enquiry',
-    description: 'Homepage → 11+ Senior → Your 11+ Journey → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
+    description: 'Homepage → 11+ Senior → Joining at 11+ → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
     steps: [
       { href: 'index.html', targetId: 'cta-home-senior', label: 'Homepage', instruction: 'Select the 11+ Senior card.' },
       { href: 'senior.html', targetId: 'cta-senior-hero-journey', label: '11+ Senior', instruction: 'Scroll to “Ready to take the next step?” and click “Start your 11+ journey”. The hero “Book a Visit” is a shortcut straight to the form.' },
-      { href: 'admissions-11plus-journey.html', targetId: 'cta-11plus-journey-promo', label: 'Your 11+ Journey', instruction: 'Click “Book a Visit” in the closing banner.' },
-      { href: 'book-a-visit.html', targetId: 'submit-book-a-visit', label: 'Book a Visit', instruction: 'Choose an event and date, then click “Book a Visit”.' },
+      { href: 'admissions-11plus-journey.html', targetId: 'cta-11plus-journey-promo', label: 'Joining at 11+', instruction: 'Click “Book a Visit” in the closing banner.' },
+      { href: 'book-a-visit.html', targetId: 'cta-visit-us-11plus', label: 'Visit Us', instruction: 'Click “Book this event” under “11+ Open Morning”.' },
+      { href: 'visit-11plus-open-morning.html', targetId: 'submit-visit-11plus-open-morning', label: '11+ Open Morning', instruction: 'Complete and submit the booking form.' },
     ],
   },
   {
     name: '7+ Prep parent enquiry',
-    description: 'Homepage → 7+ Prep → Your 7+ Journey → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
+    description: 'Homepage → 7+ Prep → Joining at 7+ → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
     steps: [
       { href: 'index.html', targetId: 'cta-home-prep', label: 'Homepage', instruction: 'Select the 7+ Prep card.' },
       { href: 'prep.html', targetId: 'cta-prep-hero-journey', label: '7+ Prep', instruction: 'Scroll to “Ready to take the next step?” and click “Start your 7+ journey”. The hero “Book a Visit” is a shortcut straight to the form.' },
-      { href: 'admissions-7plus-journey.html', targetId: 'cta-7plus-journey-promo', label: 'Your 7+ Journey', instruction: 'Click “Book a Visit” in the closing banner.' },
-      { href: 'book-a-visit.html', targetId: 'submit-book-a-visit', label: 'Book a Visit', instruction: 'Choose an event and date, then click “Book a Visit”.' },
+      { href: 'admissions-7plus-journey.html', targetId: 'cta-7plus-journey-promo', label: 'Joining at 7+', instruction: 'Click “Book a Visit” in the closing banner.' },
+      { href: 'book-a-visit.html', targetId: 'cta-visit-us-7plus', label: 'Visit Us', instruction: 'Click “Book this event” under “7+ Open Morning”.' },
+      { href: 'visit-7plus-open-morning.html', targetId: 'submit-visit-7plus-open-morning', label: '7+ Open Morning', instruction: 'Complete and submit the booking form.' },
     ],
   },
   {
     name: 'Sixth Form applicant',
-    description: 'Homepage → 16+ Sixth Form → Your 16+ Journey → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
+    description: 'Homepage → 16+ Sixth Form → Joining at 16+ → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
     steps: [
       { href: 'index.html', targetId: 'cta-home-sixth-form', label: 'Homepage', instruction: 'Select the 16+ Sixth Form card.' },
       { href: 'sixth-form.html', targetId: 'cta-sixthform-hero-journey', label: '16+ Sixth Form', instruction: 'Scroll to “Ready to take the next step?” and click “Start your 16+ journey”.' },
-      { href: 'admissions-16plus-journey.html', targetId: 'cta-16plus-journey-promo', label: 'Your 16+ Journey', instruction: 'Click “Book a Visit” in the closing banner. “Register Online” is the secondary option beside it.' },
-      { href: 'book-a-visit.html', targetId: 'submit-book-a-visit', label: 'Book a Visit', instruction: 'Choose an event and date, then click “Book a Visit”.' },
+      { href: 'admissions-16plus-journey.html', targetId: 'cta-16plus-journey-promo', label: 'Joining at 16+', instruction: 'Click “Book a Visit” in the closing banner. “Register Online” is the secondary option beside it.' },
+      { href: 'book-a-visit.html', targetId: 'cta-visit-us-sixthform', label: 'Visit Us', instruction: 'Click “Book this event” under “Sixth Form Open Evening”.' },
+      { href: 'visit-sixth-form-open-evening.html', targetId: 'submit-visit-sixth-form-open-evening', label: 'Sixth Form Open Evening', instruction: 'Complete and submit the booking form.' },
     ],
   },
   {
     name: 'Sixth Form current pupil',
-    description: 'Homepage → 16+ Sixth Form → Staying On → 16+ Registration → Registration received.',
+    description: 'Homepage → 16+ Sixth Form → Joining at 16+ (Year 11 progression) → 16+ Registration → Registration received.',
     steps: [
       { href: 'index.html', targetId: 'cta-home-sixth-form', label: 'Homepage', instruction: 'Select the 16+ Sixth Form card.' },
-      { href: 'sixth-form.html', targetId: 'cta-sixthform-staying-on', label: '16+ Sixth Form', instruction: 'Scroll to “Already at Bancroft’s?” at the foot of the page and click “Staying On”.' },
-      { href: 'sixth-form-staying-on.html', targetId: 'cta-staying-on-promo', label: 'Staying On', instruction: 'Click “Register Online” in the closing banner.' },
+      { href: 'sixth-form.html', targetId: 'cta-sixthform-moving-up', label: '16+ Sixth Form', instruction: 'Scroll to “Already at Bancroft’s?” at the foot of the page and click “See Joining at 16+”.' },
+      { href: 'admissions-16plus-journey.html', targetId: 'cta-16plus-journey-hero-register', label: 'Joining at 16+', instruction: 'Under “Already at Bancroft’s?”, read about moving up from Year 11, then click “Register Online” in the hero.' },
       { href: 'register-16plus.html', targetId: 'submit-register', label: '16+ Registration', instruction: 'Complete and submit the 16+ registration form.' },
     ],
   },
   {
     name: 'Current family quick task',
-    description: 'Homepage → School Life → Term Dates, with the Events Calendar and Weekly Menu beside it.',
+    description: 'Homepage → School Life → Term Dates, with Weekly Menu and Getting to Bancroft’s beside it.',
     steps: [
       { href: 'index.html', targetId: 'cta-home-school-life-promo', label: 'Homepage', instruction: 'Click “Go to School Life”.' },
-      { href: 'school-life.html', targetId: 'cta-schoollife-card-term-dates', label: 'School Life', instruction: 'Click the “Term Dates” card under Explore School Life. Events Calendar and Weekly Menu are beside it.' },
+      { href: 'school-life.html', targetId: 'cta-schoollife-card-term-dates', label: 'School Life', instruction: 'Click the “Term Dates” card under Explore School Life. Weekly Menu and Getting to Bancroft’s are beside it.' },
     ],
   },
   {
     name: 'Reputation to conversion via News',
-    description: 'Homepage → News article → GCSE Results or Leavers’ Destinations → Book a Visit. Direct route: the article’s closing banner. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
+    description: 'Homepage → News article → Results & Destinations → Book a Visit. Direct route: the article’s closing banner. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
     steps: [
       { href: 'index.html', targetId: 'cta-home-news-article', label: 'Homepage', instruction: 'Click the first “Latest news” story.' },
-      { href: 'news-article-a.html', targetId: 'cta-article-a-gcse-results', label: 'News article', instruction: 'Under “Related”, click “GCSE Results”. Leavers’ Destinations is beside it, and the closing banner’s “Book a Visit” is the direct route.' },
-      { href: 'senior-academic-results.html', targetId: 'cta-senior-results-promo', label: 'GCSE Results', instruction: 'Click “Book a Visit” in the closing banner.' },
-      { href: 'book-a-visit.html', targetId: 'submit-book-a-visit', label: 'Book a Visit', instruction: 'Choose an event and date, then click “Book a Visit”.' },
+      { href: 'news-article-a.html', targetId: 'cta-article-a-gcse-results', label: 'News article', instruction: 'Under “Related”, click “Results & Destinations”. Senior Academic Life is beside it, and the closing banner’s “Book a Visit” is the direct route.' },
+      { href: 'results-destinations.html', targetId: 'cta-results-destinations-promo', label: 'Results & Destinations', instruction: 'Click “Book a Visit” in the closing banner.' },
+      { href: 'book-a-visit.html', targetId: 'cta-visit-us-11plus', label: 'Visit Us', instruction: 'Click “Book this event” under “11+ Open Morning”.' },
+      { href: 'visit-11plus-open-morning.html', targetId: 'submit-visit-11plus-open-morning', label: '11+ Open Morning', instruction: 'Complete and submit the booking form.' },
     ],
   },
   {
     name: '11+ past papers',
-    description: 'Your 11+ Journey → 11+ Exam & Past Papers → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
+    description: 'Joining at 11+ → 11+ Assessments & Past Papers → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
     steps: [
-      { href: 'admissions-11plus-journey.html', targetId: 'cta-11plus-journey-card-papers', label: 'Your 11+ Journey', instruction: 'Under “You may also want”, click “11+ Exam & Past Papers”.' },
-      { href: 'admissions-11plus-past-papers.html', targetId: 'cta-past-papers-promo', label: '11+ Exam & Past Papers', instruction: 'Click “Book a Visit” in the closing banner.' },
-      { href: 'book-a-visit.html', targetId: 'submit-book-a-visit', label: 'Book a Visit', instruction: 'Choose an event and date, then click “Book a Visit”.' },
+      { href: 'admissions-11plus-journey.html', targetId: 'cta-11plus-journey-card-papers', label: 'Joining at 11+', instruction: 'Under “You may also want”, click “11+ Assessments & Past Papers”.' },
+      { href: 'admissions-11plus-past-papers.html', targetId: 'cta-past-papers-promo', label: '11+ Assessments & Past Papers', instruction: 'Click “Book a Visit” in the closing banner.' },
+      { href: 'book-a-visit.html', targetId: 'cta-visit-us-11plus', label: 'Visit Us', instruction: 'Click “Book this event” under “11+ Open Morning”.' },
+      { href: 'visit-11plus-open-morning.html', targetId: 'submit-visit-11plus-open-morning', label: '11+ Open Morning', instruction: 'Complete and submit the booking form.' },
     ],
   },
   {
     name: 'Value and fees',
-    description: 'Fees → Scholarships & Bursaries → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
+    description: 'Fees → Scholarships & Awards → Book a Visit. End state is a booked event, tracked as a key event by entry point (7+, 11+, 16+).',
     steps: [
-      { href: 'fees.html', targetId: 'cta-fees-promo', label: 'Fees', instruction: 'Click “See Scholarships & Bursaries” in the closing banner.' },
-      { href: 'scholarships-bursaries.html', targetId: 'cta-scholarships-promo', label: 'Scholarships & Bursaries', instruction: 'Click “Book a Visit” in the closing banner.' },
-      { href: 'book-a-visit.html', targetId: 'submit-book-a-visit', label: 'Book a Visit', instruction: 'Choose an event and date, then click “Book a Visit”.' },
+      { href: 'fees.html', targetId: 'cta-fees-promo', label: 'Fees', instruction: 'Click “See Scholarships & Awards” in the closing banner.' },
+      { href: 'scholarships-awards.html', targetId: 'cta-scholarships-promo', label: 'Scholarships & Awards', instruction: 'Click “Book a Visit” in the closing banner.' },
+      { href: 'book-a-visit.html', targetId: 'cta-visit-us-11plus', label: 'Visit Us', instruction: 'Click “Book this event” under “11+ Open Morning”.' },
+      { href: 'visit-11plus-open-morning.html', targetId: 'submit-visit-11plus-open-morning', label: '11+ Open Morning', instruction: 'Complete and submit the booking form.' },
     ],
   },
   {

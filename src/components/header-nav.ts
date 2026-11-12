@@ -44,11 +44,6 @@ export class WfHeaderNav extends Light {
    *  never disappears at this width, so there's no "root vs. drilled-in" state to track, just
    *  which section is currently selected. */
   @state() private desktopSection: string | null = null
-  /** Which utility link (Parent/Pupil/Staff Portal) currently has its sub-links expanded - a
-   *  push-down accordion (see `renderUtilityList`), same pattern as wf-accordion elsewhere in the
-   *  kit. Single slot, not a Set: only one open at a time, matching wf-accordion's own default
-   *  (non-multi-open) behaviour. */
-  @state() private openUtility: string | null = null
 
   /** display:contents (not the base class's default display:block) — the host must not
    *  generate its own box, or it becomes <header>'s sticky containing block. Since this
@@ -116,10 +111,6 @@ export class WfHeaderNav extends Light {
     this.desktopSection = slug
   }
 
-  private toggleUtility(label: string) {
-    this.openUtility = this.openUtility === label ? null : label
-  }
-
   /** The takeover panel is a scroll container of its own; without this, drilling into a section
    *  (or back out of one) keeps whatever scroll position the previous view was left at, which can
    *  open a section already scrolled past its own heading and Back row. */
@@ -140,34 +131,16 @@ export class WfHeaderNav extends Light {
     return html`<span class="rotate-90 inline-block">${chevronIcon(false)}</span>`
   }
 
-  /** Shared by the mobile root list and the desktop rail (see render()) — Contact stays a plain
-   *  link; Parent/Pupil/Staff Portal each expand in place to their real sub-systems (see
-   *  `headerUtilityLinks` in config.ts), same push-down pattern as wf-accordion elsewhere in the
-   *  kit (button + chevronIcon, content in normal flow beneath it) rather than a popover — no
-   *  viewport-edge positioning to work around, since expanding one just grows this list, and
-   *  whatever it sits next to (the fixed rail's promo card, or the mobile root list below it)
-   *  isn't affected. Same vertical, stacked layout at every width the takeover uses this in. */
+  /** Shared by the mobile root list and the desktop rail (see render()) — Contact, Parents,
+   *  Pupils and Staff are all plain links to real pages now (each of the latter three is itself
+   *  "a page of clear quick links" to the underlying systems), so this is just a flat list - no
+   *  push-down accordion needed, unlike when Parent/Pupil/Staff Portal were external shortcuts
+   *  with their own sub-system lists. */
   private renderUtilityList() {
     return html`
       <ul class="w-44 space-y-3 text-sm text-gray-500">
-        ${headerUtilityLinks.map((l) => {
-          if (!l.children?.length) {
-            return html`<li><a href=${l.href} @click=${() => this.closeNav()} class="hover:text-gray-900">${l.label}</a></li>`
-          }
-          const open = this.openUtility === l.label
-          return html`
-            <li>
-              <button type="button" aria-expanded=${open} @click=${() => this.toggleUtility(l.label)}
-                class="w-full flex items-center justify-between gap-1 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 rounded-md">
-                ${l.label} ${chevronIcon(open)}
-              </button>
-              ${open ? html`
-                <ul class="mt-2 space-y-2 border-l border-gray-200 pl-3">
-                  ${l.children.map((c) => html`
-                    <li><a href=${c.href} @click=${() => this.closeNav()} class="block text-gray-600 hover:text-gray-900">${c.label}</a></li>`)}
-                </ul>` : ''}
-            </li>`
-        })}
+        ${headerUtilityLinks.map((l) => html`
+          <li><a href=${l.href} @click=${() => this.closeNav()} class="hover:text-gray-900">${l.label}</a></li>`)}
       </ul>`
   }
 
