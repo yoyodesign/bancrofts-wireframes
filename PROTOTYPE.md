@@ -377,6 +377,36 @@ on About to the client's exact requested sequence: Welcome from the Head, What W
 History, Leadership & Governance, Our Family of Schools, Pastoral Care & Houses, Learning
 Support, Results & Destinations, Awards and Recognition.
 
+### Pastoral care per stage, Grounds & Facilities, Community & Partnerships rename (2026-11-13)
+
+Client follow-up, after reviewing the sitemap fixes above. Four changes:
+
+1. "Our Community" renamed to "Community & Partnerships" throughout (sitemap, School Life menu,
+   page heading/breadcrumb, all links). Its children (Foundation, Old Bancroftians) are unchanged.
+2. The single whole-school "Pastoral Care & Houses" page is replaced by three stage-specific
+   pages — Pastoral Care at the Prep, Pastoral Care in the Senior School, Pastoral Care in the
+   Sixth Form — each with its own H1/title tag so they don't compete in search, nav-childed and
+   breadcrumbed under their own stage directly after Beyond the Classroom (same slot the shared
+   page held before). Each has a Houses section; the Chaplain and Learning for Life sections
+   (both genuinely whole-school content) move to the Senior page specifically, per client
+   instruction, matching where Learning for Life lived historically. All links that pointed to
+   the old shared page now point to the right stage's page.
+3. New page "Our Grounds & Facilities" added to About, directly after Our History, covering the
+   site, sport, arts and learning spaces, and ending on a "Hire our facilities" enquiry block for
+   external lettings rather than its own page - the client's own words: "which can become its own
+   page later if lettings grows".
+4. About's sitemap-tree branch order (`sitemapChildren` - see the entry above) updated to the
+   client's new sequence: Welcome from the Head, What We Stand For, Our History, Our Grounds &
+   Facilities, Leadership & Governance, Our Family of Schools, Awards and Recognition, Results &
+   Destinations, Learning Support. Pastoral Care & Houses drops out of this list since it no
+   longer exists as a single page.
+
+Files changed: `src/config.ts` (primaryNav, `pages`, `corePages`, `changelog`),
+`scripts/gen-pages.mjs` (manifest), plus regenerated HTML shells. Pages added:
+`prep-pastoral-care.html`, `senior-pastoral-care.html`, `sixth-form-pastoral-care.html`,
+`about-grounds-facilities.html`. Pages deleted: `pastoral-care-houses.html`. Nothing renamed at
+the file level - "Our Community" keeps its existing `school-life-community.html` address.
+
 ### Sitemap (2026-10-09)
 
 `sitemap.html`, opened from the Prototype panel's "Sitemap" row — a tooling page like the Component

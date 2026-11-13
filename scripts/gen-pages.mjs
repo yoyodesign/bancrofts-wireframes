@@ -45,6 +45,7 @@ const PAGES = [
   ['prep-sport.html', 'prep-sport', 'prep', 'Prep Sport'],
   ['prep-music.html', 'prep-music', 'prep', 'Prep Music'],
   ['prep-drama.html', 'prep-drama', 'prep', 'Prep Drama'],
+  ['prep-pastoral-care.html', 'prep-pastoral-care', 'prep', 'Pastoral Care at the Prep'],
   ['prep-staff.html', 'prep-staff', 'prep', 'Meet the Prep Staff'],
 
   ['senior.html', 'senior', 'senior', '11+ Senior'],
@@ -55,6 +56,7 @@ const PAGES = [
   ['senior-sport.html', 'senior-sport', 'senior', 'Senior Sport'],
   ['senior-music.html', 'senior-music', 'senior', 'Senior Music'],
   ['senior-drama.html', 'senior-drama', 'senior', 'Senior Drama'],
+  ['senior-pastoral-care.html', 'senior-pastoral-care', 'senior', 'Pastoral Care in the Senior School'],
 
   ['sixth-form.html', 'sixth-form', 'sixth-form', '16+ Sixth Form'],
   ['sixth-form-why.html', 'sixth-form-why', 'sixth-form', 'Why Bancroft’s Sixth Form'],
@@ -64,17 +66,17 @@ const PAGES = [
   ['sixth-form-sport.html', 'sixth-form-sport', 'sixth-form', 'Sixth Form Sport'],
   ['sixth-form-music.html', 'sixth-form-music', 'sixth-form', 'Sixth Form Music'],
   ['sixth-form-drama.html', 'sixth-form-drama', 'sixth-form', 'Sixth Form Drama'],
+  ['sixth-form-pastoral-care.html', 'sixth-form-pastoral-care', 'sixth-form', 'Pastoral Care in the Sixth Form'],
   ['sixth-form-preparing-for-life.html', 'sixth-form-preparing-for-life', 'sixth-form', 'Preparing for Life Beyond Bancroft’s'],
 
   // Shared whole-school pages — linked from Prep, Senior and Sixth Form menus alike (see
   // primaryNav in config.ts); each carries no single stage's active-nav-slug, so it doesn't
   // falsely highlight one stage's nav item over the other two when visited directly.
-  ['pastoral-care-houses.html', 'pastoral-care-houses', '', 'Pastoral Care & Houses'],
   ['learning-support.html', 'learning-support', '', 'Learning Support'],
   ['results-destinations.html', 'results-destinations', '', 'Results & Destinations'],
 
   ['school-life.html', 'school-life', 'school-life', 'School Life'],
-  ['school-life-community.html', 'school-life-community', 'school-life', 'Our Community'],
+  ['school-life-community.html', 'school-life-community', 'school-life', 'Community & Partnerships'],
   ['foundation.html', 'foundation', 'school-life', 'Foundation'],
   ['old-bancroftians.html', 'old-bancroftians', 'school-life', 'Old Bancroftians'],
   ['term-dates.html', 'term-dates', 'school-life', 'Term Dates'],
@@ -92,6 +94,7 @@ const PAGES = [
   ['about-what-we-stand-for.html', 'about-what-we-stand-for', 'about', 'What We Stand For'],
   ['about-awards-recognition.html', 'about-awards-recognition', 'about', 'Awards and Recognition'],
   ['about-history.html', 'about-history', 'about', 'Our History'],
+  ['about-grounds-facilities.html', 'about-grounds-facilities', 'about', 'Our Grounds & Facilities'],
   ['about-leadership-governance.html', 'about-leadership-governance', 'about', 'Leadership & Governance'],
   ['about-family-of-schools.html', 'about-family-of-schools', 'about', 'Our Family of Schools'],
   ['about-policies-procedures.html', 'about-policies-procedures', '', 'Policies and Procedures'],

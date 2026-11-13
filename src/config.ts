@@ -46,7 +46,7 @@ export interface NavItem {
 // matching wf-homepage-hero's "one unambiguous next step" logic applied to the header itself.
 // ---------------------------------------------------------------------------
 
-export const headerCta = { label: 'Book a Visit', href: 'book-a-visit.html' }
+export const headerCta = { label: 'Visit us', href: 'book-a-visit.html' }
 
 // Small utility row shown at the foot of the burger takeover panel — quick access to Contact and
 // the three audience pages, kept out of the main section list so it doesn't compete with the
@@ -96,7 +96,7 @@ export const primaryNav: NavItem[] = [
       { label: 'Prep School Life', href: 'prep-life.html', description: 'What a day at the Prep looks and feels like.' },
       { label: 'Academic Life', href: 'prep-academic-life.html', description: 'What Prep pupils learn in the classroom, from Year 3 onwards.' },
       { label: 'Beyond the Classroom', href: 'prep-beyond-the-classroom.html', description: 'Sport, music, drama and clubs outside lessons.' },
-      { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html', description: 'The House system and how every pupil is known and supported.' },
+      { label: 'Pastoral Care', href: 'prep-pastoral-care.html', description: 'The House system and how every pupil is known and supported.' },
       { label: 'Learning Support', href: 'learning-support.html', description: 'How pupils with additional needs are identified and supported.' },
       { label: 'Meet the Staff', href: 'prep-staff.html', description: 'The teachers and support staff who lead the Prep years.' },
     ],
@@ -109,7 +109,7 @@ export const primaryNav: NavItem[] = [
       { label: 'Senior School Life', href: 'senior-life.html', description: 'What a day in the Senior School looks and feels like.' },
       { label: 'Academic Life', href: 'senior-academic-life.html', description: 'Subjects studied from Year 7 through to GCSE.' },
       { label: 'Beyond the Classroom', href: 'senior-beyond-the-classroom.html', description: 'Sport, music, drama and 250+ clubs and societies.' },
-      { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html', description: 'The House system and how every pupil is known and supported.' },
+      { label: 'Pastoral Care', href: 'senior-pastoral-care.html', description: 'The House system and how every pupil is known and supported.' },
       { label: 'Learning Support', href: 'learning-support.html', description: 'How pupils with additional needs are identified and supported.' },
       { label: 'Results & Destinations', href: 'results-destinations.html', description: 'GCSE outcomes and where pupils go on to next.' },
     ],
@@ -122,7 +122,7 @@ export const primaryNav: NavItem[] = [
       { label: 'Sixth Form Life', href: 'sixth-form-life.html', description: 'For pupils: what your days will actually be like.' },
       { label: 'Academic Life', href: 'sixth-form-academic-life.html', description: 'A Level subjects and how choices are guided.' },
       { label: 'Beyond the Classroom', href: 'sixth-form-beyond-the-classroom.html', description: 'Sport, music, drama and where Sixth Formers lead, not just attend.' },
-      { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html', description: 'The House system and how every pupil is known and supported.' },
+      { label: 'Pastoral Care', href: 'sixth-form-pastoral-care.html', description: 'The House system and how every pupil is known and supported.' },
       { label: 'Learning Support', href: 'learning-support.html', description: 'How pupils with additional needs are identified and supported.' },
       { label: 'Results & Destinations', href: 'results-destinations.html', description: 'A Level outcomes and where recent leavers have gone on to.' },
       { label: 'Preparing for Life Beyond Bancroft’s', href: 'sixth-form-preparing-for-life.html', description: 'Careers guidance, futures and alumni stories.' },
@@ -132,7 +132,7 @@ export const primaryNav: NavItem[] = [
     slug: 'school-life', label: 'School Life', href: 'school-life.html',
     children: [
       { label: 'School Life overview', href: 'school-life.html', description: 'Day-to-day life at Bancroft’s, for current families.' },
-      { label: 'Our Community', href: 'school-life-community.html', description: 'Parents, alumni and the wider Bancroft’s network.' },
+      { label: 'Community & Partnerships', href: 'school-life-community.html', description: 'Parents, alumni and the wider Bancroft’s network.' },
       { label: 'Term Dates', href: 'term-dates.html', description: 'Term starts, half terms and holidays for the year.' },
       { label: 'Weekly Menu', href: 'weekly-menu.html', description: 'What’s on the menu in the dining hall this week.' },
       { label: 'Getting to Bancroft’s', href: 'getting-to-bancrofts.html', description: 'The school bus service, plus TfL and journey planning links.' },
@@ -148,24 +148,25 @@ export const primaryNav: NavItem[] = [
       { label: 'What We Stand For', href: 'about-what-we-stand-for.html', description: 'Our values and what they mean day to day.' },
       { label: 'Awards and Recognition', href: 'about-awards-recognition.html', description: 'League tables, inspection reports and awards.' },
       { label: 'Our History', href: 'about-history.html', description: 'Bancroft’s story, from foundation to today.' },
+      { label: 'Our Grounds & Facilities', href: 'about-grounds-facilities.html', description: 'Our site, sport, arts and learning spaces, and hiring them for external events.' },
       { label: 'Leadership & Governance', href: 'about-leadership-governance.html', description: 'Our Board of Governors and Senior Leadership Team.' },
       { label: 'Our Family of Schools', href: 'about-family-of-schools.html', description: 'Bancroft’s and its two partner schools, under one foundation.' },
       { label: 'Results & Destinations', href: 'results-destinations.html', description: 'GCSE, A Level and leavers’ destinations in one place.' },
     ],
     // Sitemap-tree order only (client request) - see the field's own doc above for why this
-    // can't just be a `children` reorder: Pastoral Care & Houses and Learning Support are tree-
-    // parented here (whole-school pages) but are real nav children of Prep/Senior/Sixth Form, not
-    // of About, so they need their own explicit slot in this branch's display order.
+    // can't just be a `children` reorder: Learning Support is tree-parented here (whole-school
+    // page) but is a real nav child of Prep/Senior/Sixth Form, not of About, so it needs its own
+    // explicit slot in this branch's display order.
     sitemapChildren: [
       'about-welcome.html',
       'about-what-we-stand-for.html',
       'about-history.html',
+      'about-grounds-facilities.html',
       'about-leadership-governance.html',
       'about-family-of-schools.html',
-      'pastoral-care-houses.html',
-      'learning-support.html',
-      'results-destinations.html',
       'about-awards-recognition.html',
+      'results-destinations.html',
+      'learning-support.html',
     ],
   },
 ]
@@ -173,7 +174,7 @@ export const primaryNav: NavItem[] = [
 // ---------------------------------------------------------------------------
 // Footer columns — two themes (footer.ts's own layout can take any number of columns; this pass
 // drops to two, down from three). Old Bancroftians is deliberately not here any more (it's a
-// child page of Our Community instead, reached from School Life - client request). Portals used
+// child page of Community & Partnerships instead, reached from School Life - client request). Portals used
 // to be a third column of external parent/pupil/staff systems; those are now real internal pages
 // reached from the header's quick links instead (see headerUtilityLinks), not duplicated here.
 // Our Family of Schools and Foundation are each a built internal page now too (see
@@ -1145,7 +1146,7 @@ export const pages: Record<string, Page> = {
           heading: 'Who looks after new pupils', side: 'right', mediaLabel: 'Tutor welcoming a new pupil',
           body: ['Every pupil belongs to a tutor group and a house, so there are several adults, and plenty of older pupils, to turn to from the first day.'],
           links: [
-            { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html' },
+            { label: 'Pastoral Care', href: 'senior-pastoral-care.html' },
             { label: 'Learning Support', href: 'learning-support.html' },
           ],
         },
@@ -1154,7 +1155,7 @@ export const pages: Record<string, Page> = {
         { heading: 'Will I know anyone?', body: 'Most new pupils know only a few others when they arrive. The induction day and your tutor group are there so you start September with familiar faces.' },
         { heading: 'What if I get lost?', body: 'Everyone does at first. (Wireframe note: how new pupils are helped around the site in the first weeks, to be supplied.)' },
         { heading: 'How much homework will there be?', body: 'Wireframe note: a short, honest answer from the school, to be supplied.' },
-        { heading: 'Who do I talk to if I am worried?', body: 'Your tutor is the first person to speak to, and there are Heads of Year and school counsellors too.', ctaLabel: 'Pastoral Care & Houses', ctaHref: 'pastoral-care-houses.html' },
+        { heading: 'Who do I talk to if I am worried?', body: 'Your tutor is the first person to speak to, and there are Heads of Year and school counsellors too.', ctaLabel: 'Pastoral Care', ctaHref: 'senior-pastoral-care.html' },
       ], 'Questions new pupils ask'),
       bookVisitPromo('cta-starting-promo', 'Still deciding? Come and see Bancroft’s for yourself. Open Mornings and personal tours run throughout the year.'),
     ],
@@ -1178,7 +1179,7 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text-media', props: { heading: 'Prep School Life', side: 'left', mediaLabel: 'Prep pupils in the playground', body: ['What a day at the Prep looks and feels like.'], ctaLabel: 'See a day at the Prep', ctaHref: 'prep-life.html' } },
       { component: 'wf-text-media', props: { heading: 'Academic Life', side: 'right', mediaLabel: 'Prep pupils in a science lesson', body: ['What Prep pupils learn in the classroom.'], ctaLabel: 'See Academic Life', ctaHref: 'prep-academic-life.html' } },
       { component: 'wf-text-media', props: { heading: 'Beyond the Classroom', side: 'left', mediaLabel: 'Prep pupils at a co-curricular club', body: ['Sport, music, drama and clubs, from Forest School to coding and chess.'], ctaLabel: 'Explore Beyond the Classroom', ctaHref: 'prep-beyond-the-classroom.html' } },
-      { component: 'wf-text-media', props: { heading: 'Pastoral Care & Houses', side: 'right', mediaLabel: 'Teacher with a small group of pupils', body: ['Settling in and being known as an individual, from day one.'], ctaLabel: 'Read about pastoral care', ctaHref: 'pastoral-care-houses.html' } },
+      { component: 'wf-text-media', props: { heading: 'Pastoral Care', side: 'right', mediaLabel: 'Teacher with a small group of pupils', body: ['Settling in and being known as an individual, from day one.'], ctaLabel: 'Read about pastoral care', ctaHref: 'prep-pastoral-care.html' } },
       // Learning Support: a highlighted section on every stage landing page (client request), not
       // just a nav link - wf-promo is the kit's "full-width image with text on top" treatment,
       // the one block on this page that reads as more than an ordinary text-media row.
@@ -1227,7 +1228,7 @@ export const pages: Record<string, Page> = {
         { heading: 'Where is the Prep?', body: 'On Whitehall Road, a short walk from the Senior School entrance.', ctaLabel: 'Find us', ctaHref: 'contact.html' },
         { heading: 'What clubs can Prep pupils join?', body: 'Sport, music, drama and clubs, from Forest School to coding and chess.', ctaLabel: 'See Beyond the Classroom', ctaHref: 'prep-beyond-the-classroom.html' },
         { heading: 'How will my child get to school?', body: 'Our school bus service is open to all pupils. Alphas (Year 3) must be accompanied by a sibling in Year 5 or above.', ctaLabel: 'Getting to Bancroft’s', ctaHref: 'getting-to-bancrofts.html' },
-        { heading: 'Who looks after my child day to day?', body: 'Every child is known as an individual from day one.', ctaLabel: 'Read about Pastoral Care & Houses', ctaHref: 'pastoral-care-houses.html' },
+        { heading: 'Who looks after my child day to day?', body: 'Every child is known as an individual from day one.', ctaLabel: 'Read about Pastoral Care', ctaHref: 'prep-pastoral-care.html' },
         { heading: 'What is the Bancroft’s Family of Schools?', body: 'Bancroft’s Prep is part of the Bancroft’s Family of Schools.', ctaLabel: 'See Our Family of Schools', ctaHref: 'about-family-of-schools.html' },
         { heading: 'When should we register for 7+?', body: 'Most families register in the autumn term for entry the following September.', ctaLabel: 'Register Online', ctaHref: 'register-7plus.html' },
         { heading: 'Are bursaries available at 7+?', body: 'Our bursary programme applies at 11+ and 16+.', ctaLabel: 'See Bursaries', ctaHref: 'bursaries.html' },
@@ -1441,49 +1442,48 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  // Whole-school page (client request), replacing the separate stage-level Pastoral Care pages -
-  // linked from all three stage menus (see primaryNav in config.ts). Includes the House system
-  // and a section per stage, carried over from prep-pastoral-care.html and senior-pastoral-care.html
-  // (both now deleted, content merged in here). Learning for Life is kept as a section here too
-  // (client request), carried over from the now-deleted senior-learning-for-life.html.
-  'pastoral-care-houses': {
+  // Stage-specific Pastoral Care pages (client request, 2026-11-13), replacing the single
+  // whole-school Pastoral Care & Houses page: each stage now has its own page, nav-childed and
+  // breadcrumbed under its own stage, with a stage-specific H1/title so the three don't compete
+  // in search. The Chaplain and Learning for Life sections (both whole-school in substance) move
+  // to the Senior page, matching where Learning for Life lived historically (senior-learning-for-life.html).
+  'prep-pastoral-care': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'School Life', heading: 'Pastoral Care & Houses', body: 'A structure built so every pupil, at every stage, is known well by more than one adult.',
-        mediaLabel: 'Tutor group meeting',
-        // Linked from all three stage menus (Prep/Senior/Sixth Form) - that's unchanged by this
-        // breadcrumb, which only decides where the sitemap tool's tree hangs the card. About is
-        // its home there, alongside Results & Destinations and Learning Support, as the tree's
-        // "whole-school master pages" cluster, rather than a parent stage it doesn't belong to.
-        breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html' }),
+        eyebrow: '7+ Prep', heading: 'Pastoral Care at the Prep', body: 'How every Prep pupil is known and supported, from their very first day.',
+        mediaLabel: 'Form teacher greeting pupils in the morning',
+        breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Pastoral Care', href: 'prep-pastoral-care.html' }),
       },
     },
     blocks: [
-      { component: 'wf-text', props: { body: ['Every pupil, from the Prep through to the Sixth Form, belongs to a form or tutor group and a house, giving them overlapping communities and several trusted adults beyond their subject teachers.'] } },
-      { component: 'wf-text', props: { heading: 'The House System', body: ['Every pupil, in every year, belongs to one of the school’s houses, spanning the Prep, Senior School and Sixth Form. Houses compete throughout the year in sport, music and other events, and give pupils a ready-made community outside their own year group.', 'Wireframe note: house names, colours and the points system to be supplied by the school.'] } },
-      { component: 'wf-text-media', props: { heading: 'Pastoral Care at 7+ Prep', side: 'left', mediaLabel: 'Form teacher greeting pupils in the morning', body: ['A single form teacher sees each Prep class through most of the school day, giving children one consistent, trusted adult to turn to. Our learning support team works closely with form teachers to spot and support any child who needs extra help early.', 'Wraparound care is available before and after the school day, so working families have flexibility without disrupting their child’s routine.'] } },
-      { component: 'wf-text', props: { heading: 'Pastoral Care at 11+ Senior', body: ['Every Senior pupil belongs to a tutor group and a house, giving them two overlapping communities and several trusted adults beyond their subject teachers. Heads of Year and school counsellors provide additional support where it’s needed.'] } },
-      // Sixth Form has no existing pastoral content at all to draw from - original wireframe copy.
-      { component: 'wf-text', props: { heading: 'Pastoral Care at 16+ Sixth Form', body: ['Sixth Formers keep their tutor and house, with a dedicated Head of Sixth Form overseeing the year group and its particular pressures - university or career choices, increased independence, and balancing study with leading clubs and societies.'] } },
-      {
-        component: 'wf-cards', props: {
-          heading: 'Joining the school?', cols: 2,
-          items: [
-            { href: 'admissions-starting.html', heading: 'Starting at Bancroft’s', description: 'How new pupils are helped to settle, from induction day onwards.', imageLabel: 'New pupils on their first day', linkText: 'See Starting at Bancroft’s' },
-            { href: 'learning-support.html', heading: 'Learning Support', description: 'A proactive, tailored approach for pupils with additional needs.', imageLabel: 'Learning support session', linkText: 'Read about Learning Support' },
-          ],
-        },
+      { component: 'wf-text', props: { body: ['A single form teacher sees each Prep class through most of the school day, giving children one consistent, trusted adult to turn to. Our learning support team works closely with form teachers to spot and support any child who needs extra help early.', 'Wraparound care is available before and after the school day, so working families have flexibility without disrupting their child’s routine.'] } },
+      { component: 'wf-text', props: { heading: 'Houses', body: ['Every Prep pupil belongs to one of the school’s houses, shared with the Senior School and Sixth Form, giving them a ready-made community outside their own class. Houses compete throughout the year in sport, music and other events.', 'Wireframe note: house names, colours and the points system to be supplied by the school.'] } },
+      bookVisitPromo('cta-prep-pastoral-care-promo'),
+    ],
+  },
+
+  'senior-pastoral-care': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '11+ Senior', heading: 'Pastoral Care in the Senior School', body: 'How every Senior pupil is known, supported and challenged.',
+        mediaLabel: 'Tutor group meeting',
+        breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Pastoral Care', href: 'senior-pastoral-care.html' }),
       },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Every Senior pupil belongs to a tutor group and a house, giving them two overlapping communities and several trusted adults beyond their subject teachers. Heads of Year and school counsellors provide additional support where it’s needed.'] } },
+      { component: 'wf-text', props: { heading: 'Houses', body: ['Every Senior pupil belongs to one of the school’s houses, shared with the Prep and Sixth Form. Houses compete throughout the year in sport, music and other events, giving pupils a ready-made community outside their own year group.', 'Wireframe note: house names, colours and the points system to be supplied by the school.'] } },
       {
         component: 'wf-text-media', props: {
           heading: 'The Chaplain', side: 'right', mediaLabel: 'Pupils in the Chapel',
           body: ['The Chaplain has a pastoral role across the whole school, not only in Chapel services - available to any pupil, of any faith or none, who wants someone to talk to.'],
-          links: [{ label: 'Spiritual Life in Our Community', href: 'school-life-community.html' }],
+          links: [{ label: 'Spiritual Life in Community & Partnerships', href: 'school-life-community.html' }],
         },
       },
       {
-        component: 'wf-text-media', props: {
+        component: 'wf-text-media', anchorId: 'learning-for-life', props: {
           heading: 'Learning for Life', side: 'left', mediaLabel: 'Pupils in a Learning for Life discussion',
           body: ['Our timetabled programme for the things that matter beyond exams, covering health and wellbeing, relationships and living in the wider world.', 'Wireframe note: the themes below are placeholders. Final content should come from the existing Learning for Life Programme document, which this page replaces as the version families find in search.'],
         },
@@ -1510,7 +1510,23 @@ export const pages: Record<string, Page> = {
           ],
         },
       },
-      bookVisitPromo('cta-pastoral-care-houses-promo'),
+      bookVisitPromo('cta-senior-pastoral-care-promo'),
+    ],
+  },
+
+  'sixth-form-pastoral-care': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '16+ Sixth Form', heading: 'Pastoral Care in the Sixth Form', body: 'How every Sixth Former is known, supported and challenged.',
+        mediaLabel: 'Tutor group meeting',
+        breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Pastoral Care', href: 'sixth-form-pastoral-care.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Sixth Formers keep their tutor and house, with a dedicated Head of Sixth Form overseeing the year group and its particular pressures - university or career choices, increased independence, and balancing study with leading clubs and societies.'] } },
+      { component: 'wf-text', props: { heading: 'Houses', body: ['Every Sixth Former keeps the house they joined lower down the school, shared with the Prep and Senior School, and continues to compete in house events throughout their final two years.', 'Wireframe note: house names, colours and the points system to be supplied by the school.'] } },
+      bookVisitPromo('cta-sixth-form-pastoral-care-promo'),
     ],
   },
 
@@ -1524,7 +1540,8 @@ export const pages: Record<string, Page> = {
       props: {
         eyebrow: 'School Life', heading: 'Learning Support', body: 'Every learner understood, supported and empowered, from the Prep through to the Sixth Form.',
         mediaLabel: 'Learning support session',
-        // Same "whole-school master pages live under About" note as Pastoral Care & Houses above.
+        // Whole-school master page, tree-parented under About (sitemap tool only - see About's
+        // sitemapChildren in primaryNav) even though its real nav home is Prep/Senior/Sixth Form.
         breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Learning Support', href: 'learning-support.html' }),
       },
     },
@@ -1596,7 +1613,7 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text-media', props: { heading: 'Senior School Life', side: 'left', mediaLabel: 'Senior pupils between lessons', body: ['What a day in the Senior School looks and feels like.'], ctaLabel: 'See Senior School Life', ctaHref: 'senior-life.html' } },
       { component: 'wf-text-media', props: { heading: 'Academic Life', side: 'right', mediaLabel: 'Senior pupils in a science lesson', body: ['Subjects studied from Year 7 to GCSE.'], ctaLabel: 'See Academic Life', ctaHref: 'senior-academic-life.html' } },
       { component: 'wf-text-media', props: { heading: 'Beyond the Classroom', side: 'left', mediaLabel: 'Pupils on the sports pitch', body: ['Sport, music, drama and 250+ clubs and societies, from debating to Duke of Edinburgh.'], ctaLabel: 'Explore Beyond the Classroom', ctaHref: 'senior-beyond-the-classroom.html' } },
-      { component: 'wf-text-media', props: { heading: 'Pastoral Care & Houses', side: 'right', mediaLabel: 'Tutor group meeting', body: ['How every Senior pupil is known, supported and challenged.'], ctaLabel: 'Read about pastoral care', ctaHref: 'pastoral-care-houses.html' } },
+      { component: 'wf-text-media', props: { heading: 'Pastoral Care', side: 'right', mediaLabel: 'Tutor group meeting', body: ['How every Senior pupil is known, supported and challenged.'], ctaLabel: 'Read about pastoral care', ctaHref: 'senior-pastoral-care.html' } },
       { component: 'wf-promo', props: { heading: 'Results & Destinations', body: 'GCSE outcomes and how pupils are stretched and supported.', ctaLabel: 'See our results', ctaHref: 'results-destinations.html', ctaId: 'cta-senior-results-overview-promo', mediaLabel: 'Pupils on GCSE results day' } },
       // Learning Support: a highlighted section on every stage landing page (client request).
       { component: 'wf-promo', props: { heading: 'Learning Support', body: 'A proactive, tailored approach for pupils with additional needs, from Year 7 through to the Sixth Form.', ctaLabel: 'Read about Learning Support', ctaHref: 'learning-support.html', ctaId: 'cta-senior-learning-support-promo', mediaLabel: 'Learning support session' } },
@@ -1651,7 +1668,7 @@ export const pages: Record<string, Page> = {
         { heading: 'What subjects do pupils study?', body: 'Pupils begin with eighteen subjects across Years 7 and 8, before choosing their GCSE options.', ctaLabel: 'See Academic Life', ctaHref: 'senior-academic-life.html' },
         { heading: 'How do Bancroft’s GCSE results compare?', body: 'Our results are published each year, with a five-year view alongside.', ctaLabel: 'See Results & Destinations', ctaHref: 'results-destinations.html' },
         { heading: 'When do clubs take place?', body: 'Most clubs run during the school day. (Wireframe note: to be confirmed with the school.)', ctaLabel: 'See Beyond the Classroom', ctaHref: 'senior-beyond-the-classroom.html' },
-        { heading: 'How are pupils supported?', body: 'Every pupil belongs to a tutor group and a house, with Heads of Year and school counsellors providing additional support.', ctaLabel: 'Read about Pastoral Care & Houses', ctaHref: 'pastoral-care-houses.html' },
+        { heading: 'How are pupils supported?', body: 'Every pupil belongs to a tutor group and a house, with Heads of Year and school counsellors providing additional support.', ctaLabel: 'Read about Pastoral Care', ctaHref: 'senior-pastoral-care.html' },
         { heading: 'How will my child get to school?', body: 'Bancroft’s is a short walk from the Central Line and is served by our own school bus service.', ctaLabel: 'Getting to Bancroft’s', ctaHref: 'getting-to-bancrofts.html' },
         { heading: 'How do new pupils settle in?', body: 'An induction day in the summer term, a tutor group and a house mean new pupils start September with familiar faces.', ctaLabel: 'See Starting at Bancroft’s', ctaHref: 'admissions-starting.html' },
         { heading: 'Are scholarships and bursaries available?', body: 'Yes. Academic scholarships, Music Awards and means-tested bursaries are all available at 11+.', ctaLabel: 'See Scholarships & Awards', ctaHref: 'scholarships-awards.html' },
@@ -1874,7 +1891,7 @@ export const pages: Record<string, Page> = {
           heading: 'Related pages', cols: 3,
           items: [
             { href: 'senior-beyond-the-classroom.html#trips-visits', heading: 'Trips & Visits', description: 'History, geography and language trips that extend what is taught in lessons.' },
-            { href: 'pastoral-care-houses.html', heading: 'Learning for Life', description: 'The timetabled programme that sits alongside academic subjects.' },
+            { href: 'senior-pastoral-care.html#learning-for-life', heading: 'Learning for Life', description: 'The timetabled programme that sits alongside academic subjects.' },
             { href: 'results-destinations.html', heading: 'Results & Destinations', description: 'See how this curriculum translates into outcomes.' },
           ],
         },
@@ -2030,7 +2047,7 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text-media', props: { heading: 'Sixth Form Life', side: 'right', mediaLabel: 'Sixth Form pupils in the common room', body: ['For pupils: what your days will actually be like.'], ctaLabel: 'See what Sixth Form life is like', ctaHref: 'sixth-form-life.html' } },
       { component: 'wf-text-media', props: { heading: 'Academic Life', side: 'left', mediaLabel: 'Sixth Form pupils in a seminar', body: ['A Level subjects and how choices are guided.'], ctaLabel: 'See the subjects on offer', ctaHref: 'sixth-form-academic-life.html' } },
       { component: 'wf-text-media', props: { heading: 'Beyond the Classroom', side: 'right', mediaLabel: 'Sixth Former leading a club', body: ['Sport, music, drama and where Sixth Formers lead clubs and societies, not just attend them.'], ctaLabel: 'Explore Beyond the Classroom', ctaHref: 'sixth-form-beyond-the-classroom.html' } },
-      { component: 'wf-text-media', props: { heading: 'Pastoral Care & Houses', side: 'left', mediaLabel: 'Tutor group meeting', body: ['How every Sixth Former is known, supported and challenged.'], ctaLabel: 'Read about pastoral care', ctaHref: 'pastoral-care-houses.html' } },
+      { component: 'wf-text-media', props: { heading: 'Pastoral Care', side: 'left', mediaLabel: 'Tutor group meeting', body: ['How every Sixth Former is known, supported and challenged.'], ctaLabel: 'Read about pastoral care', ctaHref: 'sixth-form-pastoral-care.html' } },
       { component: 'wf-promo', props: { heading: 'Results & Destinations', body: 'A Level outcomes, value added, and where recent leavers have gone on to.', ctaLabel: 'See our results', ctaHref: 'results-destinations.html', ctaId: 'cta-sixthform-results-overview-promo', mediaLabel: 'Pupils on A Level results day' } },
       // Learning Support: a highlighted section on every stage landing page (client request).
       { component: 'wf-promo', props: { heading: 'Learning Support', body: 'A proactive, tailored approach for pupils with additional needs, continuing right through to the Sixth Form.', ctaLabel: 'Read about Learning Support', ctaHref: 'learning-support.html', ctaId: 'cta-sixthform-learning-support-promo', mediaLabel: 'Learning support session' } },
@@ -2345,7 +2362,7 @@ export const pages: Record<string, Page> = {
         component: 'wf-cards', props: {
           heading: 'Explore School Life', cols: 3,
           items: [
-            { href: 'school-life-community.html', heading: 'Our Community', description: 'Parents, alumni and the wider Bancroft’s network.', imageLabel: 'Parents at a community event', linkText: 'Meet our community' },
+            { href: 'school-life-community.html', heading: 'Community & Partnerships', description: 'Parents, alumni and the wider Bancroft’s network.', imageLabel: 'Parents at a community event', linkText: 'Meet our community' },
             { href: 'term-dates.html', id: 'cta-schoollife-card-term-dates', heading: 'Term Dates', description: 'Term starts, half terms and holidays for the year.', imageLabel: 'Term dates on a school noticeboard', linkText: 'See the Term Dates' },
             { href: 'weekly-menu.html', heading: 'Weekly Menu', description: 'What’s on the menu in the dining hall this week.', imageLabel: 'Pupils in the dining hall', linkText: 'See this week’s menu' },
             { href: 'getting-to-bancrofts.html', heading: 'Getting to Bancroft’s', description: 'Routes, timings and how to book a seat.', imageLabel: 'School bus outside the main building', linkText: 'Find your route' },
@@ -2371,8 +2388,8 @@ export const pages: Record<string, Page> = {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        eyebrow: 'School Life', heading: 'Our Community', body: 'Parents, alumni, faith and service — the wider Bancroft’s community beyond the classroom.',
-        mediaLabel: 'Parents’ Association event', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Our Community', href: 'school-life-community.html' }),
+        eyebrow: 'School Life', heading: 'Community & Partnerships', body: 'Parents, alumni, faith and service — the wider Bancroft’s community beyond the classroom.',
+        mediaLabel: 'Parents’ Association event', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Community & Partnerships', href: 'school-life-community.html' }),
       },
     },
     blocks: [
@@ -2630,14 +2647,15 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  // New child page of Our Community (client request) - a short section there links through to
-  // this fuller page, rather than Our Community carrying the Foundation's full detail itself.
+  // New child page of Community & Partnerships (client request) - a short section there links
+  // through to this fuller page, rather than Community & Partnerships carrying the Foundation's
+  // full detail itself.
   foundation: {
     hero: {
       component: 'wf-standard-hero',
       props: {
         eyebrow: 'School Life', heading: 'Foundation', body: 'Supporting Bancroft’s charitable purpose, including the bursaries that make a Bancroft’s education possible regardless of financial circumstance.',
-        mediaLabel: 'Bancroft’s Foundation', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Our Community', href: 'school-life-community.html' }, { label: 'Foundation', href: 'foundation.html' }),
+        mediaLabel: 'Bancroft’s Foundation', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Community & Partnerships', href: 'school-life-community.html' }, { label: 'Foundation', href: 'foundation.html' }),
       },
     },
     blocks: [
@@ -2655,13 +2673,13 @@ export const pages: Record<string, Page> = {
     ],
   },
 
-  // New child page of Our Community (client request), replacing the old external "#" link.
+  // New child page of Community & Partnerships (client request), replacing the old external "#" link.
   'old-bancroftians': {
     hero: {
       component: 'wf-standard-hero',
       props: {
         eyebrow: 'School Life', heading: 'Old Bancroftians', body: 'Once a Bancroftian, always a Bancroftian - staying connected to the school and to each other after you leave.',
-        mediaLabel: 'Old Bancroftians reunion', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Our Community', href: 'school-life-community.html' }, { label: 'Old Bancroftians', href: 'old-bancroftians.html' }),
+        mediaLabel: 'Old Bancroftians reunion', breadcrumb: bc({ label: 'School Life', href: 'school-life.html' }, { label: 'Community & Partnerships', href: 'school-life-community.html' }, { label: 'Old Bancroftians', href: 'old-bancroftians.html' }),
       },
     },
     blocks: [
@@ -2795,6 +2813,7 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text-media', props: { heading: 'What We Stand For', side: 'left', mediaLabel: 'Pupils in assembly', body: ['Our values, and what they mean day to day.'], ctaLabel: 'Read our values', ctaHref: 'about-what-we-stand-for.html' } },
       { component: 'wf-text-media', props: { heading: 'Awards and Recognition', side: 'right', mediaLabel: 'Awards displayed in the school foyer', body: ['League tables, inspection reports and awards, in one place.'], ctaLabel: 'See our awards and recognition', ctaHref: 'about-awards-recognition.html' } },
       { component: 'wf-text-media', props: { heading: 'Our History', side: 'left', mediaLabel: 'Historic photograph of the school', body: ['Bancroft’s story, from foundation to today.'], ctaLabel: 'Explore our history', ctaHref: 'about-history.html' } },
+      { component: 'wf-text-media', props: { heading: 'Our Grounds & Facilities', side: 'right', mediaLabel: 'Aerial view of the Bancroft’s site', body: ['Our site, sport, arts and learning spaces, and hiring them for external events.'], ctaLabel: 'See our grounds and facilities', ctaHref: 'about-grounds-facilities.html' } },
       { component: 'wf-text-media', props: { heading: 'Leadership & Governance', side: 'right', mediaLabel: 'Board of Governors', body: ['Our Board of Governors and Senior Leadership Team.'], ctaLabel: 'Meet our Governors and leaders', ctaHref: 'about-leadership-governance.html' } },
       { component: 'wf-text-media', props: { heading: 'Our Family of Schools', side: 'left', mediaLabel: 'Pupils from Bancroft’s and its partner Prep schools', body: ['Bancroft’s and its two partner Prep schools, under one foundation.'], ctaLabel: 'Meet our Family of Schools', ctaHref: 'about-family-of-schools.html' } },
       { component: 'wf-text-media', props: { heading: 'Results & Destinations', side: 'right', mediaLabel: 'Pupils reviewing exam results', body: ['GCSE and A Level outcomes, and where leavers go on to.'], ctaLabel: 'See our results', ctaHref: 'results-destinations.html' } },
@@ -2847,6 +2866,32 @@ export const pages: Record<string, Page> = {
     blocks: [
       { component: 'wf-text', props: { body: ['Bancroft’s has been educating pupils on this site for generations, with the Drapers’ Company as our founding benefactor throughout. Our archives hold decades of photographs, magazines and records charting how the school, and the pupils who’ve passed through it, have changed over time.', 'Our School Archivist maintains this collection and welcomes enquiries from Old Bancroftians and researchers looking to explore the school’s history in more depth.'] } },
       bookVisitPromo('cta-history-promo'),
+    ],
+  },
+
+  // New page (client request, 2026-11-13): grounds and facilities in one place, ending on an
+  // enquiry block for external lettings rather than its own page, "which can become its own page
+  // later if lettings grows" - the client's own words.
+  'about-grounds-facilities': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: 'About', heading: 'Our Grounds & Facilities', body: 'A site built for academic work, sport, the arts and life outdoors, on the edge of Epping Forest.',
+        mediaLabel: 'Aerial view of the Bancroft’s site', breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Our Grounds & Facilities', href: 'about-grounds-facilities.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Bancroft’s sits on a single site on the edge of Epping Forest, a few minutes’ walk from the Central Line, giving Prep, Senior and Sixth Form pupils room to learn, play and perform without ever having to travel between sites.'] } },
+      { component: 'wf-text-media', props: { heading: 'The site', side: 'left', mediaLabel: 'Aerial view of the Bancroft’s site', body: ['Wireframe note: an overview of the grounds - acreage, main buildings and how the Prep, Senior School and Sixth Form sit together on one site - to be supplied by the school.'] } },
+      { component: 'wf-text-media', props: { heading: 'Sport facilities', side: 'right', mediaLabel: 'Pupils on the sports pitches', body: ['Playing fields, courts and an indoor sports hall support a sports programme that runs across every stage.'], ctaLabel: 'See Beyond the Classroom', ctaHref: 'senior-beyond-the-classroom.html' } },
+      { component: 'wf-text-media', props: { heading: 'Arts and performance spaces', side: 'left', mediaLabel: 'The Performing Arts Centre', body: ['The Great Hall and the Performing Arts Centre both have modern sound and lighting systems, staging productions, concerts and assemblies throughout the year.'], ctaLabel: 'See Beyond the Classroom', ctaHref: 'senior-beyond-the-classroom.html' } },
+      { component: 'wf-text-media', props: { heading: 'Learning spaces', side: 'right', mediaLabel: 'Pupils in a well-equipped classroom', body: ['Wireframe note: a short section on classrooms, specialist teaching spaces (science, art, design technology) and the library, to be supplied by the school.'] } },
+      {
+        component: 'wf-promo', props: {
+          heading: 'Hire our facilities', body: 'Our sports, arts and learning spaces are available to hire outside the school day. Get in touch to discuss your event.',
+          ctaLabel: 'Enquire about hiring our facilities', ctaHref: 'contact.html', ctaId: 'cta-grounds-facilities-hire', mediaLabel: 'An external event in the Performing Arts Centre',
+        },
+      },
     ],
   },
 
@@ -3277,6 +3322,7 @@ export const corePages: CorePage[] = [
   { label: 'Prep: Sport', href: 'prep-sport.html', type: 'Content' },
   { label: 'Prep: Music', href: 'prep-music.html', type: 'Content' },
   { label: 'Prep: Drama', href: 'prep-drama.html', type: 'Content' },
+  { label: 'Prep: Pastoral Care', href: 'prep-pastoral-care.html', type: 'Content' },
   { label: 'Prep: Meet the Staff', href: 'prep-staff.html', type: 'Content' },
 
   // --- 11+ Senior -----------------------------------------------------------
@@ -3288,6 +3334,7 @@ export const corePages: CorePage[] = [
   { label: 'Senior: Sport', href: 'senior-sport.html', type: 'Content' },
   { label: 'Senior: Music', href: 'senior-music.html', type: 'Content' },
   { label: 'Senior: Drama', href: 'senior-drama.html', type: 'Content' },
+  { label: 'Senior: Pastoral Care', href: 'senior-pastoral-care.html', type: 'Content' },
 
   // --- 16+ Sixth Form ---------------------------------------------------------
   { label: '16+ Sixth Form', href: 'sixth-form.html', type: 'Landing' },
@@ -3298,16 +3345,16 @@ export const corePages: CorePage[] = [
   { label: 'Sixth Form: Sport', href: 'sixth-form-sport.html', type: 'Content' },
   { label: 'Sixth Form: Music', href: 'sixth-form-music.html', type: 'Content' },
   { label: 'Sixth Form: Drama', href: 'sixth-form-drama.html', type: 'Content' },
+  { label: 'Sixth Form: Pastoral Care', href: 'sixth-form-pastoral-care.html', type: 'Content' },
   { label: 'Preparing for Life Beyond Bancroft’s', href: 'sixth-form-preparing-for-life.html', type: 'Content' },
 
   // --- Shared whole-school pages, linked from all three stage menus -----------
-  { label: 'Pastoral Care & Houses', href: 'pastoral-care-houses.html', type: 'Content' },
   { label: 'Learning Support', href: 'learning-support.html', type: 'Content' },
   { label: 'Results & Destinations', href: 'results-destinations.html', type: 'Content' },
 
   // --- School Life ------------------------------------------------------------
   { label: 'School Life', href: 'school-life.html', type: 'Landing' },
-  { label: 'Our Community', href: 'school-life-community.html', type: 'Content' },
+  { label: 'Community & Partnerships', href: 'school-life-community.html', type: 'Content' },
   { label: 'Foundation', href: 'foundation.html', type: 'Content' },
   { label: 'Old Bancroftians', href: 'old-bancroftians.html', type: 'Content' },
   { label: 'Term Dates', href: 'term-dates.html', type: 'Content' },
@@ -3321,6 +3368,7 @@ export const corePages: CorePage[] = [
   { label: 'What We Stand For', href: 'about-what-we-stand-for.html', type: 'Content' },
   { label: 'Awards and Recognition', href: 'about-awards-recognition.html', type: 'Content' },
   { label: 'Our History', href: 'about-history.html', type: 'Content' },
+  { label: 'Our Grounds & Facilities', href: 'about-grounds-facilities.html', type: 'Content' },
   { label: 'Leadership & Governance', href: 'about-leadership-governance.html', type: 'Content' },
   { label: 'Our Family of Schools', href: 'about-family-of-schools.html', type: 'Content' },
   { label: 'Policies and Procedures', href: 'about-policies-procedures.html', type: 'Content' },
@@ -3442,6 +3490,12 @@ export const flows: Flow[] = [
 export interface ChangelogEntry { date: string; type: 'Added' | 'Changed' | 'Removed' | 'Fixed'; text: string }
 
 export const changelog: ChangelogEntry[] = [
+  { date: '2026-11-13', type: 'Changed', text: 'Homepage storyboard hero ("The Gate" beat) updated to match the new Figma copy: heading "A London school with room to grow." (London italicised), subhead "Academic strength, warmth and community since 1737.", and the "ISI Inspected 2025" line dropped (it duplicated the ISI stat already in the "Proof, carved in stone" beat). "Scroll to discover" and the no-CTA treatment already matched Figma, so left unchanged.' },
+  { date: '2026-11-13', type: 'Changed', text: 'Sitewide header CTA relabelled from "Book a Visit" to "Visit us", matching Figma\'s nav. Destination unchanged (book-a-visit.html).' },
+  { date: '2026-11-13', type: 'Changed', text: 'Replaced the single whole-school "Pastoral Care & Houses" page with three stage-specific pages - Pastoral Care at the Prep, Pastoral Care in the Senior School, Pastoral Care in the Sixth Form - each with its own H1/title tag, nav-childed under its own stage directly after Beyond the Classroom. The Chaplain and Learning for Life sections move to the Senior page. All cross-links updated.' },
+  { date: '2026-11-13', type: 'Added', text: 'New page "Our Grounds & Facilities" in About, after Our History: the site, sport, arts and learning spaces, ending on a "Hire our facilities" enquiry block for external lettings rather than its own page.' },
+  { date: '2026-11-13', type: 'Changed', text: '"Our Community" renamed to "Community & Partnerships" throughout (sitemap, School Life menu, page heading/breadcrumb, all links). Address and children (Foundation, Old Bancroftians) unchanged.' },
+  { date: '2026-11-13', type: 'Changed', text: "About's sitemap-tree branch order updated to the client's new sequence: Welcome from the Head, What We Stand For, Our History, Our Grounds & Facilities, Leadership & Governance, Our Family of Schools, Awards and Recognition, Results & Destinations, Learning Support." },
   { date: '2026-10-15', type: 'Changed', text: '11+ Entrance Exam & Past Papers, checked against the SEO report\'s hub structure: papers are now grouped by year with answers (2017 Maths and English, plus placeholder slots for recent years), the 2015 13+ Maths sample paper is added for occasional-place families, and Key dates gives the 11+ Open Morning date alongside personal tours.' },
   { date: '2026-10-15', type: 'Added', text: 'The 7+ Prep, 11+ Senior and 16+ Sixth Form overview pages now work as the entry-point hubs the SEO report asks for: each gains a "Joining at" section (process timeline, key dates table, fees and assessment summary, link to the full Journey page) and two or three admissions questions in its FAQs. The Journey pages keep the full detail.' },
   { date: '2026-10-14', type: 'Added', text: 'Occasional Places page under Admissions, off the menu, at the SEO director\'s recommendation: a page entirely about occasional places ranks better for that search than a section on the Admissions hub. Content from the live page (year groups, how it works, expression of interest form). Linked from Admissions "Find your journey", the Admissions FAQs and the Register Online landing page, which used to send these enquiries to Contact.' },

@@ -194,9 +194,8 @@ export class WfHomepageStoryboard extends Light {
 
             <!-- 1. The Gate — no CTA by design; "Book a Visit" is always in the header. -->
             ${this.panel(0, html`
-              <h1 class="text-3xl font-semibold text-gray-900 sm:text-5xl xl:text-7xl">Bancroft’s</h1>
-              <p class="mt-4 max-w-xl text-base text-gray-600 sm:text-lg xl:mt-6 xl:max-w-2xl xl:text-xl">An academic education, with room to grow. A co-educational day school for ages 7 to 18, on the edge of Epping Forest.</p>
-              <p class="mt-3 text-sm font-medium text-gray-500 xl:mt-4 xl:text-base">ISI Inspected 2025</p>
+              <h1 class="text-3xl font-semibold text-gray-900 sm:text-5xl xl:text-7xl">A <em class="font-serif italic">London</em> school with room to grow.</h1>
+              <p class="mt-4 max-w-xl text-base text-gray-600 sm:text-lg xl:mt-6 xl:max-w-2xl xl:text-xl">Academic strength, warmth and community since 1737.</p>
               <div class="mt-8 flex animate-bounce flex-col items-center gap-2 text-gray-400 xl:mt-14">
                 <span class="text-xs font-medium uppercase tracking-wide">Scroll to discover</span>
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
