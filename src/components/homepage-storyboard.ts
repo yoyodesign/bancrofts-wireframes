@@ -6,12 +6,23 @@ import { arrowIcon, videoPlaceholder } from './utils'
 interface Beat { id: string; label: string; caption: string }
 
 const BEATS: Beat[] = [
-  { id: 'beat-gate', label: 'The Gate', caption: 'Static shot. Front tower, formal and still.' },
-  { id: 'beat-archway', label: 'The Archway', caption: 'A dark passage through the tower — the quad glows ahead as a rectangle of light.' },
-  { id: 'beat-credibility', label: 'Credibility', caption: 'Drone orbit begins, facing back toward the tower and fountain.' },
-  { id: 'beat-welcome', label: 'The Welcome', caption: 'Orbit continues over the open lawn and the quad’s central tree.' },
-  { id: 'beat-invitation', label: 'The Invitation', caption: 'Orbit continues toward the cloister and chapel walkway, warmest light of the sequence.' },
+  { id: 'beat-gate', label: 'The Tower', caption: 'Static shot. Front tower, formal and still.' },
+  { id: 'beat-archway', label: 'Archway', caption: 'A dark passage through the tower — the quad glows ahead as a rectangle of light.' },
+  { id: 'beat-credibility', label: 'The Quad', caption: 'Drone orbit begins, facing back toward the tower and fountain.' },
+  { id: 'beat-welcome', label: 'Old Tree', caption: 'Orbit continues over the open lawn and the quad’s central tree.' },
+  { id: 'beat-invitation', label: 'Cloister', caption: 'Orbit continues toward the cloister and chapel walkway, warmest light of the sequence.' },
 ]
+
+/** Scroll-distance weight of each beat, in units of one viewport height (100svh).
+ *  The Gate is a static establishing shot, not a camera move — holding it for a full
+ *  screen-height of scroll like every other beat made the very first scroll input feel
+ *  like it did nothing. Weighting it much smaller hands off to The Archway almost as
+ *  soon as the user starts scrolling, while every other beat keeps its full-screen
+ *  hold (the pacing the rest of the fly-through is built on). */
+const BEAT_WEIGHTS = [0.08, 1, 1, 1, 1]
+const TOTAL_BEAT_WEIGHT = BEAT_WEIGHTS.reduce((sum, w) => sum + w, 0)
+/** Cumulative weight, normalised to [0, 1] — BEAT_BOUNDARIES[i] is where beat i starts. */
+const BEAT_BOUNDARIES = BEAT_WEIGHTS.reduce<number[]>((acc, w) => [...acc, acc[acc.length - 1] + w / TOTAL_BEAT_WEIGHT], [0])
 
 /** LOCAL ONLY — not yet pushed to the deployed site, per the brief.
  *
@@ -24,10 +35,11 @@ const BEATS: Beat[] = [
  *  describing the intended camera move, no branding, no photography.
  *
  *  THE MECHANIC — sticky + scroll-position, not scroll-jacking: a tall track
- *  (BEATS.length * 100svh) holds one `position: sticky` viewport-height stage. The
- *  five beats are absolutely-stacked panels inside that stage, crossfaded by opacity
- *  as a scroll listener computes progress through the track and maps it to a beat
- *  index. This keeps scrolling 100% native (wheel, trackpad, touch, keyboard, screen
+ *  (TOTAL_BEAT_WEIGHT * 100svh — see BEAT_WEIGHTS) holds one `position: sticky`
+ *  viewport-height stage. The five beats are absolutely-stacked panels inside that
+ *  stage, crossfaded by opacity as a scroll listener computes progress through the
+ *  track and maps it to a beat index via BEAT_BOUNDARIES. This keeps scrolling 100%
+ *  native (wheel, trackpad, touch, keyboard, screen
  *  readers all work exactly as they already do) — a true scroll-jacking
  *  implementation would fight all of those for a marginal fidelity gain. Once the
  *  user scrolls past the track's own height, the sticky stage releases on its own
@@ -62,15 +74,17 @@ export class WfHomepageStoryboard extends Light {
     // descendant of it - <main>'s own bottom padding sits between this component and the
     // footer and blocks normal margin collapsing from ever reaching it, so nothing this
     // component renders inside <main> can cover that margin. Zeroing it directly, scoped
-    // to this component's own lifecycle, is the only way to actually reach it.
-    const footerEl = document.querySelector('footer')
+    // to this component's own lifecycle, is the only way to actually reach it. Scoped to
+    // wf-site-footer's own <footer> specifically (not a bare 'footer' selector) since the
+    // quote beat's <footer> (its attribution line) is otherwise the first match in the DOM.
+    const footerEl = document.querySelector<HTMLElement>('wf-site-footer footer')
     if (footerEl) footerEl.style.marginTop = '0'
   }
 
   disconnectedCallback() {
     super.disconnectedCallback()
     window.removeEventListener('scroll', this.onScroll)
-    const footerEl = document.querySelector('footer')
+    const footerEl = document.querySelector<HTMLElement>('wf-site-footer footer')
     if (footerEl) footerEl.style.marginTop = ''
   }
 
@@ -103,7 +117,10 @@ export class WfHomepageStoryboard extends Light {
     const stageH = window.innerHeight - header
     const total = rect.height - stageH
     const progress = total <= 0 ? 0 : Math.min(1, Math.max(0, (header - rect.top) / total))
-    const i = Math.min(BEATS.length - 1, Math.floor(progress * BEATS.length))
+    let i = 0
+    for (let j = BEATS.length - 1; j >= 0; j--) {
+      if (progress >= BEAT_BOUNDARIES[j]) { i = j; break }
+    }
     if (i !== this.activeBeat) this.activeBeat = i
     // Hide once all 5 beats have been reached (progress === 1), not once the stage
     // has fully cleared the header line - the latter needs more scroll distance than
@@ -123,7 +140,7 @@ export class WfHomepageStoryboard extends Light {
     const stageH = window.innerHeight - header
     const total = rect.height - stageH
     const trackDocTop = rect.top + window.scrollY
-    const targetProgress = (i + 0.5) / BEATS.length
+    const targetProgress = (BEAT_BOUNDARIES[i] + BEAT_BOUNDARIES[i + 1]) / 2
     window.scrollTo({ top: trackDocTop + targetProgress * Math.max(total, 0), behavior: 'smooth' })
   }
 
@@ -189,12 +206,12 @@ export class WfHomepageStoryboard extends Light {
            true edge-to-edge width on any monitor. Vertical negative margin still cancels
            main's own py padding, unrelated to this. -->
       <div class="relative left-1/2 w-screen -translate-x-1/2 -my-12 sm:-my-16">
-        <div id="storyboard-track" class="relative" style="height: calc(${BEATS.length} * 100svh)">
+        <div id="storyboard-track" class="relative" style="height: calc(${TOTAL_BEAT_WEIGHT} * 100svh)">
           <div class="sticky top-[calc(var(--wf-bar-h)+4rem)] h-[calc(100svh-var(--wf-bar-h)-4rem)] w-full overflow-hidden">
 
             <!-- 1. The Gate — no CTA by design; "Book a Visit" is always in the header. -->
             ${this.panel(0, html`
-              <h1 class="text-3xl font-semibold text-gray-900 sm:text-5xl xl:text-7xl">A <em class="font-serif italic">London</em> school with room to grow.</h1>
+              <h1 class="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-900">A London school with room to grow.</h1>
               <p class="mt-4 max-w-xl text-base text-gray-600 sm:text-lg xl:mt-6 xl:max-w-2xl xl:text-xl">Academic strength, warmth and community since 1737.</p>
               <div class="mt-8 flex animate-bounce flex-col items-center gap-2 text-gray-400 xl:mt-14">
                 <span class="text-xs font-medium uppercase tracking-wide">Scroll to discover</span>
@@ -205,8 +222,8 @@ export class WfHomepageStoryboard extends Light {
             <!-- 2. The Archway — the choice, right before arriving. Cards scroll horizontally
                  on narrow screens rather than stacking, so this stays one screen tall. -->
             ${this.panel(1, html`
-              <h2 class="text-2xl font-semibold text-gray-900 sm:text-3xl xl:text-5xl">Which way will you go?</h2>
-              <p class="mt-2 text-gray-600 xl:mt-4 xl:text-xl">Three paths lead from here, each into the same school.</p>
+              <h2 class="text-2xl font-semibold text-gray-900 sm:text-3xl xl:text-5xl">Where will your journey begin?</h2>
+              <p class="mt-2 text-gray-600 xl:mt-4 xl:text-xl">Three entry points, one community from 7 to 18.</p>
               <div class="mt-6 flex w-full max-w-3xl snap-x gap-4 overflow-x-auto px-2 pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 xl:mt-12 xl:max-w-5xl xl:gap-8">
                 <a id="cta-home-prep" href="prep.html" class="w-56 shrink-0 snap-center rounded-xl border border-gray-200 bg-white p-4 text-left hover:border-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 sm:w-auto xl:p-8">
                   <h3 class="font-semibold text-gray-900 xl:text-2xl">7+ Prep</h3>
@@ -230,22 +247,9 @@ export class WfHomepageStoryboard extends Light {
             ${this.panel(2, html`
               <h2 class="text-2xl font-semibold text-gray-900 sm:text-3xl xl:text-5xl">Proof, carved in stone</h2>
               <p class="mx-auto mt-2 max-w-xl text-sm text-gray-600 sm:text-base xl:mt-4 xl:max-w-2xl xl:text-xl">85% of our leavers go on to top-25% universities. Every Sixth Former studies maths.</p>
-              <dl class="mt-6 grid grid-cols-4 gap-3 sm:gap-6 xl:mt-12 xl:gap-10">
-                <div><dd class="text-xl font-semibold text-gray-900 sm:text-2xl xl:text-4xl">7-18</dd><dd class="mt-1 text-[11px] text-gray-500 sm:text-xs xl:mt-2 xl:text-sm">One through-school</dd></div>
-                <div><dd class="text-xl font-semibold text-gray-900 sm:text-2xl xl:text-4xl">2025</dd><dd class="mt-1 text-[11px] text-gray-500 sm:text-xs xl:mt-2 xl:text-sm">ISI Inspection</dd></div>
-                <div><dd class="text-xl font-semibold text-gray-900 sm:text-2xl xl:text-4xl">10-15%</dd><dd class="mt-1 text-[11px] text-gray-500 sm:text-xs xl:mt-2 xl:text-sm">Scholarship value</dd></div>
-                <div><dd class="text-xl font-semibold text-gray-900 sm:text-2xl xl:text-4xl">2</dd><dd class="mt-1 text-[11px] text-gray-500 sm:text-xs xl:mt-2 xl:text-sm">Family of Schools</dd></div>
-              </dl>
-              <!-- Awards and Recognition badges row (client request): the former plain caption
-                   line, now a row of linked badge pills rather than a flat text line. -->
-              <a id="cta-home-awards-badges" href="about-awards-recognition.html" class="mt-5 flex flex-wrap justify-center gap-2 xl:mt-8 group" aria-label="See our Awards and Recognition">
-                <span class="rounded-full border border-gray-300 px-2.5 py-1 text-[11px] text-gray-600 group-hover:border-gray-400 xl:text-sm">Independent Schools of the Year Finalist 2025</span>
-                <span class="rounded-full border border-gray-300 px-2.5 py-1 text-[11px] text-gray-600 group-hover:border-gray-400 xl:text-sm">Pastoral Care Award Winner 2025</span>
-                <span class="rounded-full border border-gray-300 px-2.5 py-1 text-[11px] text-gray-600 group-hover:border-gray-400 xl:text-sm">ISI Inspection 2025</span>
-              </a>
               <div class="mt-6 flex flex-wrap justify-center gap-3 xl:mt-10 xl:gap-4">
-                <a id="cta-home-academic-promo" href="results-destinations.html" class="inline-flex items-center rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 xl:px-6 xl:py-3 xl:text-base">Explore our academic results</a>
-                <a id="cta-home-rankings-promo" href="about-awards-recognition.html" class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 xl:px-6 xl:py-3 xl:text-base">See our awards and recognition</a>
+                <a id="cta-home-academic-promo" href="results-destinations.html" class="inline-flex items-center rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 xl:px-6 xl:py-3 xl:text-base">Our academic results</a>
+                <a id="cta-home-rankings-promo" href="about-awards-recognition.html" class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 xl:px-6 xl:py-3 xl:text-base">Awards & recognition</a>
               </div>
             `)}
 
@@ -262,29 +266,18 @@ export class WfHomepageStoryboard extends Light {
             <!-- 5. Quad, orbit 3 — news, community, the closing invitation. Cards scroll
                  horizontally on narrow screens, same reasoning as beat 2. -->
             ${this.panel(4, html`
-              <h2 class="text-2xl font-semibold text-gray-900 sm:text-3xl xl:text-5xl">Already part of Bancroft’s?</h2>
-              <p class="mx-auto mt-2 max-w-xl text-sm text-gray-600 sm:text-base xl:mt-4 xl:max-w-2xl xl:text-xl">
-                Also part of a wider
-                <a id="cta-home-family-of-schools" href="about-family-of-schools.html" class="font-medium text-gray-900 underline hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 rounded-sm">Family of Schools</a>,
-                including two Prep partners who share our values.
-              </p>
-              <div class="mt-6 flex w-full max-w-3xl snap-x gap-4 overflow-x-auto px-2 pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 xl:mt-12 xl:max-w-5xl xl:gap-8">
-                <a id="cta-home-news-article" href="news-article-a.html" class="w-56 shrink-0 snap-center rounded-xl border border-gray-200 bg-white p-4 text-left hover:border-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 sm:w-auto xl:p-8">
-                  <span class="text-[11px] font-medium uppercase tracking-wide text-gray-400 xl:text-xs">Senior</span>
-                  <h3 class="mt-1 text-sm font-semibold text-gray-900 xl:mt-2 xl:text-xl">Outstanding GCSE results</h3>
-                </a>
-                <a href="news-article-b.html" class="w-56 shrink-0 snap-center rounded-xl border border-gray-200 bg-white p-4 text-left hover:border-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 sm:w-auto xl:p-8">
-                  <span class="text-[11px] font-medium uppercase tracking-wide text-gray-400 xl:text-xs">Prep</span>
-                  <h3 class="mt-1 text-sm font-semibold text-gray-900 xl:mt-2 xl:text-xl">Two new Prep partners</h3>
-                </a>
-                <a href="news-article-c.html" class="w-56 shrink-0 snap-center rounded-xl border border-gray-200 bg-white p-4 text-left hover:border-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 sm:w-auto xl:p-8">
-                  <span class="text-[11px] font-medium uppercase tracking-wide text-gray-400 xl:text-xs">Senior</span>
-                  <h3 class="mt-1 text-sm font-semibold text-gray-900 xl:mt-2 xl:text-xl">First XV, London Schools champions</h3>
-                </a>
-              </div>
+              <h2 class="text-2xl font-semibold text-gray-900 sm:text-3xl xl:text-5xl">Life at Bancroft’s</h2>
+              <p class="mx-auto mt-2 max-w-xl text-sm text-gray-600 sm:text-base xl:mt-4 xl:max-w-2xl xl:text-xl">Don’t take our word for it. Hear it from the families who know us best.</p>
+              <blockquote class="mx-auto mt-6 max-w-2xl xl:mt-10">
+                <p class="text-xl font-medium text-gray-900 sm:text-2xl xl:text-3xl">&ldquo;Within a term, she wasn’t just settled. She’d found her people.&rdquo;</p>
+                <footer class="mt-3 text-sm text-gray-500">Year 7 parent</footer>
+              </blockquote>
               <div class="mt-6 flex flex-wrap justify-center gap-3 xl:mt-10 xl:gap-4">
-                <a id="cta-home-book-visit" href="book-a-visit.html" class="inline-flex items-center rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 xl:px-6 xl:py-3 xl:text-base">Book a Visit</a>
-                <a id="cta-home-school-life-promo" href="school-life.html" class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 xl:px-6 xl:py-3 xl:text-base">Go to School Life</a>
+                <a id="cta-home-school-life-promo" href="school-life.html" class="inline-flex items-center rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 xl:px-6 xl:py-3 xl:text-base">Go to School Life</a>
+                <!-- Secondary CTA, not in the Figma content, kept so the "Reputation to
+                     conversion via News" walkthrough (see flows, below) still has a homepage
+                     starting point for cta-home-news-article. -->
+                <a id="cta-home-news-article" href="news-article-a.html" class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 xl:px-6 xl:py-3 xl:text-base">See our latest news</a>
               </div>
             `)}
 
