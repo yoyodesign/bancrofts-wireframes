@@ -152,6 +152,9 @@ export const primaryNav: NavItem[] = [
       { label: 'Leadership & Governance', href: 'about-leadership-governance.html', description: 'Our Board of Governors and Senior Leadership Team.' },
       { label: 'Our Family of Schools', href: 'about-family-of-schools.html', description: 'Bancroft’s and its two partner schools, under one foundation.' },
       { label: 'Results & Destinations', href: 'results-destinations.html', description: 'GCSE, A Level and leavers’ destinations in one place.' },
+      // Client request (2026-11-13): also surface the Vacancies page (previously footer-only,
+      // see footerColumns) in the About Us menu itself, renamed to match - see about-vacancies.
+      { label: 'Working at Bancroft’s', href: 'about-vacancies.html', description: 'Life on our staff team, and current roles.' },
     ],
     // Sitemap-tree order only (client request) - see the field's own doc above for why this
     // can't just be a `children` reorder: Learning Support is tree-parented here (whole-school
@@ -167,6 +170,7 @@ export const primaryNav: NavItem[] = [
       'about-awards-recognition.html',
       'results-destinations.html',
       'learning-support.html',
+      'about-vacancies.html',
     ],
   },
 ]
@@ -186,7 +190,7 @@ export const footerColumns = [
     heading: 'Get in Touch', links: [
       { label: 'Contact', href: 'contact.html' },
       { label: 'Policies and Procedures', href: 'about-policies-procedures.html' },
-      { label: 'Vacancies', href: 'about-vacancies.html' },
+      { label: 'Working at Bancroft’s', href: 'about-vacancies.html' },
     ],
   },
   {
@@ -1371,11 +1375,12 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { body: ['Our school day is built around it: a long lunch hour means every child can eat, play and get to a club, all in the same day, rather than it being squeezed in afterwards. Most clubs run during the school day, as a normal part of school life rather than a separate after-school programme.'] } },
       {
         component: 'wf-cards', props: {
-          heading: 'Explore Beyond the Classroom', cols: 3,
+          heading: 'Explore Beyond the Classroom', cols: 4,
           items: [
             { href: 'prep-sport.html', heading: 'Sport', description: 'Football, netball, athletics, gymnastics and swimming.', imageLabel: 'Prep pupils playing football', linkText: 'Explore Sport' },
             { href: 'prep-music.html', heading: 'Music', description: 'Choir, orchestra and termly concerts.', imageLabel: 'Prep pupils in choir practice', linkText: 'Explore Music' },
             { href: 'prep-drama.html', heading: 'Drama', description: 'Drama club, building towards termly productions.', imageLabel: 'Prep pupils rehearsing a play', linkText: 'Explore Drama' },
+            { href: 'prep-clubs.html', heading: 'Clubs', description: 'A flavour of the dozens of clubs on offer, from coding to gardening.', imageLabel: 'Prep pupils at a lunchtime club', linkText: 'Explore Clubs' },
           ],
         },
       },
@@ -1439,6 +1444,34 @@ export const pages: Record<string, Page> = {
     blocks: [
       { component: 'wf-text', props: { body: ['Drama club runs weekly for pupils who want to go further than classroom drama lessons, building towards a termly production that every year group gets the chance to be part of.'] } },
       bookVisitPromo('cta-prep-drama-promo'),
+    ],
+  },
+
+  // New page (client request, 2026-11-13): clubs beyond Sport/Music/Drama change regularly, so
+  // rather than maintaining a fixed list here, this gives a flavour of the categories on offer.
+  'prep-clubs': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '7+ Prep', heading: 'Prep Clubs', body: 'Dozens of clubs to try, alongside Sport, Music and Drama.',
+        mediaLabel: 'Prep pupils at a lunchtime club', breadcrumb: bc({ label: '7+ Prep', href: 'prep.html' }, { label: 'Beyond the Classroom', href: 'prep-beyond-the-classroom.html' }, { label: 'Clubs', href: 'prep-clubs.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Beyond Sport, Music and Drama, Prep pupils can try all sorts of lunchtime and after-school clubs - the exact list changes every term, so this page gives a flavour rather than a fixed menu.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'A flavour of our clubs', cols: 4,
+          items: [
+            { heading: 'Academic & STEM', description: 'Chess, coding and science club.' },
+            { heading: 'Creative', description: 'Art, craft and gardening club.' },
+            { heading: 'Active', description: 'Dance, multi-sports and Forest School extras.' },
+            { heading: 'Community', description: 'Eco club and pupil voice groups.' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: clubs change each term, so the real build should pull this list from a live, regularly-updated source rather than maintaining it as static page content.'] } },
+      bookVisitPromo('cta-prep-clubs-promo'),
     ],
   },
 
@@ -1921,11 +1954,12 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { body: ['Our school day is designed around it: lunch is almost an hour and a half, so eating, socialising and getting to a club can all happen without anything being squeezed in after hours. Most clubs run during the school day rather than as a separate paid programme.'] } },
       {
         component: 'wf-cards', props: {
-          heading: 'Explore Beyond the Classroom', cols: 3,
+          heading: 'Explore Beyond the Classroom', cols: 4,
           items: [
             { href: 'senior-sport.html', heading: 'Sport', description: 'Nine sports, from house fixtures to national competition.', imageLabel: 'Pupils training on the sports pitch', linkText: 'Explore Sport' },
             { href: 'senior-music.html', heading: 'Music', description: 'Orchestras, choirs and bands, with an annual concert at Drapers’ Hall.', imageLabel: 'School orchestra in rehearsal', linkText: 'Explore Music' },
             { href: 'senior-drama.html', heading: 'Drama', description: 'Two major productions a year, plus House Drama and LAMDA.', imageLabel: 'Pupils in a drama rehearsal', linkText: 'Explore Drama' },
+            { href: 'senior-clubs.html', heading: 'Clubs', description: 'A flavour of the 250+ clubs and societies on offer.', imageLabel: 'Pupils at a lunchtime club', linkText: 'Explore Clubs' },
           ],
         },
       },
@@ -1999,6 +2033,7 @@ export const pages: Record<string, Page> = {
       { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
         { href: 'senior-drama.html', label: 'Drama' },
         { href: 'senior-sport.html', label: 'Sport' },
+        { href: 'senior-clubs.html', label: 'Clubs' },
         { href: 'senior-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
       ] } },
       bookVisitPromo('cta-music-promo'),
@@ -2024,9 +2059,44 @@ export const pages: Record<string, Page> = {
       { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
         { href: 'senior-music.html', label: 'Music' },
         { href: 'senior-sport.html', label: 'Sport' },
+        { href: 'senior-clubs.html', label: 'Clubs' },
         { href: 'senior-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
       ] } },
       bookVisitPromo('cta-drama-promo'),
+    ],
+  },
+
+  // New page (client request, 2026-11-13): 250+ clubs and societies change regularly, so rather
+  // than maintaining a fixed list here, this gives a flavour of the categories on offer.
+  'senior-clubs': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '11+ Senior', heading: 'Senior Clubs & Societies', body: 'A flavour of the 250+ clubs and societies that run throughout the year.',
+        mediaLabel: 'Pupils at a lunchtime club', breadcrumb: bc({ label: '11+ Senior', href: 'senior.html' }, { label: 'Beyond the Classroom', href: 'senior-beyond-the-classroom.html' }, { label: 'Clubs', href: 'senior-clubs.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Beyond Sport, Music and Drama, pupils can join clubs and societies covering almost every interest. The exact list changes every term, so this page gives a flavour rather than a fixed menu.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'A flavour of our clubs & societies', cols: 4,
+          items: [
+            { heading: 'Academic & Debating', description: 'Subject societies, Model United Nations and debating.' },
+            { heading: 'Creative', description: 'Art, photography, film and creative writing.' },
+            { heading: 'STEM', description: 'Coding, robotics and science societies.' },
+            { heading: 'Community & Outdoors', description: 'Volunteering, environment and Scouting groups.' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: clubs and societies change each term, so the real build should pull this list from a live, regularly-updated source rather than maintaining it as static page content.'] } },
+      { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
+        { href: 'senior-sport.html', label: 'Sport' },
+        { href: 'senior-music.html', label: 'Music' },
+        { href: 'senior-drama.html', label: 'Drama' },
+        { href: 'senior-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
+      ] } },
+      bookVisitPromo('cta-senior-clubs-promo'),
     ],
   },
 
@@ -2211,11 +2281,12 @@ export const pages: Record<string, Page> = {
       { component: 'wf-text', props: { body: ['Sixth Formers stay involved in the clubs and societies that run right across the school, but with a difference: many take on running them, mentoring younger pupils and building real leadership experience alongside their A Levels.'] } },
       {
         component: 'wf-cards', props: {
-          heading: 'Explore Beyond the Classroom', cols: 3,
+          heading: 'Explore Beyond the Classroom', cols: 4,
           items: [
             { href: 'sixth-form-sport.html', heading: 'Sport', description: 'Captaincy, coaching younger pupils and nine sports to stay involved in.', imageLabel: 'Sixth Form pupils training on the sports pitch', linkText: 'Explore Sport' },
             { href: 'sixth-form-music.html', heading: 'Music', description: 'Leading ensembles, Music Scholars and the senior end of every concert.', imageLabel: 'Sixth Form pupil leading an ensemble', linkText: 'Explore Music' },
             { href: 'sixth-form-drama.html', heading: 'Drama', description: 'Leading roles, and student-directed work alongside the main productions.', imageLabel: 'Sixth Former directing a rehearsal', linkText: 'Explore Drama' },
+            { href: 'sixth-form-clubs.html', heading: 'Clubs', description: 'Leading and running clubs, not just attending them.', imageLabel: 'Sixth Former leading a club', linkText: 'Explore Clubs' },
           ],
         },
       },
@@ -2240,6 +2311,7 @@ export const pages: Record<string, Page> = {
       { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
         { href: 'sixth-form-music.html', label: 'Music' },
         { href: 'sixth-form-drama.html', label: 'Drama' },
+        { href: 'sixth-form-clubs.html', label: 'Clubs' },
         { href: 'sixth-form-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
       ] } },
       bookVisitPromo('cta-sixthform-sport-promo'),
@@ -2260,6 +2332,7 @@ export const pages: Record<string, Page> = {
       { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
         { href: 'sixth-form-sport.html', label: 'Sport' },
         { href: 'sixth-form-drama.html', label: 'Drama' },
+        { href: 'sixth-form-clubs.html', label: 'Clubs' },
         { href: 'sixth-form-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
       ] } },
       bookVisitPromo('cta-sixthform-music-promo'),
@@ -2280,9 +2353,45 @@ export const pages: Record<string, Page> = {
       { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
         { href: 'sixth-form-sport.html', label: 'Sport' },
         { href: 'sixth-form-music.html', label: 'Music' },
+        { href: 'sixth-form-clubs.html', label: 'Clubs' },
         { href: 'sixth-form-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
       ] } },
       bookVisitPromo('cta-sixthform-drama-promo'),
+    ],
+  },
+
+  // New page (client request, 2026-11-13): clubs and societies change regularly, so rather than
+  // maintaining a fixed list here, this gives a flavour of the categories on offer, with the
+  // Sixth Form's own leadership angle (same framing as Sport/Music/Drama above).
+  'sixth-form-clubs': {
+    hero: {
+      component: 'wf-standard-hero',
+      props: {
+        eyebrow: '16+ Sixth Form', heading: 'Sixth Form Clubs & Societies', body: 'Leading and running clubs, not just attending them.',
+        mediaLabel: 'Sixth Former leading a club', breadcrumb: bc({ label: '16+ Sixth Form', href: 'sixth-form.html' }, { label: 'Beyond the Classroom', href: 'sixth-form-beyond-the-classroom.html' }, { label: 'Clubs', href: 'sixth-form-clubs.html' }),
+      },
+    },
+    blocks: [
+      { component: 'wf-text', props: { body: ['Sixth Formers stay involved in the clubs and societies that run right across the school, often taking on running them or mentoring younger pupils. The exact list changes every term, so this page gives a flavour rather than a fixed menu.'] } },
+      {
+        component: 'wf-cards', props: {
+          heading: 'A flavour of our clubs & societies', cols: 4,
+          items: [
+            { heading: 'Academic & Debating', description: 'Leading subject societies, Model United Nations and debating.' },
+            { heading: 'Creative', description: 'Art, photography, film and creative writing.' },
+            { heading: 'STEM', description: 'Coding, robotics and science societies.' },
+            { heading: 'Community & Outdoors', description: 'Volunteering, Gold Duke of Edinburgh’s and Scouting leadership.' },
+          ],
+        },
+      },
+      { component: 'wf-text', props: { body: ['Wireframe note: clubs and societies change each term, so the real build should pull this list from a live, regularly-updated source rather than maintaining it as static page content.'] } },
+      { component: 'wf-button-row', props: { heading: 'Beyond the Classroom', items: [
+        { href: 'sixth-form-sport.html', label: 'Sport' },
+        { href: 'sixth-form-music.html', label: 'Music' },
+        { href: 'sixth-form-drama.html', label: 'Drama' },
+        { href: 'sixth-form-beyond-the-classroom.html', label: 'See Beyond the Classroom' },
+      ] } },
+      bookVisitPromo('cta-sixthform-clubs-promo'),
     ],
   },
 
@@ -2567,6 +2676,9 @@ export const pages: Record<string, Page> = {
       },
     },
     blocks: [
+      // Added (client request, 2026-11-13): a map of the site and its transport links, so
+      // families can orient themselves before reading the route detail below.
+      { component: 'wf-media', props: { label: 'Map: Bancroft’s site and nearby transport links', aspectClass: 'aspect-[16/9]' } },
       { component: 'wf-text', props: { heading: 'School Bus Service', body: [
         'We’re delighted to work with Zeelo on our home-to-school travel service, offering a range of ticket options - an Annual Pass, an Annual One-Way Pass, Termly Passes and a 30 Ride Bundle - for convenient, flexible travel throughout the academic year.',
         'The service is available to all pupils; Alphas (Year 3) must be accompanied by a sibling in P1 (Year 5) or above.',
@@ -3059,16 +3171,25 @@ export const pages: Record<string, Page> = {
     ],
   },
 
+  // Renamed from "Vacancies" and elevated with more culture content and a video (client request,
+  // 2026-11-13) - it's a popular page, and the client wants it to say more about what it's
+  // actually like to work here, not just list roles. Added to the About Us menu alongside its
+  // existing footer link (see primaryNav → about, and footerColumns).
   'about-vacancies': {
     hero: {
       component: 'wf-standard-hero',
       props: {
-        heading: 'Vacancies', body: 'Join a school that invests seriously in its staff, as well as its pupils.',
-        mediaLabel: 'Staff member teaching a lesson', breadcrumb: bc({ label: 'Vacancies', href: 'about-vacancies.html' }),
+        heading: 'Working at Bancroft’s', body: 'Join a school that invests seriously in its staff, as well as its pupils.',
+        mediaLabel: 'Staff member teaching a lesson', breadcrumb: bc({ label: 'About', href: 'about.html' }, { label: 'Working at Bancroft’s', href: 'about-vacancies.html' }),
       },
     },
     blocks: [
-      { component: 'wf-text', props: { heading: 'Working at Bancroft’s', body: ['We look for staff who share our belief that academic ambition and genuine care for pupils aren’t in tension. In return, we invest heavily in professional development and offer a genuinely collegiate working environment.', 'Wireframe note: client idea for the real build - these listings come from MyNewTerm, as a link or embed (to be scoped with the dev team), rather than being maintained as page content here.'] } },
+      { component: 'wf-text', props: { heading: 'Our culture', body: [
+        'We look for staff who share our belief that academic ambition and genuine care for pupils aren’t in tension. In return, we invest heavily in professional development and offer a genuinely collegiate working environment.',
+        'Wireframe note: client wants this section to say a lot more about what it’s actually like to work here day to day - staff voices, development opportunities, wellbeing support - rather than the short, generic paragraph above. Fuller copy to be supplied by the client.',
+      ] } },
+      { component: 'wf-media', props: { type: 'video', label: 'A look at working at Bancroft’s', aspectClass: 'aspect-video' } },
+      { component: 'wf-text', props: { body: ['Wireframe note: client idea for the real build - these listings come from MyNewTerm, as a link or embed (to be scoped with the dev team), rather than being maintained as page content here.'] } },
       {
         component: 'wf-cards', props: {
           heading: 'Current vacancies', cols: 3,
@@ -3204,7 +3325,7 @@ export const pages: Record<string, Page> = {
         component: 'wf-cards', props: {
           heading: 'You may also want', cols: 2,
           items: [
-            { href: 'about-vacancies.html', heading: 'Vacancies', description: 'Current roles at Bancroft’s.' },
+            { href: 'about-vacancies.html', heading: 'Working at Bancroft’s', description: 'Current roles at Bancroft’s.' },
             { href: 'about-policies-procedures.html', heading: 'Policies and Procedures', description: 'Key school policies, including safeguarding.' },
           ],
         },
@@ -3322,6 +3443,7 @@ export const corePages: CorePage[] = [
   { label: 'Prep: Sport', href: 'prep-sport.html', type: 'Content' },
   { label: 'Prep: Music', href: 'prep-music.html', type: 'Content' },
   { label: 'Prep: Drama', href: 'prep-drama.html', type: 'Content' },
+  { label: 'Prep: Clubs', href: 'prep-clubs.html', type: 'Content' },
   { label: 'Prep: Pastoral Care', href: 'prep-pastoral-care.html', type: 'Content' },
   { label: 'Prep: Meet the Staff', href: 'prep-staff.html', type: 'Content' },
 
@@ -3334,6 +3456,7 @@ export const corePages: CorePage[] = [
   { label: 'Senior: Sport', href: 'senior-sport.html', type: 'Content' },
   { label: 'Senior: Music', href: 'senior-music.html', type: 'Content' },
   { label: 'Senior: Drama', href: 'senior-drama.html', type: 'Content' },
+  { label: 'Senior: Clubs', href: 'senior-clubs.html', type: 'Content' },
   { label: 'Senior: Pastoral Care', href: 'senior-pastoral-care.html', type: 'Content' },
 
   // --- 16+ Sixth Form ---------------------------------------------------------
@@ -3345,6 +3468,7 @@ export const corePages: CorePage[] = [
   { label: 'Sixth Form: Sport', href: 'sixth-form-sport.html', type: 'Content' },
   { label: 'Sixth Form: Music', href: 'sixth-form-music.html', type: 'Content' },
   { label: 'Sixth Form: Drama', href: 'sixth-form-drama.html', type: 'Content' },
+  { label: 'Sixth Form: Clubs', href: 'sixth-form-clubs.html', type: 'Content' },
   { label: 'Sixth Form: Pastoral Care', href: 'sixth-form-pastoral-care.html', type: 'Content' },
   { label: 'Preparing for Life Beyond Bancroft’s', href: 'sixth-form-preparing-for-life.html', type: 'Content' },
 
@@ -3372,7 +3496,7 @@ export const corePages: CorePage[] = [
   { label: 'Leadership & Governance', href: 'about-leadership-governance.html', type: 'Content' },
   { label: 'Our Family of Schools', href: 'about-family-of-schools.html', type: 'Content' },
   { label: 'Policies and Procedures', href: 'about-policies-procedures.html', type: 'Content' },
-  { label: 'Vacancies', href: 'about-vacancies.html', type: 'Content' },
+  { label: 'Working at Bancroft’s', href: 'about-vacancies.html', type: 'Content' },
 
   { label: 'Privacy Policy', href: 'privacy-policy.html', type: 'Content' },
 
@@ -3490,6 +3614,9 @@ export const flows: Flow[] = [
 export interface ChangelogEntry { date: string; type: 'Added' | 'Changed' | 'Removed' | 'Fixed'; text: string }
 
 export const changelog: ChangelogEntry[] = [
+  { date: '2026-11-16', type: 'Added', text: 'New "Clubs" page under Beyond the Classroom for Prep, Senior and Sixth Form (client request, via Figma comments) - a flavour of club categories rather than a fixed list, since the real roster changes every term. Added alongside Sport/Music/Drama in each hub\'s card grid and (for Senior/Sixth Form) their cross-link button rows.' },
+  { date: '2026-11-16', type: 'Added', text: 'Map added to Getting to Bancroft’s, after the client flagged it would help families orient themselves before the route detail (client request, via Figma comments).' },
+  { date: '2026-11-16', type: 'Changed', text: '"Vacancies" renamed to "Working at Bancroft’s" and added to the About Us menu (kept its existing footer link too), with a new culture section and video placeholder added above the existing "Current vacancies" listing (client request, via Figma comments).' },
   { date: '2026-11-13', type: 'Changed', text: 'Homepage storyboard hero ("The Gate" beat) updated to match the new Figma copy: heading "A London school with room to grow." (London italicised), subhead "Academic strength, warmth and community since 1737.", and the "ISI Inspected 2025" line dropped (it duplicated the ISI stat already in the "Proof, carved in stone" beat). "Scroll to discover" and the no-CTA treatment already matched Figma, so left unchanged.' },
   { date: '2026-11-13', type: 'Changed', text: 'Sitewide header CTA relabelled from "Book a Visit" to "Visit us", matching Figma\'s nav. Destination unchanged (book-a-visit.html).' },
   { date: '2026-11-13', type: 'Changed', text: 'Replaced the single whole-school "Pastoral Care & Houses" page with three stage-specific pages - Pastoral Care at the Prep, Pastoral Care in the Senior School, Pastoral Care in the Sixth Form - each with its own H1/title tag, nav-childed under its own stage directly after Beyond the Classroom. The Chaplain and Learning for Life sections move to the Senior page. All cross-links updated.' },

@@ -407,6 +407,44 @@ Files changed: `src/config.ts` (primaryNav, `pages`, `corePages`, `changelog`),
 `about-grounds-facilities.html`. Pages deleted: `pastoral-care-houses.html`. Nothing renamed at
 the file level - "Our Community" keeps its existing `school-life-community.html` address.
 
+### Homepage hero/scroll fixes, Figma review comments actioned (2026-11-16)
+
+Two batches of work:
+
+**Homepage storyboard** (from a Figma "hero homepage" content request, then iterated scene by
+scene): matched the Gate/Archway/Credibility/Invitation beats' copy to the latest Figma, dropped
+content Figma didn't show (the duplicate ISI line, the Credibility stats/badges, the Invitation's
+Family of Schools link and second news cards), weighted the Gate beat's scroll distance much
+shorter than the rest so the very first scroll at the top hands off to the Archway almost
+instantly, fixed a stray grey/white bar above the footer (a `<footer>` element added for the new
+quote beat was stealing the bare `'footer'` selector the component used to zero out the real site
+footer's margin), and renamed the quick-jump rail's labels to match Figma's Quick Links (The
+Tower, Archway, The Quad, Old Tree, Cloister).
+
+**Figma review comments** (read via the Figma MCP's `get_comments`, matched to sitemap positions):
+of the comments that weren't already covered by the pastoral care/Grounds & Facilities/Community &
+Partnerships work above, three were simple enough to action directly:
+
+1. "Vacancies" renamed to "Working at Bancroft's" and added to the About Us menu (its existing
+   footer link is unchanged), with a new "Our culture" section and a video placeholder added
+   above the existing "Current vacancies" listing.
+2. A map added to Getting to Bancroft's, so families can orient themselves before the route
+   detail below it.
+3. A new "Clubs" page added under Beyond the Classroom for Prep, Senior and Sixth Form - a
+   flavour of club categories rather than a fixed list (the real roster changes every term),
+   alongside Sport/Music/Drama in each hub's card grid and, for Senior/Sixth Form, their
+   cross-link button rows.
+
+Two comments were left as genuinely open/unresolved rather than guessed at: an SEO rename for
+Sixth Form's "Preparing for Life Beyond Bancroft's" page (the only reply on that thread was "can
+ask Moses," not a decision), and Learning Support's placement in About (the commenter themselves
+was still going back and forth on it).
+
+Files changed: `src/config.ts`, `scripts/gen-pages.mjs`,
+`src/components/homepage-storyboard.ts`, plus regenerated HTML shells. Pages added:
+`prep-clubs.html`, `senior-clubs.html`, `sixth-form-clubs.html`. Nothing deleted or renamed at
+the file level.
+
 ### Sitemap (2026-10-09)
 
 `sitemap.html`, opened from the Prototype panel's "Sitemap" row — a tooling page like the Component

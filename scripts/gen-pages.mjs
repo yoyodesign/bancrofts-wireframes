@@ -45,6 +45,7 @@ const PAGES = [
   ['prep-sport.html', 'prep-sport', 'prep', 'Prep Sport'],
   ['prep-music.html', 'prep-music', 'prep', 'Prep Music'],
   ['prep-drama.html', 'prep-drama', 'prep', 'Prep Drama'],
+  ['prep-clubs.html', 'prep-clubs', 'prep', 'Prep Clubs'],
   ['prep-pastoral-care.html', 'prep-pastoral-care', 'prep', 'Pastoral Care at the Prep'],
   ['prep-staff.html', 'prep-staff', 'prep', 'Meet the Prep Staff'],
 
@@ -56,6 +57,7 @@ const PAGES = [
   ['senior-sport.html', 'senior-sport', 'senior', 'Senior Sport'],
   ['senior-music.html', 'senior-music', 'senior', 'Senior Music'],
   ['senior-drama.html', 'senior-drama', 'senior', 'Senior Drama'],
+  ['senior-clubs.html', 'senior-clubs', 'senior', 'Senior Clubs & Societies'],
   ['senior-pastoral-care.html', 'senior-pastoral-care', 'senior', 'Pastoral Care in the Senior School'],
 
   ['sixth-form.html', 'sixth-form', 'sixth-form', '16+ Sixth Form'],
@@ -66,6 +68,7 @@ const PAGES = [
   ['sixth-form-sport.html', 'sixth-form-sport', 'sixth-form', 'Sixth Form Sport'],
   ['sixth-form-music.html', 'sixth-form-music', 'sixth-form', 'Sixth Form Music'],
   ['sixth-form-drama.html', 'sixth-form-drama', 'sixth-form', 'Sixth Form Drama'],
+  ['sixth-form-clubs.html', 'sixth-form-clubs', 'sixth-form', 'Sixth Form Clubs & Societies'],
   ['sixth-form-pastoral-care.html', 'sixth-form-pastoral-care', 'sixth-form', 'Pastoral Care in the Sixth Form'],
   ['sixth-form-preparing-for-life.html', 'sixth-form-preparing-for-life', 'sixth-form', 'Preparing for Life Beyond Bancroft’s'],
 
@@ -98,7 +101,7 @@ const PAGES = [
   ['about-leadership-governance.html', 'about-leadership-governance', 'about', 'Leadership & Governance'],
   ['about-family-of-schools.html', 'about-family-of-schools', 'about', 'Our Family of Schools'],
   ['about-policies-procedures.html', 'about-policies-procedures', '', 'Policies and Procedures'],
-  ['about-vacancies.html', 'about-vacancies', '', 'Vacancies'],
+  ['about-vacancies.html', 'about-vacancies', 'about', 'Working at Bancroft’s'],
 
   ['contact.html', 'contact', '', 'Contact'],
   ['privacy-policy.html', 'privacy-policy', '', 'Privacy Policy'],
